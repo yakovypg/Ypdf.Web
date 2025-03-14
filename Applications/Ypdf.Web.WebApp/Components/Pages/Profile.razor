@@ -1,0 +1,26 @@
+﻿@page "/profile"
+@attribute [StreamRendering]
+
+<PageTitle>Profile</PageTitle>
+
+<h1>Profile</h1>
+
+@if (!isProfileLoaded)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p>Data loaded</p>
+}
+
+@code
+{
+    private bool isProfileLoaded = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        isProfileLoaded = true;
+    }
+}

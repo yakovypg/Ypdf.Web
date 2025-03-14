@@ -49,8 +49,8 @@ else
         forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
             Date = startDate.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = summaries[Random.Shared.Next(summaries.Length)]
+            TemperatureC = 1,
+            Summary = summaries[0]
         }).ToArray();
     }
 

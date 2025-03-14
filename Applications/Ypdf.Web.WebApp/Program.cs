@@ -1,24 +1,26 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Ypdf.Web.WebApp.Components;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorComponents()
+builder.Services
+    .AddRazorComponents()
     .AddInteractiveServerComponents();
 
-var app = builder.Build();
+WebApplication webApplication = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    app.UseHsts();
-}
+if (!webApplication.Environment.IsDevelopment())
+    webApplication.UseHsts();
 
-app.UseHttpsRedirection();
+webApplication
+    .UseHttpsRedirection()
+    .UseStaticFiles()
+    .UseAntiforgery();
 
-app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapRazorComponents<App>()
+webApplication
+    .MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.Run();
+webApplication.Run();

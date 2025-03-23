@@ -1,0 +1,17 @@
+name: ypdf
+
+services:
+  accounts_database:
+    image: postgis/postgis:13-master
+    container_name: AccountsDbPostgres
+    expose:
+      - 8080
+    ports:
+      - 8080:5432
+    restart: always
+    environment:
+      POSTGRES_USER: Ypdf
+      POSTGRES_PASSWORD: Ypdf2025
+      POSTGRES_MULTIPLE_DATABASES: AccountsDB
+    volumes:
+      - ./Docker/Postgres:/docker-entrypoint-initdb.d

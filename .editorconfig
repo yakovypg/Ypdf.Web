@@ -25,3 +25,7 @@ dotnet_diagnostic.CA1031.severity = none
 # CA1515: Consider making public types internal
 [*.cs]
 dotnet_diagnostic.CA1515.severity = none
+
+# CA1848: Use the LoggerMessage delegates
+[*.cs]
+dotnet_diagnostic.CA1848.severity = none

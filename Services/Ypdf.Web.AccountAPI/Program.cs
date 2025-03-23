@@ -1,7 +1,20 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Ypdf.Web.AccoutAPI;
+using Ypdf.Web.AccoutAPI.Infrastructure.Data;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-WebApplication app = builder.Build();
+IHostBuilder builder = Host.CreateDefaultBuilder(args);
 
-app.MapGet("/", () => "Hello World!");
-app.Run();
+_ = builder.ConfigureWebHostDefaults(webBuilder =>
+{
+    webBuilder.UseStartup<Startup>();
+});
+
+IHost host = builder.Build();
+
+using IServiceScope scope = host.Services.CreateScope();
+AccountsDatabaseInitializer.InitializeDatabase(scope.ServiceProvider);
+
+host.Run();

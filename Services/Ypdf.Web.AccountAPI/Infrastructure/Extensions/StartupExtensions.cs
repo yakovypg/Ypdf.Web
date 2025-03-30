@@ -61,11 +61,7 @@ public static class StartupExtensions
         ArgumentNullException.ThrowIfNull(services, nameof(services));
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
 
-#if DEBUG
         string? connectionString = configuration.GetConnectionString("Accounts");
-#else
-        string? connectionString = configuration.GetConnectionString("AccountsDebug");
-#endif
 
         return services.AddDbContext<AccountsDbContext>(t =>
         {

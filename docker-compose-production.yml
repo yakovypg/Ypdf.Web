@@ -1,0 +1,40 @@
+name: ypdf
+
+services:
+  account_api:
+    build:
+      context: .
+      dockerfile: ./Services/Ypdf.Web.AccountAPI/Dockerfile
+    container_name: AccountAPI
+    deploy:
+      resources:
+        limits:
+          memory: 1gb
+    expose:
+      - 8081
+    ports:
+      - 8081:443
+    restart: always
+    environment:
+      ASPNETCORE_URLS: https://+;http://+
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTPS_PORT: 8081
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
+    volumes:
+      - ./Certificates:/https
+
+  accounts_database:
+    image: postgis/postgis:13-master
+    container_name: AccountsDbPostgres
+    expose:
+      - 8080
+    ports:
+      - 8080:5432
+    restart: always
+    environment:
+      POSTGRES_USER: Ypdf
+      POSTGRES_PASSWORD: Ypdf2025
+      POSTGRES_MULTIPLE_DATABASES: AccountsDB
+    volumes:
+      - ./Docker/Postgres:/docker-entrypoint-initdb.d

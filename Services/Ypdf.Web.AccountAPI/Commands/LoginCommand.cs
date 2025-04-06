@@ -30,6 +30,13 @@ public class LoginCommand : BaseCommand, ICommand<LoginRequest, LoginResponse>
         string jsonData = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
         Logger.LogInformation("LOGIN: {JsonData}", jsonData);
 
-        return new LoginResponse(new Models.Dto.UserDto(), "2432423243");
+        var user = new Models.Dto.UserDto()
+        {
+            Nickname = "some_nickname",
+            SubscriptionId = 1,
+            UserId = 1
+        };
+
+        return new LoginResponse(user, "some_token");
     }
 }

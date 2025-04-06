@@ -30,6 +30,13 @@ public class RegisterUserCommand : BaseCommand, ICommand<RegisterUserRequest, Re
         string jsonData = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
         Logger.LogInformation("Register: {JsonData}", jsonData);
 
-        return new RegisterUserResponse(new Models.Dto.UserDto());
+        var user = new Models.Dto.UserDto()
+        {
+            Nickname = request.Nickname,
+            SubscriptionId = 2,
+            UserId = 2
+        };
+
+        return new RegisterUserResponse(user);
     }
 }

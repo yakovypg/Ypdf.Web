@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Models.Api;
 
-namespace Ypdf.Web.AccoutAPI.Infrastructure.Extensions;
+namespace Ypdf.Web.AccoutAPI.Infrastructure.Handlers;
 
 public static class ExceptionHandler
 {

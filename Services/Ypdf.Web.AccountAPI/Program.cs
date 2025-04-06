@@ -25,7 +25,6 @@ static IHostBuilder CreateHostBuilder(string[] args)
         .ConfigureAppConfiguration((context, config) =>
         {
             string basePath = Directory.GetCurrentDirectory();
-            /*string? aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");*/
             string aspNetCoreEnvironment = context.HostingEnvironment.EnvironmentName;
 
             string defaultAppSettings = "appsettings.json";

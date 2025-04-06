@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using AutoMapper;
@@ -17,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Ypdf.Web.AccoutAPI.Commands;
 using Ypdf.Web.AccoutAPI.Infrastructure.Data;
+using Ypdf.Web.AccoutAPI.Infrastructure.Handlers;
 using Ypdf.Web.AccoutAPI.Models.Dto.Requests;
 using Ypdf.Web.AccoutAPI.Models.Dto.Responses;
 using Ypdf.Web.Domain.Commands;

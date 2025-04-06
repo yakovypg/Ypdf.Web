@@ -40,12 +40,43 @@ services:
     restart: always
     environment:
       ASPNETCORE_URLS: https://+;http://+
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: Ypdf
+      RABBITMQ_PASSWORD: Ypdf2025
       ASPNETCORE_HTTPS_PORT: 8082
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
     volumes:
       - ./Certificates:/https
+      - output_files:/output
+
+  file_storing_api:
+    build:
+      context: .
+      dockerfile: ./Services/Ypdf.Web.FileStoringAPI/Dockerfile
+    container_name: FileStoringAPI
+    deploy:
+      resources:
+        limits:
+          memory: 1gb
+    expose:
+      - 8083
+    ports:
+      - 8083:443
+    restart: always
+    environment:
+      ASPNETCORE_URLS: https://+;http://+
+      ASPNETCORE_ENVIRONMENT: Development
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: Ypdf
+      RABBITMQ_PASSWORD: Ypdf2025
+      ASPNETCORE_HTTPS_PORT: 8083
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
+    volumes:
+      - ./Certificates:/https
+      - output_files:/output
 
   accounts_database:
     image: postgis/postgis:13-master
@@ -61,3 +92,16 @@ services:
       POSTGRES_MULTIPLE_DATABASES: AccountsDB
     volumes:
       - ./Docker/Postgres:/docker-entrypoint-initdb.d
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: RabbitMQ
+    ports:
+      - "5672:5672"   # RabbitMQ port
+      - "15672:15672" # RabbitMQ management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: Ypdf
+      RABBITMQ_DEFAULT_PASS: Ypdf2025
+
+volumes:
+  output_files:

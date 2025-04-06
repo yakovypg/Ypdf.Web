@@ -10,6 +10,7 @@ namespace Ypdf.Web.AccoutAPI.Controllers;
 
 [Route("api/account")]
 [ApiController]
+[ApiVersion("1.0")]
 public class AccountApiController : ControllerBase
 {
     [HttpPost("register")]

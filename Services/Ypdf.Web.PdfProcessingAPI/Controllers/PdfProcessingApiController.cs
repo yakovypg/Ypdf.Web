@@ -10,6 +10,7 @@ namespace Ypdf.Web.AccoutAPI.Controllers;
 
 [Route("api/tool")]
 [ApiController]
+[ApiVersion("1.0")]
 public class PdfProcessingApiController : ControllerBase
 {
     [HttpPost("merge")]

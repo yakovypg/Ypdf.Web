@@ -48,11 +48,9 @@ public static class StartupExtensions
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
-        services
+        return services
             .AddScoped<ICommand<MergeRequest, PdfOperationResponse>, MergeCommand>()
             .AddScoped<ICommand<SplitRequest, PdfOperationResponse>, SplitCommand>();
-
-        return services;
     }
 
     public static IServiceCollection AddApiVersioning(this IServiceCollection services, IConfiguration configuration)

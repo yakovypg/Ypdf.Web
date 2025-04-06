@@ -75,11 +75,9 @@ public static class StartupExtensions
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
-        services
+        return services
             .AddScoped<ICommand<RegisterUserRequest, RegisterUserResponse>, RegisterUserCommand>()
             .AddScoped<ICommand<LoginRequest, LoginResponse>, LoginCommand>();
-
-        return services;
     }
 
     public static IServiceCollection AddApiVersioning(this IServiceCollection services, IConfiguration configuration)

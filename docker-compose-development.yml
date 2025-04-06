@@ -19,6 +19,33 @@ services:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTPS_PORT: 8081
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
+    volumes:
+      - ./Certificates:/https
+
+  pdf_processing_api:
+    build:
+      context: .
+      dockerfile: ./Services/Ypdf.Web.PdfProcessingAPI/Dockerfile
+    container_name: PdfProcessingAPI
+    deploy:
+      resources:
+        limits:
+          memory: 1gb
+    expose:
+      - 8082
+    ports:
+      - 8082:443
+    restart: always
+    environment:
+      ASPNETCORE_URLS: https://+;http://+
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTPS_PORT: 8082
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
+    volumes:
+      - ./Certificates:/https
 
   accounts_database:
     image: postgis/postgis:13-master

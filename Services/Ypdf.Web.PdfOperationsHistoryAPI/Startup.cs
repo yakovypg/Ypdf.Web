@@ -49,6 +49,7 @@ public class Startup
 
         services
             .AddCommands()
+            .AddServices()
             .AddMapper()
             .AddApiVersioning(Configuration)
             .AddSwaggerGen()

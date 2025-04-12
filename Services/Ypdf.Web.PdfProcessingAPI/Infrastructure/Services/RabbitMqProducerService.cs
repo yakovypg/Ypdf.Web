@@ -6,14 +6,14 @@ using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using Ypdf.Web.Domain.Models.Configuration;
 
-namespace Ypdf.Web.PdfProcessingAPI.Services;
+namespace Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
 
-public class RabbitMqSenderService : IRabbitMqSenderService
+public class RabbitMqProducerService : IRabbitMqProducerService
 {
     private readonly string _hostName;
     private readonly string _queueName;
 
-    public RabbitMqSenderService(IConfiguration configuration)
+    public RabbitMqProducerService(IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
 

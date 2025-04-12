@@ -8,9 +8,9 @@ using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Extensions;
 using Ypdf.Web.Domain.Models.Configuration;
 using Ypdf.Web.Domain.Models.Informing;
+using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
 using Ypdf.Web.PdfProcessingAPI.Models.Dto.Requests;
 using Ypdf.Web.PdfProcessingAPI.Models.Dto.Responses;
-using Ypdf.Web.PdfProcessingAPI.Services;
 
 namespace Ypdf.Web.PdfProcessingAPI.Commands;
 
@@ -20,7 +20,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
     protected BasePdfCommand(
         string commandName,
         PdfOperationType operationType,
-        IRabbitMqSenderService rabbitMqSenderService,
+        IRabbitMqProducerService rabbitMqSenderService,
         IConfiguration configuration,
         IMapper mapper,
         ILogger<BaseCommand> logger)
@@ -41,7 +41,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
     protected string CommandName { get; }
     protected PdfOperationType OperationType { get; }
 
-    protected IRabbitMqSenderService RabbitMqSenderService { get; }
+    protected IRabbitMqProducerService RabbitMqSenderService { get; }
     protected IConfiguration Configuration { get; }
 
     public virtual async Task<PdfOperationResponse> ExecuteAsync(TRequest request)

@@ -5,16 +5,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Informing;
+using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
 using Ypdf.Web.PdfProcessingAPI.Infrastructure.Timing;
 using Ypdf.Web.PdfProcessingAPI.Models.Dto.Requests;
-using Ypdf.Web.PdfProcessingAPI.Services;
 
 namespace Ypdf.Web.PdfProcessingAPI.Commands;
 
 public class MergeCommand : BasePdfCommand<MergeRequest>
 {
     public MergeCommand(
-        IRabbitMqSenderService rabbitMqSenderService,
+        IRabbitMqProducerService rabbitMqSenderService,
         IConfiguration configuration,
         IMapper mapper,
         ILogger<BaseCommand> logger)

@@ -14,9 +14,9 @@ using Microsoft.OpenApi.Models;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.PdfProcessingAPI.Commands;
 using Ypdf.Web.PdfProcessingAPI.Infrastructure.Handlers;
+using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
 using Ypdf.Web.PdfProcessingAPI.Models.Dto.Requests;
 using Ypdf.Web.PdfProcessingAPI.Models.Dto.Responses;
-using Ypdf.Web.PdfProcessingAPI.Services;
 
 namespace Ypdf.Web.PdfProcessingAPI.Infrastructure.Extensions;
 
@@ -58,7 +58,7 @@ public static class StartupExtensions
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
-        return services.AddScoped<IRabbitMqSenderService, RabbitMqSenderService>();
+        return services.AddScoped<IRabbitMqProducerService, RabbitMqProducerService>();
     }
 
     public static IServiceCollection AddApiVersioning(this IServiceCollection services, IConfiguration configuration)

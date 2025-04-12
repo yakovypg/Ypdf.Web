@@ -28,21 +28,16 @@ public class MergeCommand : BasePdfCommand<MergeRequest>
     {
     }
 
-    protected override string GetOutputPath()
-    {
-        return GetDefaultOutputFilePath();
-    }
-
     protected override Task<(DateTime OperationStart, DateTime OperationEnd)> GetCommandTask(
         MergeRequest request,
-        string outputPath)
+        string outputFilePath)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
-        ArgumentNullException.ThrowIfNull(outputPath, nameof(outputPath));
+        ArgumentNullException.ThrowIfNull(outputFilePath, nameof(outputFilePath));
 
         return TimedInvoke.InvokeAsync(() =>
         {
-            return System.IO.File.WriteAllTextAsync(outputPath, string.Empty);
+            return System.IO.File.WriteAllTextAsync(outputFilePath, string.Empty);
         });
     }
 }

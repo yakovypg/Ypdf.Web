@@ -54,10 +54,10 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
 
         Logger.LogInformation("Execute {CommandName} with {RequestJson}", CommandName, requestJson);
 
-        string outputPath = GetOutputPath();
-        Logger.LogInformation("Output path: {OutputPath}", outputPath);
+        string outputFilePath = GetOutputFilePath();
+        Logger.LogInformation("Output file path: {OutputPath}", outputFilePath);
 
-        Task<(DateTime, DateTime)> commandTask = GetCommandTask(request, outputPath);
+        Task<(DateTime, DateTime)> commandTask = GetCommandTask(request, outputFilePath);
 
         (DateTime operationStart, DateTime operationEnd) = await commandTask.ConfigureAwait(false);
         Logger.LogInformation("{CommandName} successfully executed", CommandName);
@@ -74,7 +74,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
             .SendMessageAsync(operationResult)
             .ConfigureAwait(false);
 
-        return new PdfOperationResponse(operationResult);
+        return new PdfOperationResponse(outputFilePath, operationResult);
     }
 
     protected virtual string GetRootOutputFilesDirectoryPath()
@@ -83,7 +83,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
             ?? throw new ConfigurationException("Output files directory not specified");
     }
 
-    protected virtual string GetDefaultOutputDirectoryPath()
+    protected virtual string GetOutputDirectoryPath()
     {
         string outputFilesDirectoryPath = GetRootOutputFilesDirectoryPath();
         string outputFileName = Guid.NewGuid().ToString();
@@ -91,7 +91,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
         return Path.Combine(outputFilesDirectoryPath, outputFileName);
     }
 
-    protected virtual string GetDefaultOutputFilePath()
+    protected virtual string GetOutputFilePath()
     {
         string outputFilesDirectoryPath = GetRootOutputFilesDirectoryPath();
         string outputFileName = $"{Guid.NewGuid()}.pdf";
@@ -99,9 +99,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
         return Path.Combine(outputFilesDirectoryPath, outputFileName);
     }
 
-    protected abstract string GetOutputPath();
-
     protected abstract Task<(DateTime OperationStart, DateTime OperationEnd)> GetCommandTask(
         TRequest request,
-        string outputPath);
+        string outputFilePath);
 }

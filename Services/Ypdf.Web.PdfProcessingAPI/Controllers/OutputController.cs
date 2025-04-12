@@ -14,9 +14,9 @@ namespace Ypdf.Web.PdfProcessingAPI.Controllers;
 [ApiVersion("1.0")]
 public class OutputController : ControllerBase
 {
-    [HttpGet("{id}")]
+    [HttpGet("{name}")]
     public async Task<ApiResponse<GetOutputFileResponse>> GetOutputFile(
-        Guid id,
+        string name,
         [FromServices] ICommand<GetOutputFileRequest, GetOutputFileResponse> getOutputFileCommand)
     {
         if (getOutputFileCommand is null)
@@ -24,7 +24,7 @@ public class OutputController : ControllerBase
 
         var request = new GetOutputFileRequest()
         {
-            Id = id
+            FileName = name
         };
 
         GetOutputFileResponse response = await getOutputFileCommand

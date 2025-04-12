@@ -18,7 +18,7 @@ public class ToolController : ControllerBase
         [FromBody] MergeRequest request,
         [FromServices] ICommand<MergeRequest, PdfOperationResponse> mergeCommand)
     {
-        if (mergeCommand is null)
+        if (request is null || mergeCommand is null)
             return new(null, HttpStatusCode.InternalServerError);
 
         PdfOperationResponse response = await mergeCommand
@@ -33,7 +33,7 @@ public class ToolController : ControllerBase
         [FromBody] SplitRequest request,
         [FromServices] ICommand<SplitRequest, PdfOperationResponse> splitCommand)
     {
-        if (splitCommand is null)
+        if (request is null || splitCommand is null)
             return new(null, HttpStatusCode.InternalServerError);
 
         PdfOperationResponse response = await splitCommand

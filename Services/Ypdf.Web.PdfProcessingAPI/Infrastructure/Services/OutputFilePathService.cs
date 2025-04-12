@@ -15,13 +15,37 @@ public class OutputFilePathService : IOutputFilePathService
         _configuration = configuration;
     }
 
+    public string GetOutputFilesDirectory()
+    {
+        return _configuration.GetSection("Storages:OutputFiles").Value
+            ?? throw new ConfigurationException("Output files directory not specified");
+    }
+
     public string GetOutputFilePath(string fileName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(fileName, nameof(fileName));
 
-        string outputFilesDirectory = _configuration.GetSection("Storages:OutputFiles").Value
-            ?? throw new ConfigurationException("Output files directory not specified");
+        string outputFilesDirectory = GetOutputFilesDirectory();
 
         return Path.Combine(outputFilesDirectory, fileName);
+    }
+
+    public string GetNextOutputFileName(string extension)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(extension, nameof(extension));
+
+        string fileName;
+        string filePath;
+
+        do
+        {
+            Guid fileNameWithoutExtension = Guid.NewGuid();
+
+            fileName = $"{fileNameWithoutExtension}.{extension}";
+            filePath = GetOutputFilePath(fileName);
+        }
+        while (File.Exists(filePath));
+
+        return fileName;
     }
 }

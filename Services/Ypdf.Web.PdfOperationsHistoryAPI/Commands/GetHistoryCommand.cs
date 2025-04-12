@@ -24,11 +24,8 @@ public class GetHistoryCommand : BaseCommand, ICommand<GetHistoryRequest, GetHis
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        string jsonData = await request
-            .ToJsonAsync()
-            .ConfigureAwait(false);
-
-        Logger.LogInformation("GetHistory: {JsonData}", jsonData);
+        Logger.LogInformation("Get history for user {UserId}", request.UserId);
+        await Task.Delay(100).ConfigureAwait(false);
 
         return new GetHistoryResponse();
     }

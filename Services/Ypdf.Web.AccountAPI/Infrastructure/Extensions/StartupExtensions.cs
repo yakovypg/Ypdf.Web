@@ -16,10 +16,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Ypdf.Web.AccoutAPI.Commands;
 using Ypdf.Web.AccoutAPI.Infrastructure.Data;
-using Ypdf.Web.AccoutAPI.Infrastructure.Handlers;
 using Ypdf.Web.AccoutAPI.Models.Dto.Requests;
 using Ypdf.Web.AccoutAPI.Models.Dto.Responses;
 using Ypdf.Web.Domain.Commands;
+using Ypdf.Web.Domain.Infrastructure.Handlers;
 using Ypdf.Web.Domain.Models.Configuration;
 
 namespace Ypdf.Web.AccoutAPI.Infrastructure.Extensions;

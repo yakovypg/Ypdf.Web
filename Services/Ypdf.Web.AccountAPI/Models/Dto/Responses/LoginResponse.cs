@@ -7,7 +7,7 @@ public class LoginResponse
     public LoginResponse(UserDto user, string token)
     {
         ArgumentNullException.ThrowIfNull(user, nameof(user));
-        ArgumentException.ThrowIfNullOrEmpty(token, nameof(token));
+        ArgumentException.ThrowIfNullOrWhiteSpace(token, nameof(token));
 
         User = user;
         Token = token;

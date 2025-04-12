@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Ypdf.Web.AccoutAPI.Models.Dto.Requests;
 using Ypdf.Web.AccoutAPI.Models.Dto.Responses;
 using Ypdf.Web.Domain.Commands;
+using Ypdf.Web.Domain.Infrastructure.Extensions;
 
 namespace Ypdf.Web.AccoutAPI.Commands;
 
@@ -21,13 +22,10 @@ public class RegisterUserCommand : BaseCommand, ICommand<RegisterUserRequest, Re
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        using var memoryStream = new System.IO.MemoryStream();
-
-        await System.Text.Json.JsonSerializer
-            .SerializeAsync(memoryStream, request)
+        string jsonData = await request
+            .ToJsonAsync()
             .ConfigureAwait(false);
 
-        string jsonData = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
         Logger.LogInformation("Register with {JsonData}", jsonData);
 
         var user = new Models.Dto.UserDto()

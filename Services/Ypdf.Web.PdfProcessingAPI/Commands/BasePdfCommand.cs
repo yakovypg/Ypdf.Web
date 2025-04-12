@@ -20,6 +20,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
     protected BasePdfCommand(
         string commandName,
         PdfOperationType operationType,
+        IOutputFilePathService outputFilePathService,
         IRabbitMqProducerService rabbitMqSenderService,
         IConfiguration configuration,
         IMapper mapper,
@@ -29,11 +30,13 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
         ArgumentNullException.ThrowIfNull(commandName, nameof(commandName));
+        ArgumentNullException.ThrowIfNull(outputFilePathService, nameof(outputFilePathService));
         ArgumentNullException.ThrowIfNull(rabbitMqSenderService, nameof(rabbitMqSenderService));
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
 
         CommandName = commandName;
         OperationType = operationType;
+        OutputFilePathService = outputFilePathService;
         RabbitMqSenderService = rabbitMqSenderService;
         Configuration = configuration;
     }
@@ -41,6 +44,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
     protected string CommandName { get; }
     protected PdfOperationType OperationType { get; }
 
+    protected IOutputFilePathService OutputFilePathService { get; }
     protected IRabbitMqProducerService RabbitMqSenderService { get; }
     protected IConfiguration Configuration { get; }
 
@@ -77,26 +81,12 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
         return new PdfOperationResponse(outputFilePath, operationResult);
     }
 
-    protected virtual string GetRootOutputFilesDirectoryPath()
-    {
-        return Configuration.GetSection("Storages:OutputFiles").Value
-            ?? throw new ConfigurationException("Output files directory not specified");
-    }
-
-    protected virtual string GetOutputDirectoryPath()
-    {
-        string outputFilesDirectoryPath = GetRootOutputFilesDirectoryPath();
-        string outputFileName = Guid.NewGuid().ToString();
-
-        return Path.Combine(outputFilesDirectoryPath, outputFileName);
-    }
-
     protected virtual string GetOutputFilePath()
     {
-        string outputFilesDirectoryPath = GetRootOutputFilesDirectoryPath();
-        string outputFileName = $"{Guid.NewGuid()}.pdf";
+        string fileName = OutputFilePathService.GetNextOutputFileName("pdf");
+        string filePath = OutputFilePathService.GetOutputFilePath(fileName);
 
-        return Path.Combine(outputFilesDirectoryPath, outputFileName);
+        return filePath;
     }
 
     protected abstract Task<(DateTime OperationStart, DateTime OperationEnd)> GetCommandTask(

@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using Ypdf.Web.AccoutAPI.Models;
 
@@ -6,7 +7,7 @@ namespace Ypdf.Web.AccoutAPI.Infrastructure.Data;
 public class AccountsDbContext : DbContext
 {
     public AccountsDbContext(DbContextOptions<AccountsDbContext> options)
-        : base(options)
+        : base(options ?? throw new ArgumentNullException(nameof(options)))
     {
     }
 
@@ -15,6 +16,7 @@ public class AccountsDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        ArgumentNullException.ThrowIfNull(modelBuilder, nameof(modelBuilder));
         base.OnModelCreating(modelBuilder);
     }
 }

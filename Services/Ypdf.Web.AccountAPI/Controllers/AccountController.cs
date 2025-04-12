@@ -18,7 +18,7 @@ public class AccountController : ControllerBase
         [FromBody] RegisterUserRequest request,
         [FromServices] ICommand<RegisterUserRequest, RegisterUserResponse> registerUserCommand)
     {
-        if (registerUserCommand is null)
+        if (request is null || registerUserCommand is null)
             return new(null, HttpStatusCode.InternalServerError);
 
         RegisterUserResponse response = await registerUserCommand
@@ -33,7 +33,7 @@ public class AccountController : ControllerBase
         [FromBody] LoginRequest request,
         [FromServices] ICommand<LoginRequest, LoginResponse> loginCommand)
     {
-        if (loginCommand is null)
+        if (request is null || loginCommand is null)
             return new(null, HttpStatusCode.InternalServerError);
 
         LoginResponse response = await loginCommand

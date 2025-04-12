@@ -14,6 +14,7 @@ namespace Ypdf.Web.PdfProcessingAPI.Commands;
 public class SplitCommand : BasePdfCommand<SplitRequest>
 {
     public SplitCommand(
+        IOutputFilePathService outputFilePathService,
         IRabbitMqProducerService rabbitMqSenderService,
         IConfiguration configuration,
         IMapper mapper,
@@ -21,6 +22,7 @@ public class SplitCommand : BasePdfCommand<SplitRequest>
         : base(
             nameof(SplitCommand),
             PdfOperationType.Split,
+            outputFilePathService ?? throw new ArgumentNullException(nameof(outputFilePathService)),
             rabbitMqSenderService ?? throw new ArgumentNullException(nameof(rabbitMqSenderService)),
             configuration ?? throw new ArgumentNullException(nameof(configuration)),
             mapper ?? throw new ArgumentNullException(nameof(mapper)),

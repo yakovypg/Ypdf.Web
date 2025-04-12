@@ -33,7 +33,7 @@ public class Startup
         ArgumentNullException.ThrowIfNull(apiVersionDescriptionProvider, nameof(apiVersionDescriptionProvider));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
 
-        application
+        _ = application
             .UseRouting()
             .UseHttpsRedirection()
             .UseExceptionHandler(logger)
@@ -44,11 +44,13 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+
+        _ = services
             .AddHttpClient()
             .AddControllers();
 
-        services
+        _ = services
             .AddAccountsDbContext(Configuration)
             .AddCommands()
             .AddMapper()
@@ -56,7 +58,7 @@ public class Startup
             .AddSwaggerGen()
             .ConfigureEndpoints();
 
-        services
+        _ = services
             .AddControllersWithViews()
             .AddJsonOptions(options =>
             {

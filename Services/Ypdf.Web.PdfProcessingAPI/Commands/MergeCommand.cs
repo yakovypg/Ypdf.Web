@@ -14,6 +14,7 @@ namespace Ypdf.Web.PdfProcessingAPI.Commands;
 public class MergeCommand : BasePdfCommand<MergeRequest>
 {
     public MergeCommand(
+        IOutputFilePathService outputFilePathService,
         IRabbitMqProducerService rabbitMqSenderService,
         IConfiguration configuration,
         IMapper mapper,
@@ -21,6 +22,7 @@ public class MergeCommand : BasePdfCommand<MergeRequest>
         : base(
             nameof(MergeCommand),
             PdfOperationType.Merge,
+            outputFilePathService ?? throw new ArgumentNullException(nameof(outputFilePathService)),
             rabbitMqSenderService ?? throw new ArgumentNullException(nameof(rabbitMqSenderService)),
             configuration ?? throw new ArgumentNullException(nameof(configuration)),
             mapper ?? throw new ArgumentNullException(nameof(mapper)),

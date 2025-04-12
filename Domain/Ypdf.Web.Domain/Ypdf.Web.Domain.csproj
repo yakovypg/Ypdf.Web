@@ -1,6 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <ItemGroup>
     <PackageReference Include="AutoMapper" />
     <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
+
 </Project>

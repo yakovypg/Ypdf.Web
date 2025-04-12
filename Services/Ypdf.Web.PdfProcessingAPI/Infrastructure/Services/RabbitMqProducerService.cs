@@ -57,12 +57,16 @@ public class RabbitMqProducerService : IRabbitMqProducerService, IDisposable
 
     public async Task SendMessageAsync(object obj)
     {
-        string? message = JsonSerializer.Serialize(obj);
+        ArgumentNullException.ThrowIfNull(obj, nameof(obj));
+
+        string message = JsonSerializer.Serialize(obj);
         await SendMessageAsync(message).ConfigureAwait(false);
     }
 
     public async Task SendMessageAsync(string message)
     {
+        ArgumentNullException.ThrowIfNull(message, nameof(message));
+
         var factory = new ConnectionFactory()
         {
             HostName = _hostName,
@@ -78,13 +82,14 @@ public class RabbitMqProducerService : IRabbitMqProducerService, IDisposable
             .CreateChannelAsync()
             .ConfigureAwait(false);
 
-        _ = await channel.QueueDeclareAsync(
+        Task<QueueDeclareOk> queueDeclareTask = channel.QueueDeclareAsync(
             queue: _queueName,
             durable: false,
             exclusive: false,
             autoDelete: false,
-            arguments: null)
-            .ConfigureAwait(false);
+            arguments: null);
+
+        _ = await queueDeclareTask.ConfigureAwait(false);
 
         byte[] body = Encoding.UTF8.GetBytes(message);
 

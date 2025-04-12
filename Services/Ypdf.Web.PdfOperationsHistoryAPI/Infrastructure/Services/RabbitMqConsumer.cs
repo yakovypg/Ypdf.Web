@@ -1,4 +1,6 @@
 using System;
+using System.Net;
+using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,16 +9,20 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Ypdf.Web.Domain.Infrastructure.Extensions;
 using Ypdf.Web.Domain.Models.Configuration;
 
 namespace Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Services;
 
-public class RabbitMqConsumer : BackgroundService, IAsyncDisposable
+public class RabbitMqConsumer : BackgroundService
 {
     private readonly ILogger<RabbitMqConsumer> _logger;
 
     private readonly string _hostName;
     private readonly string _queueName;
+
+    private readonly SecureString? _userName;
+    private readonly SecureString? _password;
 
     private IConnection? _connection;
     private IChannel? _channel;
@@ -35,14 +41,17 @@ public class RabbitMqConsumer : BackgroundService, IAsyncDisposable
 
         _queueName = configuration.GetSection("RabbitMQ:QueueName").Value
             ?? throw new ConfigurationException("Queue name for RabbitMQ not specified");
-    }
 
-    ~RabbitMqConsumer()
-    {
-        DisposeAsync(false)
-            .AsTask()
-            .GetAwaiter()
-            .GetResult();
+        _userName = new SecureString();
+        _password = new SecureString();
+
+        _userName.Enrich(
+            configuration["RabbitMQ:UserName"]
+                ?? throw new ConfigurationException("User name for RabbitMQ not specified"));
+
+        _password.Enrich(
+            configuration["RabbitMQ:Password"]
+                ?? throw new ConfigurationException("Password for RabbitMQ user not specified"));
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
@@ -51,7 +60,9 @@ public class RabbitMqConsumer : BackgroundService, IAsyncDisposable
 
         var factory = new ConnectionFactory()
         {
-            HostName = _hostName
+            HostName = _hostName,
+            UserName = new NetworkCredential(string.Empty, _userName).Password,
+            Password = new NetworkCredential(string.Empty, _password).Password
         };
 
         _connection = await factory
@@ -77,33 +88,47 @@ public class RabbitMqConsumer : BackgroundService, IAsyncDisposable
             .ConfigureAwait(false);
     }
 
-    public async ValueTask DisposeAsync()
+    public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        await DisposeAsync(true)
+        if (_channel is not null)
+        {
+            await _channel
+                .CloseAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            _channel = null;
+        }
+
+        if (_connection is not null)
+        {
+            await _connection
+                .CloseAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            _connection = null;
+        }
+
+        await base
+            .StopAsync(cancellationToken)
             .ConfigureAwait(false);
+    }
+
+    public override void Dispose()
+    {
+        Dispose(true);
+        base.Dispose();
 
         GC.SuppressFinalize(this);
     }
 
-    protected virtual async ValueTask DisposeAsync(bool disposing)
+    protected virtual void Dispose(bool disposing)
     {
         if (!_isDisposed)
         {
             if (disposing)
             {
-                if (_channel is not null)
-                {
-                    await _channel
-                        .CloseAsync()
-                        .ConfigureAwait(false);
-                }
-
-                if (_connection is not null)
-                {
-                    await _connection
-                        .CloseAsync()
-                        .ConfigureAwait(false);
-                }
+                _userName?.Dispose();
+                _password?.Dispose();
             }
 
             _isDisposed = true;

@@ -50,6 +50,7 @@ public static class StartupExtensions
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
         return services
+            .AddScoped<ICommand<GetOutputFileRequest, GetOutputFileResponse>, GetOutputFileCommand>()
             .AddScoped<ICommand<MergeRequest, PdfOperationResponse>, MergeCommand>()
             .AddScoped<ICommand<SplitRequest, PdfOperationResponse>, SplitCommand>();
     }

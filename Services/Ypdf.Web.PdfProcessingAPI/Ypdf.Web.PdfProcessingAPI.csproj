@@ -1,11 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
+
   <ItemGroup>
     <PackageReference Include="AutoMapper" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" />
     <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="RabbitMQ.Client" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Domain\Ypdf.Web.Domain\Ypdf.Web.Domain.csproj" />
   </ItemGroup>
+
 </Project>

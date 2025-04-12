@@ -11,11 +11,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Ypdf.Web.AccoutAPI.Commands;
-using Ypdf.Web.AccoutAPI.Models.Dto.Requests;
-using Ypdf.Web.AccoutAPI.Models.Dto.Responses;
 using Ypdf.Web.Domain.Commands;
+using Ypdf.Web.PdfProcessingAPI.Commands;
 using Ypdf.Web.PdfProcessingAPI.Infrastructure.Handlers;
+using Ypdf.Web.PdfProcessingAPI.Models.Dto.Requests;
+using Ypdf.Web.PdfProcessingAPI.Models.Dto.Responses;
+using Ypdf.Web.PdfProcessingAPI.Services;
 
 namespace Ypdf.Web.PdfProcessingAPI.Infrastructure.Extensions;
 
@@ -51,6 +52,12 @@ public static class StartupExtensions
         return services
             .AddScoped<ICommand<MergeRequest, PdfOperationResponse>, MergeCommand>()
             .AddScoped<ICommand<SplitRequest, PdfOperationResponse>, SplitCommand>();
+    }
+
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+        return services.AddScoped<IRabbitMqSenderService, RabbitMqSenderService>();
     }
 
     public static IServiceCollection AddApiVersioning(this IServiceCollection services, IConfiguration configuration)

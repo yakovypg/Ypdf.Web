@@ -48,6 +48,7 @@ public class Startup
             .AddControllers();
 
         services
+            .AddServices()
             .AddCommands()
             .AddMapper()
             .AddApiVersioning(Configuration)

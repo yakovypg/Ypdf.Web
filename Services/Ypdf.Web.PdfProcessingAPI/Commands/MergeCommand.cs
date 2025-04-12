@@ -3,51 +3,46 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Ypdf.Web.AccoutAPI.Models.Dto.Requests;
-using Ypdf.Web.AccoutAPI.Models.Dto.Responses;
 using Ypdf.Web.Domain.Commands;
-using Ypdf.Web.Domain.Models.Configuration;
+using Ypdf.Web.Domain.Models.Informing;
+using Ypdf.Web.PdfProcessingAPI.Infrastructure.Timing;
+using Ypdf.Web.PdfProcessingAPI.Models.Dto.Requests;
+using Ypdf.Web.PdfProcessingAPI.Services;
 
-namespace Ypdf.Web.AccoutAPI.Commands;
+namespace Ypdf.Web.PdfProcessingAPI.Commands;
 
-public class MergeCommand : BaseCommand, ICommand<MergeRequest, PdfOperationResponse>
+public class MergeCommand : BasePdfCommand<MergeRequest>
 {
-    private readonly IConfiguration _configuration;
-
     public MergeCommand(
+        IRabbitMqSenderService rabbitMqSenderService,
         IConfiguration configuration,
         IMapper mapper,
         ILogger<BaseCommand> logger)
         : base(
+            nameof(MergeCommand),
+            PdfOperationType.Merge,
+            rabbitMqSenderService ?? throw new ArgumentNullException(nameof(rabbitMqSenderService)),
+            configuration ?? throw new ArgumentNullException(nameof(configuration)),
             mapper ?? throw new ArgumentNullException(nameof(mapper)),
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
-        ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
-        _configuration = configuration;
     }
 
-    public async Task<PdfOperationResponse> ExecuteAsync(MergeRequest request)
+    protected override string GetOutputPath()
+    {
+        return GetDefaultOutputFilePath();
+    }
+
+    protected override Task<(DateTime OperationStart, DateTime OperationEnd)> GetCommandTask(
+        MergeRequest request,
+        string outputPath)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
+        ArgumentNullException.ThrowIfNull(outputPath, nameof(outputPath));
 
-        using var memoryStream = new System.IO.MemoryStream();
-
-        await System.Text.Json.JsonSerializer
-            .SerializeAsync(memoryStream, request)
-            .ConfigureAwait(false);
-
-        string jsonData = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
-        Logger.LogInformation("MERGE: {JsonData}", jsonData);
-
-        string outputFilesDirectory = _configuration.GetSection("Storages:OutputFiles").Value
-            ?? throw new ConfigurationException("Output files directory not specified");
-
-        Logger.LogInformation("Directory: {OutputFilesDirectory}", outputFilesDirectory);
-
-        await System.IO.File
-            .WriteAllTextAsync($"{DateTime.Now.Ticks}", string.Empty)
-            .ConfigureAwait(false);
-
-        return new PdfOperationResponse();
+        return TimedInvoke.InvokeAsync(() =>
+        {
+            return System.IO.File.WriteAllTextAsync(outputPath, string.Empty);
+        });
     }
 }

@@ -1,6 +1,9 @@
-namespace Ypdf.Web.AccoutAPI.Models.Dto.Requests;
+using System;
 
-public class MergeRequest
+namespace Ypdf.Web.PdfProcessingAPI.Models.Dto.Requests;
+
+public class MergeRequest : IPdfCommandRequest
 {
+    public Guid UserId { get; set; }
     public object? File { get; set; }
 }

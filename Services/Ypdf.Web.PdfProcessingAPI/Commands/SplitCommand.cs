@@ -1,35 +1,48 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Ypdf.Web.AccoutAPI.Models.Dto.Requests;
-using Ypdf.Web.AccoutAPI.Models.Dto.Responses;
 using Ypdf.Web.Domain.Commands;
+using Ypdf.Web.Domain.Models.Informing;
+using Ypdf.Web.PdfProcessingAPI.Infrastructure.Timing;
+using Ypdf.Web.PdfProcessingAPI.Models.Dto.Requests;
+using Ypdf.Web.PdfProcessingAPI.Services;
 
-namespace Ypdf.Web.AccoutAPI.Commands;
+namespace Ypdf.Web.PdfProcessingAPI.Commands;
 
-public class SplitCommand : BaseCommand, ICommand<SplitRequest, PdfOperationResponse>
+public class SplitCommand : BasePdfCommand<SplitRequest>
 {
-    public SplitCommand(IMapper mapper, ILogger<BaseCommand> logger)
+    public SplitCommand(
+        IRabbitMqSenderService rabbitMqSenderService,
+        IConfiguration configuration,
+        IMapper mapper,
+        ILogger<BaseCommand> logger)
         : base(
+            nameof(SplitCommand),
+            PdfOperationType.Split,
+            rabbitMqSenderService ?? throw new ArgumentNullException(nameof(rabbitMqSenderService)),
+            configuration ?? throw new ArgumentNullException(nameof(configuration)),
             mapper ?? throw new ArgumentNullException(nameof(mapper)),
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
     }
 
-    public async Task<PdfOperationResponse> ExecuteAsync(SplitRequest request)
+    protected override string GetOutputPath()
+    {
+        return GetDefaultOutputDirectoryPath();
+    }
+
+    protected override Task<(DateTime OperationStart, DateTime OperationEnd)> GetCommandTask(
+        SplitRequest request,
+        string outputPath)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
+        ArgumentNullException.ThrowIfNull(outputPath, nameof(outputPath));
 
-        using var memoryStream = new System.IO.MemoryStream();
-
-        await System.Text.Json.JsonSerializer
-            .SerializeAsync(memoryStream, request)
-            .ConfigureAwait(false);
-
-        string jsonData = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
-        Logger.LogInformation("SPLIT: {JsonData}", jsonData);
-
-        return new PdfOperationResponse();
+        return TimedInvoke.InvokeAsync(() =>
+        {
+            return System.IO.File.WriteAllTextAsync(outputPath, string.Empty);
+        });
     }
 }

@@ -7,7 +7,7 @@ using Ypdf.Web.Domain.Models.Api;
 using Ypdf.Web.FileStoringAPI.Models.Dto.Requests;
 using Ypdf.Web.FileStoringAPI.Models.Dto.Responses;
 
-namespace Ypdf.Web.AccoutAPI.Controllers;
+namespace Ypdf.Web.FileStoringAPI.Controllers;
 
 [Route("api/output")]
 [ApiController]

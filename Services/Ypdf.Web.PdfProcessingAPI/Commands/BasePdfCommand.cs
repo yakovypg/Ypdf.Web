@@ -58,7 +58,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
 
         Logger.LogInformation("Execute {CommandName} with {RequestJson}", CommandName, requestJson);
 
-        string outputFilePath = GetOutputFilePath();
+        (string outputFileName, string outputFilePath) = GetOutputFilePath();
         Logger.LogInformation("Output file path: {OutputPath}", outputFilePath);
 
         Task<(DateTime, DateTime)> commandTask = GetCommandTask(request, outputFilePath);
@@ -78,15 +78,15 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
             .SendMessageAsync(operationResult)
             .ConfigureAwait(false);
 
-        return new PdfOperationResponse(outputFilePath, operationResult);
+        return new PdfOperationResponse(outputFileName, operationResult);
     }
 
-    protected virtual string GetOutputFilePath()
+    protected virtual (string FileName, string FilePath) GetOutputFilePath()
     {
         string fileName = OutputFilePathService.GetNextOutputFileName("pdf");
         string filePath = OutputFilePathService.GetOutputFilePath(fileName);
 
-        return filePath;
+        return (fileName, filePath);
     }
 
     protected abstract Task<(DateTime OperationStart, DateTime OperationEnd)> GetCommandTask(

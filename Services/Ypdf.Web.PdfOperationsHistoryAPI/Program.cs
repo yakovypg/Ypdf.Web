@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Ypdf.Web.FileStoringAPI;
+using Ypdf.Web.PdfOperationsHistoryAPI;
 
 IHostBuilder hostBuilder = CreateHostBuilder(args);
 IHost host = hostBuilder.Build();

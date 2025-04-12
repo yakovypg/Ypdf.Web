@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Ypdf.Web.FileStoringAPI.Infrastructure.Extensions;
+using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Extensions;
 
-namespace Ypdf.Web.FileStoringAPI;
+namespace Ypdf.Web.PdfOperationsHistoryAPI;
 
 public class Startup
 {

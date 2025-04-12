@@ -13,23 +13,23 @@ COPY .ruleset ./
 COPY .editorconfig ./
 
 # Copy .csproj files
-COPY Services/Ypdf.Web.FileStoringAPI/Ypdf.Web.FileStoringAPI.csproj ./Services/Ypdf.Web.FileStoringAPI/
+COPY Services/Ypdf.Web.PdfOperationsHistory/Ypdf.Web.PdfOperationsHistory.csproj ./Services/Ypdf.Web.PdfOperationsHistory/
 COPY Domain/Ypdf.Web.Domain/Ypdf.Web.Domain.csproj ./Domain/Ypdf.Web.Domain/
 
 # Restore dependencies
-RUN dotnet restore ./Services/Ypdf.Web.FileStoringAPI/Ypdf.Web.FileStoringAPI.csproj
+RUN dotnet restore ./Services/Ypdf.Web.PdfOperationsHistory/Ypdf.Web.PdfOperationsHistory.csproj
 
 # Copy other files
-COPY Services/Ypdf.Web.FileStoringAPI/. ./Services/Ypdf.Web.FileStoringAPI/
+COPY Services/Ypdf.Web.PdfOperationsHistory/. ./Services/Ypdf.Web.PdfOperationsHistory/
 COPY Domain/Ypdf.Web.Domain/. ./Domain/Ypdf.Web.Domain/
 
 # Build project
-WORKDIR /app/src/Services/Ypdf.Web.FileStoringAPI
+WORKDIR /app/src/Services/Ypdf.Web.PdfOperationsHistory
 RUN dotnet build -c Release -o /app/build
 
 # Publish project
 FROM build AS publish
-RUN dotnet publish -c Release -o /app/publish ./Ypdf.Web.FileStoringAPI.csproj
+RUN dotnet publish -c Release -o /app/publish ./Ypdf.Web.PdfOperationsHistory.csproj
 
 # Create final image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
@@ -37,4 +37,4 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 # Run project
-ENTRYPOINT ["dotnet", "Ypdf.Web.FileStoringAPI.dll"]
+ENTRYPOINT ["dotnet", "Ypdf.Web.PdfOperationsHistory.dll"]

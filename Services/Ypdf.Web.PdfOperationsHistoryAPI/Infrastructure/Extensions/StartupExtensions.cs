@@ -12,12 +12,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Ypdf.Web.Domain.Commands;
-using Ypdf.Web.FileStoringAPI.Commands;
-using Ypdf.Web.FileStoringAPI.Infrastructure.Handlers;
-using Ypdf.Web.FileStoringAPI.Models.Dto.Requests;
-using Ypdf.Web.FileStoringAPI.Models.Dto.Responses;
+using Ypdf.Web.PdfOperationsHistoryAPI.Commands;
+using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Handlers;
+using Ypdf.Web.PdfOperationsHistoryAPI.Models.Dto.Requests;
+using Ypdf.Web.PdfOperationsHistoryAPI.Models.Dto.Responses;
 
-namespace Ypdf.Web.FileStoringAPI.Infrastructure.Extensions;
+namespace Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Extensions;
 
 public static class StartupExtensions
 {
@@ -49,7 +49,7 @@ public static class StartupExtensions
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
         return services
-            .AddScoped<ICommand<GetOutputFileRequest, GetOutputFileResponse>, GetOutputFileCommand>();
+            .AddScoped<ICommand<GetHistoryRequest, GetHistoryResponse>, GetHistoryCommand>();
     }
 
     public static IServiceCollection AddApiVersioning(this IServiceCollection services, IConfiguration configuration)

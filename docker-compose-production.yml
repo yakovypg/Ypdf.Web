@@ -54,8 +54,8 @@ services:
   file_storing_api:
     build:
       context: .
-      dockerfile: ./Services/Ypdf.Web.FileStoringAPI/Dockerfile
-    container_name: FileStoringAPI
+      dockerfile: ./Services/Ypdf.Web.PdfOperationsHistoryAPI/Dockerfile
+    container_name: PdfOperationsHistoryAPI
     deploy:
       resources:
         limits:

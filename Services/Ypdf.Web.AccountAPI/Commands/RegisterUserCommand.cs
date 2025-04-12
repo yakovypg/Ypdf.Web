@@ -28,7 +28,7 @@ public class RegisterUserCommand : BaseCommand, ICommand<RegisterUserRequest, Re
             .ConfigureAwait(false);
 
         string jsonData = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
-        Logger.LogInformation("Register: {JsonData}", jsonData);
+        Logger.LogInformation("Register with {JsonData}", jsonData);
 
         var user = new Models.Dto.UserDto()
         {

@@ -28,7 +28,7 @@ public class LoginCommand : BaseCommand, ICommand<LoginRequest, LoginResponse>
             .ConfigureAwait(false);
 
         string jsonData = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
-        Logger.LogInformation("LOGIN: {JsonData}", jsonData);
+        Logger.LogInformation("Login with {JsonData}", jsonData);
 
         var user = new Models.Dto.UserDto()
         {

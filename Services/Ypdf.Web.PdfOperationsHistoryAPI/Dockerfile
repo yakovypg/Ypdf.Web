@@ -13,23 +13,23 @@ COPY .ruleset ./
 COPY .editorconfig ./
 
 # Copy .csproj files
-COPY Services/Ypdf.Web.PdfOperationsHistory/Ypdf.Web.PdfOperationsHistory.csproj ./Services/Ypdf.Web.PdfOperationsHistory/
+COPY Services/Ypdf.Web.PdfOperationsHistoryAPI/Ypdf.Web.PdfOperationsHistoryAPI.csproj ./Services/Ypdf.Web.PdfOperationsHistoryAPI/
 COPY Domain/Ypdf.Web.Domain/Ypdf.Web.Domain.csproj ./Domain/Ypdf.Web.Domain/
 
 # Restore dependencies
-RUN dotnet restore ./Services/Ypdf.Web.PdfOperationsHistory/Ypdf.Web.PdfOperationsHistory.csproj
+RUN dotnet restore ./Services/Ypdf.Web.PdfOperationsHistoryAPI/Ypdf.Web.PdfOperationsHistoryAPI.csproj
 
 # Copy other files
-COPY Services/Ypdf.Web.PdfOperationsHistory/. ./Services/Ypdf.Web.PdfOperationsHistory/
+COPY Services/Ypdf.Web.PdfOperationsHistoryAPI/. ./Services/Ypdf.Web.PdfOperationsHistoryAPI/
 COPY Domain/Ypdf.Web.Domain/. ./Domain/Ypdf.Web.Domain/
 
 # Build project
-WORKDIR /app/src/Services/Ypdf.Web.PdfOperationsHistory
+WORKDIR /app/src/Services/Ypdf.Web.PdfOperationsHistoryAPI
 RUN dotnet build -c Release -o /app/build
 
 # Publish project
 FROM build AS publish
-RUN dotnet publish -c Release -o /app/publish ./Ypdf.Web.PdfOperationsHistory.csproj
+RUN dotnet publish -c Release -o /app/publish ./Ypdf.Web.PdfOperationsHistoryAPI.csproj
 
 # Create final image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
@@ -37,4 +37,4 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 # Run project
-ENTRYPOINT ["dotnet", "Ypdf.Web.PdfOperationsHistory.dll"]
+ENTRYPOINT ["dotnet", "Ypdf.Web.PdfOperationsHistoryAPI.dll"]

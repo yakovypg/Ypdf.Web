@@ -11,7 +11,7 @@ namespace Ypdf.Web.PdfProcessingAPI.Controllers;
 [Route("api/tool")]
 [ApiController]
 [ApiVersion("1.0")]
-public class PdfProcessingApiController : ControllerBase
+public class ToolController : ControllerBase
 {
     [HttpPost("merge")]
     public async Task<ApiResponse<PdfOperationResponse>> Merge(

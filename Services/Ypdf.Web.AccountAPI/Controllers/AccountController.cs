@@ -11,7 +11,7 @@ namespace Ypdf.Web.AccoutAPI.Controllers;
 [Route("api/account")]
 [ApiController]
 [ApiVersion("1.0")]
-public class AccountApiController : ControllerBase
+public class AccountController : ControllerBase
 {
     [HttpPost("register")]
     public async Task<ApiResponse<RegisterUserResponse>> Register(

@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Net;
 using System.Runtime.Serialization;
 
-namespace Ypdf.Web.Domain.Models.Api;
+namespace Ypdf.Web.Domain.Models.Api.Exceptions;
 
 [Serializable]
 public abstract class ApiException : Exception
@@ -53,7 +53,7 @@ public abstract class ApiException : Exception
         base.GetObjectData(info, context);
     }
 
-    protected static string GetDefaultMessage(HttpStatusCode statusCode)
+    private static string GetDefaultMessage(HttpStatusCode statusCode)
     {
         return $"Error {statusCode} occurred.";
     }

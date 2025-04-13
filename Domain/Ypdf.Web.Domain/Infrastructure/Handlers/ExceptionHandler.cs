@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Models.Api;
+using Ypdf.Web.Domain.Models.Api.Exceptions;
 
 namespace Ypdf.Web.Domain.Infrastructure.Handlers;
 

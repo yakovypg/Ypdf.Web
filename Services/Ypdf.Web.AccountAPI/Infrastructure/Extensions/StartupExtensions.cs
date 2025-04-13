@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -20,7 +19,6 @@ using Ypdf.Web.AccoutAPI.Models.Dto.Requests;
 using Ypdf.Web.AccoutAPI.Models.Dto.Responses;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Handlers;
-using Ypdf.Web.Domain.Models.Configuration;
 
 namespace Ypdf.Web.AccoutAPI.Infrastructure.Extensions;
 
@@ -144,32 +142,6 @@ public static class StartupExtensions
         };
 
         return application.UseExceptionHandler(exceptionHandlerOptions);
-    }
-
-    public static IApplicationBuilder UseLocalization(
-        this IApplicationBuilder application,
-        IConfiguration configuration)
-    {
-        ArgumentNullException.ThrowIfNull(application, nameof(application));
-        ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
-
-        LocalizationConfiguration? localizationConfiguration = configuration
-            .GetSection(nameof(LocalizationConfiguration))
-            .Get<LocalizationConfiguration>();
-
-        if (localizationConfiguration is null)
-            return application;
-
-        return application.UseRequestLocalization(options =>
-        {
-            options.SupportedCultures = localizationConfiguration.SupportedCultureNames
-                .Select(e => CultureInfo.GetCultureInfo(e))
-                .ToList();
-
-            options.DefaultRequestCulture = new RequestCulture(
-                localizationConfiguration.CultureName,
-                localizationConfiguration.UiCultureName);
-        });
     }
 
     public static IApplicationBuilder UseSwagger(

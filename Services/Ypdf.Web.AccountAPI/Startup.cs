@@ -37,7 +37,6 @@ public class Startup
             .UseRouting()
             .UseHttpsRedirection()
             .UseExceptionHandler(logger)
-            .UseLocalization(Configuration)
             .UseEndpoints(endpoints => { endpoints.MapControllers(); })
             .UseSwagger(apiVersionDescriptionProvider);
     }

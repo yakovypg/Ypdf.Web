@@ -41,7 +41,9 @@ public class MergeCommand : BasePdfCommand<MergeRequest>
 
         return TimedInvoke.InvokeAsync(() =>
         {
-            return System.IO.File.WriteAllTextAsync(outputFilePath, string.Empty);
+            return System.IO.File.WriteAllTextAsync(
+                outputFilePath,
+                $"Merge {DateTime.Now.ToLongTimeString()}");
         });
     }
 }

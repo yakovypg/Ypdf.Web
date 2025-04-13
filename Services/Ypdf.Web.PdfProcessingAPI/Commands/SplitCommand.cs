@@ -41,7 +41,9 @@ public class SplitCommand : BasePdfCommand<SplitRequest>
 
         return TimedInvoke.InvokeAsync(() =>
         {
-            return System.IO.File.WriteAllTextAsync(outputFilePath, string.Empty);
+            return System.IO.File.WriteAllTextAsync(
+                outputFilePath,
+                $"Split {DateTime.Now.ToLongTimeString()}");
         });
     }
 }

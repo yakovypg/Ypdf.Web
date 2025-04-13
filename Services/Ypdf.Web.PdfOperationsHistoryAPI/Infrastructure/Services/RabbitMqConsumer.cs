@@ -58,6 +58,8 @@ public class RabbitMqConsumer : BackgroundService
     {
         ArgumentNullException.ThrowIfNull(cancellationToken, nameof(cancellationToken));
 
+        _logger.LogInformation("Trying to connect to RabbitMQ");
+
         var factory = new ConnectionFactory()
         {
             HostName = _hostName,
@@ -82,6 +84,8 @@ public class RabbitMqConsumer : BackgroundService
             cancellationToken: cancellationToken);
 
         await queueDeclareTask.ConfigureAwait(false);
+
+        _logger.LogInformation("Connection to RabbitMQ established");
 
         await base
             .StartAsync(cancellationToken)
@@ -146,6 +150,8 @@ public class RabbitMqConsumer : BackgroundService
         if (_channel is null)
             throw new ConnectionNotEstablishedException("Connection with RabbitMQ not established.");
 
+        _logger.LogInformation("Trying to start listening RabbitMQ");
+
         var consumer = new AsyncEventingBasicConsumer(_channel);
 
         consumer.ReceivedAsync += async (_, e) =>
@@ -163,6 +169,8 @@ public class RabbitMqConsumer : BackgroundService
             autoAck: false,
             consumer: consumer,
             cancellationToken: stoppingToken);
+
+        _logger.LogInformation("RabbitMQ consume task created");
 
         _ = await consumeTask.ConfigureAwait(false);
     }

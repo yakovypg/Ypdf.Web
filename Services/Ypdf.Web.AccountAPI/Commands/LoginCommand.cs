@@ -6,6 +6,7 @@ using Ypdf.Web.AccoutAPI.Models.Dto.Requests;
 using Ypdf.Web.AccoutAPI.Models.Dto.Responses;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Extensions;
+using Ypdf.Web.Domain.Models.Api.Exceptions;
 
 namespace Ypdf.Web.AccoutAPI.Commands;
 
@@ -22,6 +23,8 @@ public class LoginCommand : BaseCommand, ICommand<LoginRequest, LoginResponse>
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
+        ValidateRequestParameters(request);
+
         string jsonData = await request
             .ToJsonAsync()
             .ConfigureAwait(false);
@@ -36,5 +39,16 @@ public class LoginCommand : BaseCommand, ICommand<LoginRequest, LoginResponse>
         };
 
         return new LoginResponse(user, "some_token");
+    }
+
+    private static void ValidateRequestParameters(LoginRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+
+        if (string.IsNullOrEmpty(request.Email))
+            throw new BadRequestException("Email not specified");
+
+        if (string.IsNullOrEmpty(request.Password))
+            throw new BadRequestException("Email not specified");
     }
 }

@@ -1,12 +1,11 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Extensions;
-using Ypdf.Web.Domain.Models.Configuration;
+using Ypdf.Web.Domain.Models.Api.Exceptions;
 using Ypdf.Web.Domain.Models.Informing;
 using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
 using Ypdf.Web.PdfProcessingAPI.Models.Dto.Requests;
@@ -87,6 +86,22 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
         string filePath = OutputFilePathService.GetOutputFilePath(fileName);
 
         return (fileName, filePath);
+    }
+
+    protected virtual void ValidateRequestParameters(ISingleFilePdfCommandRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+
+        if (request.File is null)
+            throw new BadRequestException("File not specified.");
+    }
+
+    protected virtual void ValidateRequestParameters(IMultipleFilesPdfCommandRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+
+        if (request.Files is null)
+            throw new BadRequestException("Files not specified.");
     }
 
     protected abstract Task<(DateTime OperationStart, DateTime OperationEnd)> GetCommandTask(

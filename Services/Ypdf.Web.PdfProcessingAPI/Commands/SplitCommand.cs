@@ -35,7 +35,9 @@ public class SplitCommand : BasePdfCommand<SplitRequest>
         string outputFilePath)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
-        ArgumentNullException.ThrowIfNull(outputFilePath, nameof(outputFilePath));
+        ArgumentException.ThrowIfNullOrWhiteSpace(outputFilePath, nameof(outputFilePath));
+
+        ValidateRequestParameters(request);
 
         return TimedInvoke.InvokeAsync(() =>
         {

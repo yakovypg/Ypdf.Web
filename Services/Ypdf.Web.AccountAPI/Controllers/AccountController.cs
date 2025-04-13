@@ -21,6 +21,9 @@ public class AccountController : ControllerBase
         if (request is null || registerUserCommand is null)
             return new(null, HttpStatusCode.InternalServerError);
 
+        if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+            return new(null, HttpStatusCode.BadRequest);
+
         RegisterUserResponse response = await registerUserCommand
             .ExecuteAsync(request)
             .ConfigureAwait(false);
@@ -35,6 +38,9 @@ public class AccountController : ControllerBase
     {
         if (request is null || loginCommand is null)
             return new(null, HttpStatusCode.InternalServerError);
+
+        if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+            return new(null, HttpStatusCode.BadRequest);
 
         LoginResponse response = await loginCommand
             .ExecuteAsync(request)

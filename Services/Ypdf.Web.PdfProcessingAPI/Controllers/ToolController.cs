@@ -21,6 +21,9 @@ public class ToolController : ControllerBase
         if (request is null || mergeCommand is null)
             return new(null, HttpStatusCode.InternalServerError);
 
+        if (request.File is null)
+            return new ApiResponse<PdfOperationResponse>(null, HttpStatusCode.BadRequest);
+
         PdfOperationResponse response = await mergeCommand
             .ExecuteAsync(request)
             .ConfigureAwait(false);
@@ -35,6 +38,9 @@ public class ToolController : ControllerBase
     {
         if (request is null || splitCommand is null)
             return new(null, HttpStatusCode.InternalServerError);
+
+        if (request.File is null)
+            return new ApiResponse<PdfOperationResponse>(null, HttpStatusCode.BadRequest);
 
         PdfOperationResponse response = await splitCommand
             .ExecuteAsync(request)

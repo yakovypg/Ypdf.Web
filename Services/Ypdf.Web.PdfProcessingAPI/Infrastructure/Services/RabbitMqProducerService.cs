@@ -67,6 +67,8 @@ public class RabbitMqProducerService : IRabbitMqProducerService, IDisposable
     {
         ArgumentNullException.ThrowIfNull(message, nameof(message));
 
+        _logger.LogInformation("Trying to connect to RabbitMQ");
+
         var factory = new ConnectionFactory()
         {
             HostName = _hostName,
@@ -91,13 +93,17 @@ public class RabbitMqProducerService : IRabbitMqProducerService, IDisposable
 
         _ = await queueDeclareTask.ConfigureAwait(false);
 
+        _logger.LogInformation("Connection to RabbitMQ established");
+
         byte[] body = Encoding.UTF8.GetBytes(message);
 
-        _logger.LogInformation("Send message to RabbitMQ: {Message}", message);
+        _logger.LogInformation("Trying to send message to RabbitMQ: {Message}", message);
 
         await channel
             .BasicPublishAsync(string.Empty, _queueName, body)
             .ConfigureAwait(false);
+
+        _logger.LogInformation("Message to RabbitMQ was sent");
     }
 
     public void Dispose()

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Commands;
-using Ypdf.Web.Domain.Infrastructure.Extensions;
 using Ypdf.Web.PdfOperationsHistoryAPI.Models.Dto.Requests;
 using Ypdf.Web.PdfOperationsHistoryAPI.Models.Dto.Responses;
 
@@ -24,7 +23,7 @@ public class GetHistoryCommand : BaseCommand, ICommand<GetHistoryRequest, GetHis
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        Logger.LogInformation("Get history for user {UserId}", request.UserId);
+        Logger.LogInformation("Trying to get history for user {UserId}", request.UserId);
         await Task.Delay(100).ConfigureAwait(false);
 
         return new GetHistoryResponse();

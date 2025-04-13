@@ -122,7 +122,7 @@ public static class StartupExtensions
         {
             AllowStatusCode404Response = true,
 
-            ExceptionHandler = async httpContext => await ExceptionHandler
+            ExceptionHandler = async httpContext => await ApiExceptionHandler
                 .HandleExceptionAsync(httpContext, logger)
                 .ConfigureAwait(false)
         };

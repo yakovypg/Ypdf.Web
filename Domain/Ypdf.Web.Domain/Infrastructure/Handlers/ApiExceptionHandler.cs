@@ -11,14 +11,14 @@ using Ypdf.Web.Domain.Models.Api.Exceptions;
 
 namespace Ypdf.Web.Domain.Infrastructure.Handlers;
 
-public static class ExceptionHandler
+public static class ApiExceptionHandler
 {
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    static ExceptionHandler()
+    static ApiExceptionHandler()
     {
         _jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     }
@@ -29,10 +29,7 @@ public static class ExceptionHandler
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
 
         string requestPath = context.Request.Path.Value ?? string.Empty;
-
-        bool isApiError = requestPath.StartsWith(
-            "/api/",
-            StringComparison.InvariantCulture);
+        bool isApiError = requestPath.StartsWith("/api/", StringComparison.InvariantCulture);
 
         if (isApiError)
         {
@@ -41,11 +38,13 @@ public static class ExceptionHandler
         }
         else if (context.Response.StatusCode == (int)HttpStatusCode.NotFound)
         {
-            HandleNotFoundError(context);
+            await HandleNotFoundErrorAsync(context, logger)
+                .ConfigureAwait(false);
         }
         else
         {
-            HandleUnknownError(context);
+            await HandleUnknownErrorAsync(context, logger)
+                .ConfigureAwait(false);
         }
     }
 
@@ -68,6 +67,43 @@ public static class ExceptionHandler
             _ => new(HttpStatusCode.InternalServerError, nameof(HttpStatusCode.InternalServerError))
         };
 
+        await WriteApiErrorToResponseAsync(apiError, context)
+            .ConfigureAwait(false);
+    }
+
+    private static async Task HandleNotFoundErrorAsync(HttpContext context, ILogger logger)
+    {
+        ArgumentNullException.ThrowIfNull(context, nameof(context));
+
+        logger.LogError("{ErrorName} error occurred", nameof(HttpStatusCode.NotFound));
+
+        var apiError = new ApiError(
+            HttpStatusCode.NotFound,
+            nameof(HttpStatusCode.NotFound));
+
+        await WriteApiErrorToResponseAsync(apiError, context)
+            .ConfigureAwait(false);
+    }
+
+    private static async Task HandleUnknownErrorAsync(HttpContext context, ILogger logger)
+    {
+        ArgumentNullException.ThrowIfNull(context, nameof(context));
+
+        logger.LogError("{ErrorName} error occurred", nameof(HttpStatusCode.InternalServerError));
+
+        var apiError = new ApiError(
+            HttpStatusCode.InternalServerError,
+            nameof(HttpStatusCode.InternalServerError));
+
+        await WriteApiErrorToResponseAsync(apiError, context)
+            .ConfigureAwait(false);
+    }
+
+    private static async Task WriteApiErrorToResponseAsync(ApiError apiError, HttpContext context)
+    {
+        ArgumentNullException.ThrowIfNull(apiError, nameof(apiError));
+        ArgumentNullException.ThrowIfNull(context, nameof(context));
+
         context.Response.ContentType = "application/json";
 
         string response = JsonSerializer.Serialize(apiError, _jsonSerializerOptions);
@@ -75,17 +111,5 @@ public static class ExceptionHandler
         await context.Response
             .WriteAsync(response)
             .ConfigureAwait(false);
-    }
-
-    public static void HandleNotFoundError(HttpContext context)
-    {
-        ArgumentNullException.ThrowIfNull(context, nameof(context));
-        context.Response.Redirect("/error/notfound");
-    }
-
-    public static void HandleUnknownError(HttpContext context)
-    {
-        ArgumentNullException.ThrowIfNull(context, nameof(context));
-        context.Response.Redirect("/error");
     }
 }

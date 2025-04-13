@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Handlers;
 using Ypdf.Web.PdfOperationsHistoryAPI.Commands;
+using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Data.Repositories;
 using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Services;
 using Ypdf.Web.PdfOperationsHistoryAPI.Models.Dto.Requests;
 using Ypdf.Web.PdfOperationsHistoryAPI.Models.Dto.Responses;
@@ -57,6 +58,12 @@ public static class StartupExtensions
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
         return services.AddHostedService<RabbitMqConsumer>();
+    }
+
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+        return services.AddSingleton<IPdfOperationResultRepository, PdfOperationResultRepository>();
     }
 
     public static IServiceCollection AddApiVersioning(this IServiceCollection services, IConfiguration configuration)

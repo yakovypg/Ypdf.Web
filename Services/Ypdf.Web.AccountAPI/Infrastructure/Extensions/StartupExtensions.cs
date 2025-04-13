@@ -19,6 +19,7 @@ using Ypdf.Web.AccoutAPI.Models.Dto.Requests;
 using Ypdf.Web.AccoutAPI.Models.Dto.Responses;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Handlers;
+using Ypdf.Web.Domain.Models.Configuration;
 
 namespace Ypdf.Web.AccoutAPI.Infrastructure.Extensions;
 
@@ -59,7 +60,8 @@ public static class StartupExtensions
         ArgumentNullException.ThrowIfNull(services, nameof(services));
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
 
-        string? connectionString = configuration.GetConnectionString("Accounts");
+        string connectionString = configuration.GetConnectionString("Accounts")
+            ?? throw new ConfigurationException("Connection string to Accounts not specified");
 
         return services.AddDbContext<AccountsDbContext>(t =>
         {

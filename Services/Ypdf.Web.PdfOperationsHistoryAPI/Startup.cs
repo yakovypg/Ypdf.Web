@@ -52,6 +52,7 @@ public class Startup
         _ = services
             .AddCommands()
             .AddServices()
+            .AddRepositories()
             .AddMapper()
             .AddApiVersioning(Configuration)
             .AddSwaggerGen()

@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Security;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -11,11 +12,14 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Ypdf.Web.Domain.Infrastructure.Extensions;
 using Ypdf.Web.Domain.Models.Configuration;
+using Ypdf.Web.Domain.Models.Informing;
+using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Data.Repositories;
 
 namespace Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Services;
 
 public class RabbitMqConsumer : BackgroundService
 {
+    private readonly IPdfOperationResultRepository _pdfOperationResultRepository;
     private readonly ILogger<RabbitMqConsumer> _logger;
 
     private readonly string _hostName;
@@ -29,11 +33,16 @@ public class RabbitMqConsumer : BackgroundService
 
     private bool _isDisposed;
 
-    public RabbitMqConsumer(IConfiguration configuration, ILogger<RabbitMqConsumer> logger)
+    public RabbitMqConsumer(
+        IPdfOperationResultRepository pdfOperationResultRepository,
+        IConfiguration configuration,
+        ILogger<RabbitMqConsumer> logger)
     {
+        ArgumentNullException.ThrowIfNull(pdfOperationResultRepository, nameof(pdfOperationResultRepository));
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
 
+        _pdfOperationResultRepository = pdfOperationResultRepository;
         _logger = logger;
 
         _hostName = configuration.GetSection("RabbitMQ:HostName").Value
@@ -161,6 +170,8 @@ public class RabbitMqConsumer : BackgroundService
 
             _logger.LogInformation("Recieved content from RabbitMQ: {Content}", content);
 
+            SaveRecievedData(content);
+
             await _channel.BasicAckAsync(e.DeliveryTag, false).ConfigureAwait(false);
         };
 
@@ -173,5 +184,29 @@ public class RabbitMqConsumer : BackgroundService
         _logger.LogInformation("RabbitMQ consume task created");
 
         _ = await consumeTask.ConfigureAwait(false);
+    }
+
+    private void SaveRecievedData(string content)
+    {
+        ArgumentNullException.ThrowIfNull(content, nameof(content));
+
+        try
+        {
+            _logger.LogInformation("Trying to deserialize recieved data: {Content}", content);
+
+            PdfOperationResult result = JsonSerializer.Deserialize<PdfOperationResult>(content)
+                ?? throw new InvalidOperationException();
+
+            _logger.LogInformation("Recieved data successfully deserialized");
+            _logger.LogInformation("Trying to save deserialized data");
+
+            _pdfOperationResultRepository.Add(result);
+
+            _logger.LogInformation("Deserialized data successfully saved");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Failed to save recieved data. Exception: {@Exception}", ex);
+        }
     }
 }

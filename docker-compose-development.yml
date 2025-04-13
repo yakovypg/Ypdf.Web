@@ -51,7 +51,7 @@ services:
       - ./Certificates:/https
       - output_files:/output
 
-  file_storing_api:
+  pdf_operations_history_api:
     build:
       context: .
       dockerfile: ./Services/Ypdf.Web.PdfOperationsHistoryAPI/Dockerfile
@@ -76,7 +76,7 @@ services:
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
     volumes:
       - ./Certificates:/https
-      - output_files:/output
+      - db_data:/db
 
   accounts_database:
     image: postgis/postgis:13-master
@@ -104,4 +104,5 @@ services:
       RABBITMQ_DEFAULT_PASS: Ypdf2025
 
 volumes:
+  db_data:
   output_files:

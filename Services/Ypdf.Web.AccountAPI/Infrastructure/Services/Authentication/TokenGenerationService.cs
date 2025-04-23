@@ -59,7 +59,7 @@ public class TokenGenerationService : ITokenGenerationService
         return token;
     }
 
-    private static IEnumerable<Claim> CreateClaims(User user)
+    private static List<Claim> CreateClaims(User user)
     {
         ArgumentNullException.ThrowIfNull(user, nameof(user));
 
@@ -68,13 +68,23 @@ public class TokenGenerationService : ITokenGenerationService
         string userName = user.UserName ?? string.Empty;
         string jti = Guid.NewGuid().ToString();
 
-        return
+        List<Claim> claims =
         [
             new(JwtRegisteredClaimNames.Sub, id),
             new(JwtRegisteredClaimNames.Email, email),
             new(JwtRegisteredClaimNames.Name, userName),
             new(JwtRegisteredClaimNames.Jti, jti)
         ];
+
+        if (user.UserSubscription is not null)
+        {
+            string subscription = user.UserSubscription.Subscription.SubscriptionType.ToString();
+            var subscriptionClaim = new Claim(JwtCustomClaimNames.Subscription, subscription);
+
+            claims.Add(subscriptionClaim);
+        }
+
+        return claims;
     }
 
     private static SigningCredentials CreateSigningCredentials(string key)

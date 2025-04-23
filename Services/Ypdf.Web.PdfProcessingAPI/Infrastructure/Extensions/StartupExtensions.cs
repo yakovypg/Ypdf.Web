@@ -61,7 +61,8 @@ public static class StartupExtensions
 
         return services
             .AddScoped<IOutputFilePathService, OutputFilePathService>()
-            .AddScoped<IRabbitMqProducerService, RabbitMqProducerService>();
+            .AddScoped<IRabbitMqProducerService, RabbitMqProducerService>()
+            .AddScoped<ISubscriptionInfoService, SubscriptionInfoService>();
     }
 
     public static IServiceCollection AddApiVersioning(this IServiceCollection services, IConfiguration configuration)

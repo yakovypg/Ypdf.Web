@@ -1,5 +1,5 @@
 using System;
-using System.Security.Claims;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +15,7 @@ namespace Ypdf.Web.PdfProcessingAPI.Commands;
 public class MergeCommand : BasePdfCommand<MergeRequest>
 {
     public MergeCommand(
+        ISubscriptionInfoService subscriptionInfoService,
         IOutputFilePathService outputFilePathService,
         IRabbitMqProducerService rabbitMqSenderService,
         IConfiguration configuration,
@@ -23,18 +24,13 @@ public class MergeCommand : BasePdfCommand<MergeRequest>
         : base(
             nameof(MergeCommand),
             PdfOperationType.Merge,
+            subscriptionInfoService ?? throw new ArgumentNullException(nameof(subscriptionInfoService)),
             outputFilePathService ?? throw new ArgumentNullException(nameof(outputFilePathService)),
             rabbitMqSenderService ?? throw new ArgumentNullException(nameof(rabbitMqSenderService)),
             configuration ?? throw new ArgumentNullException(nameof(configuration)),
             mapper ?? throw new ArgumentNullException(nameof(mapper)),
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
-    }
-
-    protected override bool HasAccess(ClaimsPrincipal userClaims)
-    {
-        ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
-        return true;
     }
 
     protected override Task<(DateTimeOffset OperationStart, DateTimeOffset OperationEnd)> GetCommandTask(
@@ -48,9 +44,9 @@ public class MergeCommand : BasePdfCommand<MergeRequest>
 
         return TimedInvoke.InvokeAsync(() =>
         {
-            return System.IO.File.WriteAllTextAsync(
+            return System.IO.File.WriteAllBytesAsync(
                 outputFilePath,
-                $"Merge {DateTime.Now.ToLongTimeString()}");
+                request.File!.ToArray());
         });
     }
 }

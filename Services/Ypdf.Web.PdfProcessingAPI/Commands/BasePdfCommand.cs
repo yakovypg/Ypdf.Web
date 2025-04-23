@@ -1,4 +1,5 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Extensions;
 using Ypdf.Web.Domain.Models.Api.Exceptions;
+using Ypdf.Web.Domain.Models.Configuration;
 using Ypdf.Web.Domain.Models.Informing;
 using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
 using Ypdf.Web.PdfProcessingAPI.Models.Requests;
@@ -15,11 +17,11 @@ using Ypdf.Web.PdfProcessingAPI.Models.Responses;
 namespace Ypdf.Web.PdfProcessingAPI.Commands;
 
 public abstract class BasePdfCommand<TRequest> : BaseCommand, IProtectedCommand<TRequest, PdfOperationResponse>
-    where TRequest : IPdfCommandRequest
 {
     protected BasePdfCommand(
         string commandName,
         PdfOperationType operationType,
+        ISubscriptionInfoService subscriptionInfoService,
         IOutputFilePathService outputFilePathService,
         IRabbitMqProducerService rabbitMqSenderService,
         IConfiguration configuration,
@@ -30,12 +32,14 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, IProtectedCommand<
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
         ArgumentNullException.ThrowIfNull(commandName, nameof(commandName));
+        ArgumentNullException.ThrowIfNull(subscriptionInfoService, nameof(subscriptionInfoService));
         ArgumentNullException.ThrowIfNull(outputFilePathService, nameof(outputFilePathService));
         ArgumentNullException.ThrowIfNull(rabbitMqSenderService, nameof(rabbitMqSenderService));
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
 
         CommandName = commandName;
         OperationType = operationType;
+        SubscriptionInfoService = subscriptionInfoService;
         OutputFilePathService = outputFilePathService;
         RabbitMqSenderService = rabbitMqSenderService;
         Configuration = configuration;
@@ -44,6 +48,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, IProtectedCommand<
     protected string CommandName { get; }
     protected PdfOperationType OperationType { get; }
 
+    protected ISubscriptionInfoService SubscriptionInfoService { get; }
     protected IOutputFilePathService OutputFilePathService { get; }
     protected IRabbitMqProducerService RabbitMqSenderService { get; }
     protected IConfiguration Configuration { get; }
@@ -61,7 +66,10 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, IProtectedCommand<
 
         Logger.LogInformation("Execute {CommandName} with {RequestJson}", CommandName, requestJson);
 
-        VerifyAccess(userClaims);
+        await VerifyAccessToOperationAsync(userClaims)
+            .ConfigureAwait(false);
+
+        int userId = GetUserId(userClaims);
 
         (string outputFileName, string outputFilePath) = GetOutputFilePath();
         Logger.LogInformation("Output file path: {OutputPath}", outputFilePath);
@@ -75,7 +83,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, IProtectedCommand<
 
         var operationResult = new PdfOperationResult()
         {
-            UserId = request.UserId,
+            UserId = userId,
             OperationType = OperationType,
             StartDate = operationStart,
             EndDate = operationEnd
@@ -112,11 +120,14 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, IProtectedCommand<
             throw new BadRequestException("Files not specified");
     }
 
-    protected virtual void VerifyAccess(ClaimsPrincipal userClaims)
+    protected virtual async Task VerifyAccessToOperationAsync(ClaimsPrincipal userClaims)
     {
         ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
 
-        if (!HasAccess(userClaims))
+        bool hasAccess = await HasUserAccessToOperationAsync(userClaims)
+            .ConfigureAwait(false);
+
+        if (!hasAccess)
         {
             Logger.LogWarning(
                 "User {@User} doesn't have access to the {OperationType} operation",
@@ -127,9 +138,33 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, IProtectedCommand<
         }
     }
 
-    protected abstract bool HasAccess(ClaimsPrincipal userClaims);
+    protected virtual async Task<bool> HasUserAccessToOperationAsync(ClaimsPrincipal userClaims)
+    {
+        ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
+
+        string? subscriptionName = userClaims.Get(JwtCustomClaimNames.Subscription);
+
+        if (string.IsNullOrEmpty(subscriptionName))
+            return false;
+
+        string operationName = OperationType.ToString();
+
+        return await SubscriptionInfoService
+            .IsOperationAllowedAsync(subscriptionName, operationName)
+            .ConfigureAwait(false);
+    }
 
     protected abstract Task<(DateTimeOffset OperationStart, DateTimeOffset OperationEnd)> GetCommandTask(
         TRequest request,
         string outputFilePath);
+
+    private static int GetUserId(ClaimsPrincipal userClaims)
+    {
+        ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
+
+        if (!userClaims.Get(JwtRegisteredClaimNames.Sub, out int userId))
+            throw new ForbiddenException();
+
+        return userId;
+    }
 }

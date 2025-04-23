@@ -157,7 +157,7 @@ public class RabbitMqConsumer : BackgroundService
         stoppingToken.ThrowIfCancellationRequested();
 
         if (_channel is null)
-            throw new ConnectionNotEstablishedException("Connection with RabbitMQ not established.");
+            throw new ConnectionNotEstablishedException("Connection with RabbitMQ not established");
 
         _logger.LogInformation("Trying to start listening RabbitMQ");
 

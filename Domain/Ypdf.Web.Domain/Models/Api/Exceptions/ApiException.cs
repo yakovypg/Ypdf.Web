@@ -30,7 +30,7 @@ public abstract class ApiException : Exception
 
 #if NET8_0_OR_GREATER
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete("This API supports obsolete formatter-based serialization. It should not be called or extended by application code.", DiagnosticId = "SYSLIB0051", UrlFormat = "https://aka.ms/dotnet-warnings/{0}")]
+    [Obsolete("This API supports obsolete formatter-based serialization. It should not be called or extended by application code", DiagnosticId = "SYSLIB0051", UrlFormat = "https://aka.ms/dotnet-warnings/{0}")]
 #endif
     protected ApiException(SerializationInfo info, StreamingContext context)
         : base(info, context)
@@ -43,7 +43,7 @@ public abstract class ApiException : Exception
 
 #if NET8_0_OR_GREATER
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete("This API supports obsolete formatter-based serialization. It should not be called or extended by application code.", DiagnosticId = "SYSLIB0051", UrlFormat = "https://aka.ms/dotnet-warnings/{0}")]
+    [Obsolete("This API supports obsolete formatter-based serialization. It should not be called or extended by application code", DiagnosticId = "SYSLIB0051", UrlFormat = "https://aka.ms/dotnet-warnings/{0}")]
 #endif
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
@@ -55,6 +55,6 @@ public abstract class ApiException : Exception
 
     private static string GetDefaultMessage(HttpStatusCode statusCode)
     {
-        return $"Error {statusCode} occurred.";
+        return $"Error {statusCode} occurred";
     }
 }

@@ -53,6 +53,6 @@ public class GetOutputFileCommand : BaseCommand, ICommand<GetOutputFileRequest, 
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
         if (string.IsNullOrWhiteSpace(request.FileName))
-            throw new BadRequestException("Output file not found.");
+            throw new BadRequestException("Output file not found");
     }
 }

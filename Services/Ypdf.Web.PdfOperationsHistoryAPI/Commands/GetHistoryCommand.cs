@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Commands;
+using Ypdf.Web.Domain.Infrastructure.Extensions;
 using Ypdf.Web.Domain.Models.Api.Exceptions;
 using Ypdf.Web.Domain.Models.Informing;
 using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Data.Repositories;
@@ -58,15 +59,13 @@ public class GetHistoryCommand : BaseCommand, IProtectedCommand<GetHistoryReques
     {
         ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
 
-        string? userIdSource = userClaims.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        bool allowed = userClaims.VerifyAccess(JwtRegisteredClaimNames.Sub, pdfOperationResultUserId);
 
-        if (string.IsNullOrEmpty(userIdSource)
-            || !int.TryParse(userIdSource, out int userId)
-            || pdfOperationResultUserId != userId)
+        if (!allowed)
         {
             Logger.LogInformation(
-                "User {SenderId} doesn't have access to the resource owned by user {OwnerId}",
-                userIdSource,
+                "User {@User} doesn't have access to the resource owned by user {OwnerId}",
+                userClaims,
                 pdfOperationResultUserId);
 
             throw new ForbiddenException("User doesn't have access to the resource");

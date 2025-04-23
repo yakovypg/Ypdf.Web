@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Ypdf.Web.AccoutAPI.Models;
 using Ypdf.Web.Domain.Models.Configuration;
 
 namespace Ypdf.Web.AccoutAPI.Infrastructure.Services.Authentication;
@@ -24,19 +27,11 @@ public class TokenGenerationService : ITokenGenerationService
         _logger = logger;
     }
 
-    public string Generate(string userEmail)
+    public string Generate(User user)
     {
-        ArgumentException.ThrowIfNullOrEmpty(userEmail, nameof(userEmail));
+        ArgumentNullException.ThrowIfNull(user, nameof(user));
 
-        _logger.LogInformation("Trying to generate token for user with email {Email}", userEmail);
-
-        string jti = Guid.NewGuid().ToString();
-
-        var claims = new Claim[]
-        {
-            new(JwtRegisteredClaimNames.Sub, userEmail),
-            new(JwtRegisteredClaimNames.Jti, jti)
-        };
+        _logger.LogInformation("Trying to generate token for user with email {Email}", user.Email);
 
         string issuer = ExtractIssuerFromConfiguration();
         string audience = ExtractAudienceFromConfiguration();
@@ -46,6 +41,8 @@ public class TokenGenerationService : ITokenGenerationService
 
         string key = ExtractKeyFromConfiguration();
         SigningCredentials signingCredentials = CreateSigningCredentials(key);
+
+        IEnumerable<Claim> claims = CreateClaims(user);
 
         var jwtSecurityToken = new JwtSecurityToken(
             issuer: issuer,
@@ -57,9 +54,27 @@ public class TokenGenerationService : ITokenGenerationService
         var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
         string token = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
 
-        _logger.LogInformation("Token for user with email {Email} generated", userEmail);
+        _logger.LogInformation("Token for user with email {Email} generated", user.Email);
 
         return token;
+    }
+
+    private static IEnumerable<Claim> CreateClaims(User user)
+    {
+        ArgumentNullException.ThrowIfNull(user, nameof(user));
+
+        string id = user.Id.ToString(CultureInfo.InvariantCulture);
+        string email = user.Email ?? string.Empty;
+        string userName = user.UserName ?? string.Empty;
+        string jti = Guid.NewGuid().ToString();
+
+        return
+        [
+            new(JwtRegisteredClaimNames.Sub, id),
+            new(JwtRegisteredClaimNames.Email, email),
+            new(JwtRegisteredClaimNames.Name, userName),
+            new(JwtRegisteredClaimNames.Jti, jti)
+        ];
     }
 
     private static SigningCredentials CreateSigningCredentials(string key)

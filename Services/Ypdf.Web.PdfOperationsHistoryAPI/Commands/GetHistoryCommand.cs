@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Commands;
+using Ypdf.Web.Domain.Models.Api.Exceptions;
 using Ypdf.Web.Domain.Models.Informing;
 using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Data.Repositories;
 using Ypdf.Web.PdfOperationsHistoryAPI.Models.Requests;
@@ -11,7 +14,7 @@ using Ypdf.Web.PdfOperationsHistoryAPI.Models.Responses;
 
 namespace Ypdf.Web.PdfOperationsHistoryAPI.Commands;
 
-public class GetHistoryCommand : BaseCommand, ICommand<GetHistoryRequest, GetHistoryResponse>
+public class GetHistoryCommand : BaseCommand, IProtectedCommand<GetHistoryRequest, GetHistoryResponse>
 {
     private readonly IPdfOperationResultRepository _pdfOperationResultRepository;
 
@@ -23,15 +26,23 @@ public class GetHistoryCommand : BaseCommand, ICommand<GetHistoryRequest, GetHis
             mapper ?? throw new ArgumentNullException(nameof(mapper)),
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
-        ArgumentNullException.ThrowIfNull(pdfOperationResultRepository, nameof(pdfOperationResultRepository));
+        ArgumentNullException.ThrowIfNull(
+            pdfOperationResultRepository,
+            nameof(pdfOperationResultRepository));
+
         _pdfOperationResultRepository = pdfOperationResultRepository;
     }
 
-    public Task<GetHistoryResponse> ExecuteAsync(GetHistoryRequest request)
+    public Task<GetHistoryResponse> ExecuteAsync(
+        GetHistoryRequest request,
+        ClaimsPrincipal userClaims)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
+        ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
 
         Logger.LogInformation("Trying to get history for user {UserId}", request.UserId);
+
+        VerifyAccess(request.UserId, userClaims);
 
         IEnumerable<PdfOperationResult> results = _pdfOperationResultRepository
             .FindAll(t => t.UserId == request.UserId);
@@ -41,5 +52,24 @@ public class GetHistoryCommand : BaseCommand, ICommand<GetHistoryRequest, GetHis
         var response = new GetHistoryResponse(results);
 
         return Task.FromResult(response);
+    }
+
+    private void VerifyAccess(int pdfOperationResultUserId, ClaimsPrincipal userClaims)
+    {
+        ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
+
+        string? userIdSource = userClaims.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+        if (string.IsNullOrEmpty(userIdSource)
+            || !int.TryParse(userIdSource, out int userId)
+            || pdfOperationResultUserId != userId)
+        {
+            Logger.LogInformation(
+                "User {SenderId} doesn't have access to the resource owned by user {OwnerId}",
+                userIdSource,
+                pdfOperationResultUserId);
+
+            throw new ForbiddenException("User doesn't have access to the resource");
+        }
     }
 }

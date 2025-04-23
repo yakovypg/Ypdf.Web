@@ -1,5 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Api;
@@ -14,6 +15,7 @@ namespace Ypdf.Web.PdfProcessingAPI.Controllers;
 public class OutputController : ControllerBase
 {
     [HttpGet("{name}")]
+    [AllowAnonymous]
     public async Task<ApiResponse<GetOutputFileResponse>> GetOutputFile(
         string name,
         [FromServices] ICommand<GetOutputFileRequest, GetOutputFileResponse> getOutputFileCommand)

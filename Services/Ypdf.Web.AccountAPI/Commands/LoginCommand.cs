@@ -47,7 +47,7 @@ public class LoginCommand : BaseCommand, ICommand<LoginRequest, LoginResponse>
             .SignInAsync(request.Email!, request.Password!)
             .ConfigureAwait(false);
 
-        string token = _tokenGenerationService.Generate(user.Email!);
+        string token = _tokenGenerationService.Generate(user);
 
         Logger.LogInformation(
             "User with email {Email} has logged in successfully",

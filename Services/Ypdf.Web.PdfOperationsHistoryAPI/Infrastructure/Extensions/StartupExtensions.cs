@@ -51,7 +51,7 @@ public static class StartupExtensions
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
         return services
-            .AddScoped<ICommand<GetHistoryRequest, GetHistoryResponse>, GetHistoryCommand>();
+            .AddScoped<IProtectedCommand<GetHistoryRequest, GetHistoryResponse>, GetHistoryCommand>();
     }
 
     public static IServiceCollection AddServices(this IServiceCollection services)

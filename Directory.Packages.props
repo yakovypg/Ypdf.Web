@@ -1,8 +1,10 @@
 <Project>
+
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <EnablePackageVersionOverride>false</EnablePackageVersionOverride>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
     <PackageVersion Include="LiteDB" Version="5.0.21" />
@@ -24,4 +26,5 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
   </ItemGroup>
+
 </Project>

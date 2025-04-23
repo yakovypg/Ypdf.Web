@@ -4,5 +4,5 @@ namespace Ypdf.Web.PdfProcessingAPI.Models.Requests;
 
 public interface IMultipleFilesPdfCommandRequest : IPdfCommandRequest
 {
-    IReadOnlyCollection<object>? Files { get; set; }
+    IEnumerable<IEnumerable<byte>>? Files { get; set; }
 }

@@ -51,8 +51,8 @@ public static class StartupExtensions
 
         return services
             .AddScoped<ICommand<GetOutputFileRequest, GetOutputFileResponse>, GetOutputFileCommand>()
-            .AddScoped<ICommand<MergeRequest, PdfOperationResponse>, MergeCommand>()
-            .AddScoped<ICommand<SplitRequest, PdfOperationResponse>, SplitCommand>();
+            .AddScoped<IProtectedCommand<MergeRequest, PdfOperationResponse>, MergeCommand>()
+            .AddScoped<IProtectedCommand<SplitRequest, PdfOperationResponse>, SplitCommand>();
     }
 
     public static IServiceCollection AddServices(this IServiceCollection services)

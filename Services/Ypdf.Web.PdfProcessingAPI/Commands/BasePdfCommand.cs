@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +14,7 @@ using Ypdf.Web.PdfProcessingAPI.Models.Responses;
 
 namespace Ypdf.Web.PdfProcessingAPI.Commands;
 
-public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest, PdfOperationResponse>
+public abstract class BasePdfCommand<TRequest> : BaseCommand, IProtectedCommand<TRequest, PdfOperationResponse>
     where TRequest : IPdfCommandRequest
 {
     protected BasePdfCommand(
@@ -47,15 +48,20 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
     protected IRabbitMqProducerService RabbitMqSenderService { get; }
     protected IConfiguration Configuration { get; }
 
-    public virtual async Task<PdfOperationResponse> ExecuteAsync(TRequest request)
+    public virtual async Task<PdfOperationResponse> ExecuteAsync(
+        TRequest request,
+        ClaimsPrincipal userClaims)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
+        ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
 
         string requestJson = await request
             .ToJsonAsync()
             .ConfigureAwait(false);
 
         Logger.LogInformation("Execute {CommandName} with {RequestJson}", CommandName, requestJson);
+
+        VerifyAccess(userClaims);
 
         (string outputFileName, string outputFilePath) = GetOutputFilePath();
         Logger.LogInformation("Output file path: {OutputPath}", outputFilePath);
@@ -105,6 +111,23 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
         if (request.Files is null)
             throw new BadRequestException("Files not specified");
     }
+
+    protected virtual void VerifyAccess(ClaimsPrincipal userClaims)
+    {
+        ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
+
+        if (!HasAccess(userClaims))
+        {
+            Logger.LogWarning(
+                "User {@User} doesn't have access to the {OperationType} operation",
+                userClaims,
+                OperationType);
+
+            throw new ForbiddenException("User doesn't have access to the resource");
+        }
+    }
+
+    protected abstract bool HasAccess(ClaimsPrincipal userClaims);
 
     protected abstract Task<(DateTimeOffset OperationStart, DateTimeOffset OperationEnd)> GetCommandTask(
         TRequest request,

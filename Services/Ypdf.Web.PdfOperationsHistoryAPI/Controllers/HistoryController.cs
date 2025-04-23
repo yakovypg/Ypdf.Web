@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Api;
@@ -15,9 +16,10 @@ namespace Ypdf.Web.PdfOperationsHistoryAPI.Controllers;
 public class HistoryController : ControllerBase
 {
     [HttpGet("{id}")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<ApiResponse<GetHistoryResponse>> GetHistory(
-        Guid id,
-        [FromServices] ICommand<GetHistoryRequest, GetHistoryResponse> getHistoryCommand)
+        int id,
+        [FromServices] IProtectedCommand<GetHistoryRequest, GetHistoryResponse> getHistoryCommand)
     {
         if (getHistoryCommand is null)
             return new(null, HttpStatusCode.InternalServerError);
@@ -28,7 +30,7 @@ public class HistoryController : ControllerBase
         };
 
         GetHistoryResponse response = await getHistoryCommand
-            .ExecuteAsync(request)
+            .ExecuteAsync(request, User)
             .ConfigureAwait(false);
 
         return new(response, HttpStatusCode.OK);

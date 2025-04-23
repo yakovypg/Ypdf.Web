@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +29,12 @@ public class SplitCommand : BasePdfCommand<SplitRequest>
             mapper ?? throw new ArgumentNullException(nameof(mapper)),
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
+    }
+
+    protected override bool HasAccess(ClaimsPrincipal userClaims)
+    {
+        ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
+        return true;
     }
 
     protected override Task<(DateTimeOffset OperationStart, DateTimeOffset OperationEnd)> GetCommandTask(

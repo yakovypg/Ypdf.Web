@@ -12,7 +12,7 @@ services:
       - 8081
     ports:
       - 8081:443
-    restart: always
+    restart: on-failure
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Production
@@ -33,7 +33,7 @@ services:
       - 8082
     ports:
       - 8082:443
-    restart: always
+    restart: on-failure
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Production
@@ -58,7 +58,7 @@ services:
       - 8083
     ports:
       - 8083:443
-    restart: always
+    restart: on-failure
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Production
@@ -79,7 +79,7 @@ services:
       - 8080
     ports:
       - 8080:5432
-    restart: always
+    restart: on-failure
     environment:
       POSTGRES_USER: Ypdf
       POSTGRES_PASSWORD: Ypdf2025
@@ -93,6 +93,7 @@ services:
     ports:
       - "5672:5672"   # RabbitMQ port
       - "15672:15672" # RabbitMQ management UI
+    restart: on-failure
     environment:
       RABBITMQ_DEFAULT_USER: Ypdf
       RABBITMQ_DEFAULT_PASS: Ypdf2025

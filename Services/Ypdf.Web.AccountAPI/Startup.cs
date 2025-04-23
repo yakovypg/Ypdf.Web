@@ -35,6 +35,8 @@ public class Startup
 
         _ = application
             .UseRouting()
+            .UseAuthentication()
+            .UseAuthorization()
             .UseHttpsRedirection()
             .UseExceptionHandler(logger)
             .UseEndpoints(endpoints => { endpoints.MapControllers(); })
@@ -52,10 +54,15 @@ public class Startup
         _ = services
             .AddAccountsDbContext(Configuration)
             .AddCommands()
+            .AddRepositories()
+            .AddServices()
             .AddMapper()
             .AddApiVersioning(Configuration)
             .AddSwaggerGen()
             .ConfigureEndpoints();
+
+        _ = services.AddIdentity();
+        _ = services.AddAuthentication();
 
         _ = services
             .AddControllersWithViews()

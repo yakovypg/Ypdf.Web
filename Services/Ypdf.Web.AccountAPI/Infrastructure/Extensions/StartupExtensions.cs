@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -12,9 +16,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ypdf.Web.AccoutAPI.Commands;
+using Ypdf.Web.AccoutAPI.Data.Repositories;
 using Ypdf.Web.AccoutAPI.Infrastructure.Data;
+using Ypdf.Web.AccoutAPI.Infrastructure.Services;
+using Ypdf.Web.AccoutAPI.Mappings;
+using Ypdf.Web.AccoutAPI.Models;
 using Ypdf.Web.AccoutAPI.Models.Dto.Requests;
 using Ypdf.Web.AccoutAPI.Models.Dto.Responses;
 using Ypdf.Web.Domain.Commands;
@@ -44,6 +53,7 @@ public static class StartupExtensions
 
         var mappingConfig = new MapperConfiguration(configuration =>
         {
+            configuration.AddProfile(new EntityMappingProfile());
         });
 
         IMapper mapper = mappingConfig.CreateMapper();
@@ -71,6 +81,65 @@ public static class StartupExtensions
         });
     }
 
+    public static AuthenticationBuilder AddAuthentication(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+        ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
+
+        AuthenticationBuilder builder = services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        });
+
+        string issuer = configuration["Jwt:Issuer"]
+            ?? throw new ConfigurationException("Issuer for Jwt not specified");
+
+        string audience = configuration["Jwt:Audience"]
+            ?? throw new ConfigurationException("Audience for Jwt not specified");
+
+        string key = configuration["Jwt:Key"]
+            ?? throw new ConfigurationException("Key for Jwt not specified");
+
+        byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+        var issuerSigningKey = new SymmetricSecurityKey(keyBytes);
+
+        return builder.AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = issuer,
+                ValidAudience = audience,
+                IssuerSigningKey = issuerSigningKey
+            };
+        });
+    }
+
+    public static IdentityBuilder AddIdentity(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+
+        IdentityBuilder builder = services.AddIdentity<User, IdentityRole<int>>(setup =>
+        {
+            setup.Password.RequireDigit = true;
+            setup.Password.RequireNonAlphanumeric = false;
+            setup.Password.RequireLowercase = true;
+            setup.Password.RequireUppercase = true;
+            setup.Password.RequiredUniqueChars = 1;
+            setup.Password.RequiredLength = 8;
+        });
+
+        return builder
+            .AddEntityFrameworkStores<AccountsDbContext>()
+            .AddDefaultTokenProviders();
+    }
+
     public static IServiceCollection AddCommands(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
@@ -78,6 +147,28 @@ public static class StartupExtensions
         return services
             .AddScoped<ICommand<RegisterUserRequest, RegisterUserResponse>, RegisterUserCommand>()
             .AddScoped<ICommand<LoginRequest, LoginResponse>, LoginCommand>();
+    }
+
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+
+        return services
+            .AddScoped<IUserRepository, UserRepository>()
+            .AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+    }
+
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+
+        return services
+            .AddScoped<IEmailVerifierService, EmailVerifierService>()
+            .AddScoped<IPasswordVerifierService, PasswordVerifierService>()
+            .AddScoped<IUserNameVerifierService, UserNameVerifierService>()
+            .AddScoped<IUserSubscriptionService, UserSubscriptionService>()
+            .AddScoped<ITokenGenerationService, TokenGenerationService>()
+            .AddScoped<ISignInService, SignInService>();
     }
 
     public static IServiceCollection AddApiVersioning(this IServiceCollection services, IConfiguration configuration)

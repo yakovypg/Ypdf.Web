@@ -1,15 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace Ypdf.Web.AccoutAPI.Models;
 
-public class User
+public class User : IdentityUser<int>
 {
-    [Key]
-    public int UserId { get; set; }
-
-    [ForeignKey("SubscriptionId")]
-    public Subscription? Subscription { get; set; }
-
-    public string? Nickname { get; set; }
+    public int UserSubscriptionId { get; set; }
+    public UserSubscription? UserSubscription { get; set; }
 }

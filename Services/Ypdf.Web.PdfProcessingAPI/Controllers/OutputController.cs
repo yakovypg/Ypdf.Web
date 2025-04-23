@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -21,9 +20,6 @@ public class OutputController : ControllerBase
     {
         if (getOutputFileCommand is null)
             return new(null, HttpStatusCode.InternalServerError);
-
-        if (string.IsNullOrWhiteSpace(name))
-            return new(null, HttpStatusCode.BadRequest);
 
         var request = new GetOutputFileRequest()
         {

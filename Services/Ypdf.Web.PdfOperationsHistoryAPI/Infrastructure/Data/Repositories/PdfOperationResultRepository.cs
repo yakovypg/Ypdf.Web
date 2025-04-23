@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using LiteDB;
 using Microsoft.Extensions.Configuration;
 using Ypdf.Web.Domain.Models.Configuration;
@@ -49,6 +50,24 @@ public class PdfOperationResultRepository : IPdfOperationResultRepository, IDisp
     public IEnumerable<PdfOperationResult> GetAll()
     {
         return _operationResults.FindAll();
+    }
+
+    public IEnumerable<PdfOperationResult> FindAll(Func<PdfOperationResult, bool> predicate)
+    {
+        ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+        return GetAll().Where(predicate);
+    }
+
+    public PdfOperationResult FindOne(Func<PdfOperationResult, bool> predicate)
+    {
+        ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+        return GetAll().First(predicate);
+    }
+
+    public PdfOperationResult? FindOneOrDefault(Func<PdfOperationResult, bool> predicate)
+    {
+        ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+        return GetAll().FirstOrDefault(predicate);
     }
 
     public void Dispose()

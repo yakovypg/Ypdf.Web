@@ -35,8 +35,7 @@ public class GetHistoryCommand : BaseCommand, ICommand<GetHistoryRequest, GetHis
         Logger.LogInformation("Trying to get history for user {UserId}", request.UserId);
 
         IEnumerable<PdfOperationResult> results = _pdfOperationResultRepository
-            .GetAll()
-            .Where(t => t.UserId == request.UserId);
+            .FindAll(t => t.UserId == request.UserId);
 
         Logger.LogInformation("History for user {UserId} successfully recieved", request.UserId);
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Ypdf.Web.Domain.Models.Informing;
 
@@ -10,4 +11,8 @@ public interface IPdfOperationResultRepository
 
     PdfOperationResult GetById(int id);
     IEnumerable<PdfOperationResult> GetAll();
+
+    IEnumerable<PdfOperationResult> FindAll(Func<PdfOperationResult, bool> predicate);
+    PdfOperationResult FindOne(Func<PdfOperationResult, bool> predicate);
+    PdfOperationResult? FindOneOrDefault(Func<PdfOperationResult, bool> predicate);
 }

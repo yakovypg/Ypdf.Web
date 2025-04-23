@@ -60,9 +60,11 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
         (string outputFileName, string outputFilePath) = GetOutputFilePath();
         Logger.LogInformation("Output file path: {OutputPath}", outputFilePath);
 
-        Task<(DateTime, DateTime)> commandTask = GetCommandTask(request, outputFilePath);
+        Task<(DateTimeOffset, DateTimeOffset)> commandTask = GetCommandTask(request, outputFilePath);
 
-        (DateTime operationStart, DateTime operationEnd) = await commandTask.ConfigureAwait(false);
+        (DateTimeOffset operationStart, DateTimeOffset operationEnd) = await commandTask
+            .ConfigureAwait(false);
+
         Logger.LogInformation("{CommandName} successfully executed", CommandName);
 
         var operationResult = new PdfOperationResult()
@@ -93,7 +95,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
         if (request.File is null)
-            throw new BadRequestException("File not specified.");
+            throw new BadRequestException("File not specified");
     }
 
     protected virtual void ValidateRequestParameters(IMultipleFilesPdfCommandRequest request)
@@ -101,10 +103,10 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, ICommand<TRequest,
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
         if (request.Files is null)
-            throw new BadRequestException("Files not specified.");
+            throw new BadRequestException("Files not specified");
     }
 
-    protected abstract Task<(DateTime OperationStart, DateTime OperationEnd)> GetCommandTask(
+    protected abstract Task<(DateTimeOffset OperationStart, DateTimeOffset OperationEnd)> GetCommandTask(
         TRequest request,
         string outputFilePath);
 }

@@ -30,7 +30,7 @@ public class MergeCommand : BasePdfCommand<MergeRequest>
     {
     }
 
-    protected override Task<(DateTime OperationStart, DateTime OperationEnd)> GetCommandTask(
+    protected override Task<(DateTimeOffset OperationStart, DateTimeOffset OperationEnd)> GetCommandTask(
         MergeRequest request,
         string outputFilePath)
     {

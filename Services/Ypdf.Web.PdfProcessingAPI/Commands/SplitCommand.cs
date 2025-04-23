@@ -30,7 +30,7 @@ public class SplitCommand : BasePdfCommand<SplitRequest>
     {
     }
 
-    protected override Task<(DateTime OperationStart, DateTime OperationEnd)> GetCommandTask(
+    protected override Task<(DateTimeOffset OperationStart, DateTimeOffset OperationEnd)> GetCommandTask(
         SplitRequest request,
         string outputFilePath)
     {

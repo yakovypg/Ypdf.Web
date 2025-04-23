@@ -5,28 +5,28 @@ namespace Ypdf.Web.PdfProcessingAPI.Infrastructure.Timing;
 
 public static class TimedInvoke
 {
-    public static (DateTime Start, DateTime End) Invoke(Action action)
+    public static (DateTimeOffset Start, DateTimeOffset End) Invoke(Action action)
     {
         ArgumentNullException.ThrowIfNull(action, nameof(action));
 
-        DateTime start = DateTime.Now;
+        DateTimeOffset start = DateTimeOffset.UtcNow;
         action.Invoke();
-        DateTime end = DateTime.Now;
+        DateTimeOffset end = DateTimeOffset.UtcNow;
 
         return (start, end);
     }
 
-    public static async Task<(DateTime Start, DateTime End)> InvokeAsync(Func<Task> action)
+    public static async Task<(DateTimeOffset Start, DateTimeOffset End)> InvokeAsync(Func<Task> action)
     {
         ArgumentNullException.ThrowIfNull(action, nameof(action));
 
-        DateTime start = DateTime.Now;
+        DateTimeOffset start = DateTimeOffset.UtcNow;
 
         await action
             .Invoke()
             .ConfigureAwait(false);
 
-        DateTime end = DateTime.Now;
+        DateTimeOffset end = DateTimeOffset.UtcNow;
 
         return (start, end);
     }

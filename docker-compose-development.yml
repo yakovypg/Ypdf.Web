@@ -6,10 +6,8 @@ services:
       context: .
       dockerfile: ./Services/Ypdf.Web.AccountAPI/Dockerfile
     container_name: AccountAPI
-    deploy:
-      resources:
-        limits:
-          memory: 1gb
+    depends_on:
+      - accounts_database
     expose:
       - 8081
     ports:
@@ -29,10 +27,8 @@ services:
       context: .
       dockerfile: ./Services/Ypdf.Web.PdfProcessingAPI/Dockerfile
     container_name: PdfProcessingAPI
-    deploy:
-      resources:
-        limits:
-          memory: 1gb
+    depends_on:
+      - rabbitmq
     expose:
       - 8082
     ports:
@@ -56,10 +52,8 @@ services:
       context: .
       dockerfile: ./Services/Ypdf.Web.PdfOperationsHistoryAPI/Dockerfile
     container_name: PdfOperationsHistoryAPI
-    deploy:
-      resources:
-        limits:
-          memory: 1gb
+    depends_on:
+      - rabbitmq
     expose:
       - 8083
     ports:

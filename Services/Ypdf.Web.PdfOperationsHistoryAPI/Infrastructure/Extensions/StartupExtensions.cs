@@ -16,8 +16,8 @@ using Ypdf.Web.Domain.Infrastructure.Handlers;
 using Ypdf.Web.PdfOperationsHistoryAPI.Commands;
 using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Data.Repositories;
 using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Services;
-using Ypdf.Web.PdfOperationsHistoryAPI.Models.Dto.Requests;
-using Ypdf.Web.PdfOperationsHistoryAPI.Models.Dto.Responses;
+using Ypdf.Web.PdfOperationsHistoryAPI.Models.Requests;
+using Ypdf.Web.PdfOperationsHistoryAPI.Models.Responses;
 
 namespace Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Extensions;
 

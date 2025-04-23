@@ -7,7 +7,7 @@ using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Informing;
 using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
 using Ypdf.Web.PdfProcessingAPI.Infrastructure.Timing;
-using Ypdf.Web.PdfProcessingAPI.Models.Dto.Requests;
+using Ypdf.Web.PdfProcessingAPI.Models.Requests;
 
 namespace Ypdf.Web.PdfProcessingAPI.Commands;
 

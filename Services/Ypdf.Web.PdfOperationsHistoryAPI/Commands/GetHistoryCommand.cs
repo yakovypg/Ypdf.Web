@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Informing;
 using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Data.Repositories;
-using Ypdf.Web.PdfOperationsHistoryAPI.Models.Dto.Requests;
-using Ypdf.Web.PdfOperationsHistoryAPI.Models.Dto.Responses;
+using Ypdf.Web.PdfOperationsHistoryAPI.Models.Requests;
+using Ypdf.Web.PdfOperationsHistoryAPI.Models.Responses;
 
 namespace Ypdf.Web.PdfOperationsHistoryAPI.Commands;
 

@@ -1,8 +1,8 @@
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Ypdf.Web.AccoutAPI.Models.Dto.Requests;
-using Ypdf.Web.AccoutAPI.Models.Dto.Responses;
+using Ypdf.Web.AccoutAPI.Models.Requests;
+using Ypdf.Web.AccoutAPI.Models.Responses;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Api;
 

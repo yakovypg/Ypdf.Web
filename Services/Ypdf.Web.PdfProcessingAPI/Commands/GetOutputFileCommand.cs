@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Api.Exceptions;
 using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
-using Ypdf.Web.PdfProcessingAPI.Models.Dto.Requests;
-using Ypdf.Web.PdfProcessingAPI.Models.Dto.Responses;
+using Ypdf.Web.PdfProcessingAPI.Models.Requests;
+using Ypdf.Web.PdfProcessingAPI.Models.Responses;
 
 namespace Ypdf.Web.PdfProcessingAPI.Commands;
 

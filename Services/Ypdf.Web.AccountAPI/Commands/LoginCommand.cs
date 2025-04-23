@@ -2,11 +2,11 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
-using Ypdf.Web.AccoutAPI.Infrastructure.Services;
+using Ypdf.Web.AccoutAPI.Infrastructure.Services.Authentication;
 using Ypdf.Web.AccoutAPI.Models;
 using Ypdf.Web.AccoutAPI.Models.Dto;
-using Ypdf.Web.AccoutAPI.Models.Dto.Requests;
-using Ypdf.Web.AccoutAPI.Models.Dto.Responses;
+using Ypdf.Web.AccoutAPI.Models.Requests;
+using Ypdf.Web.AccoutAPI.Models.Responses;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Api.Exceptions;
 

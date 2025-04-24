@@ -2,7 +2,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Ypdf.Web.AccoutAPI.Infrastructure.Data;
 using Ypdf.Web.AccoutAPI.Infrastructure.Extensions;
 using Ypdf.Web.AccoutAPI.Models;
 using Ypdf.Web.Domain.Models.Api.Exceptions;
@@ -11,14 +13,20 @@ namespace Ypdf.Web.AccoutAPI.Data.Repositories;
 
 public class UserRepository : IUserRepository
 {
+    private readonly AccountsDbContext _context;
     private readonly UserManager<User> _userManager;
     private readonly ILogger<UserRepository> _logger;
 
-    public UserRepository(UserManager<User> userManager, ILogger<UserRepository> logger)
+    public UserRepository(
+        AccountsDbContext context,
+        UserManager<User> userManager,
+        ILogger<UserRepository> logger)
     {
+        ArgumentNullException.ThrowIfNull(context, nameof(context));
         ArgumentNullException.ThrowIfNull(userManager, nameof(userManager));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
 
+        _context = context;
         _userManager = userManager;
         _logger = logger;
     }
@@ -88,6 +96,19 @@ public class UserRepository : IUserRepository
         }
 
         _logger.LogInformation("User with email {Email} deleted", email);
+    }
+
+    public async Task<User?> GetByEmailWithDependenciesAsync(string email)
+    {
+        ArgumentNullException.ThrowIfNull(email, nameof(email));
+
+#nullable disable // EF makes everything null safe when accessing navigation
+        return await _context.Users
+            .Include(u => u.UserSubscription)
+                .ThenInclude(us => us.Subscription)
+            .SingleOrDefaultAsync(t => t.Email == email)
+            .ConfigureAwait(false);
+#nullable enable // EF makes everything null safe when accessing navigation
     }
 
     public async Task<User?> GetByEmailAsync(string email)

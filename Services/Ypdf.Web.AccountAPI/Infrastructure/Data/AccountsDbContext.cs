@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Ypdf.Web.AccoutAPI.Infrastructure.Data.Configuration;
 using Ypdf.Web.AccoutAPI.Models;
 
 namespace Ypdf.Web.AccoutAPI.Infrastructure.Data;
@@ -19,6 +20,10 @@ public class AccountsDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
         base.OnModelCreating(builder);
+
+        _ = builder
+            .ApplyConfiguration(new UserSubscriptionConfiguration());
     }
 }

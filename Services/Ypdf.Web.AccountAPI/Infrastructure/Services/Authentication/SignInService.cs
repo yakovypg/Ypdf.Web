@@ -33,7 +33,7 @@ public class SignInService : ISignInService
         _logger.LogInformation("Trying to authenticate user with email {Email}", email);
 
         User? user = await _userRepository
-            .GetByEmailAsync(email)
+            .GetByEmailWithDependenciesAsync(email)
             .ConfigureAwait(false);
 
         if (user is null)

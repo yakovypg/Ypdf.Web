@@ -12,10 +12,12 @@ public class UserSubscription
 
     [ForeignKey(nameof(Subscription))]
     public int SubscriptionId { get; set; }
+    [Required]
     public required Subscription Subscription { get; set; }
 
     [ForeignKey(nameof(User))]
     public int UserId { get; set; }
+    [Required]
     public required User User { get; set; }
 
     public DateTimeOffset ExpiresAt { get; set; }

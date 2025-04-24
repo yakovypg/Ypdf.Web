@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Ypdf.Web.AccoutAPI.Infrastructure.Configuration;
 using Ypdf.Web.AccoutAPI.Infrastructure.Extensions;
 
 namespace Ypdf.Web.AccoutAPI;
@@ -61,7 +62,10 @@ public class Startup
             .AddSwaggerGen()
             .ConfigureEndpoints();
 
-        _ = services.AddIdentity();
+        PasswordRequirements passwordRequirements = services
+            .AddPasswordRequirements(Configuration);
+
+        _ = services.AddIdentity(passwordRequirements);
         _ = services.AddAuthentication(Configuration);
 
         _ = services

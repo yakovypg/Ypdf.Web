@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ypdf.Web.AccoutAPI.Commands;
 using Ypdf.Web.AccoutAPI.Data.Repositories;
+using Ypdf.Web.AccoutAPI.Infrastructure.Configuration;
 using Ypdf.Web.AccoutAPI.Infrastructure.Data;
 using Ypdf.Web.AccoutAPI.Infrastructure.Services;
 using Ypdf.Web.AccoutAPI.Infrastructure.Services.Authentication;
@@ -48,6 +49,25 @@ public static class StartupExtensions
         .GetExecutingAssembly()
         .GetName()
         .Name;
+
+    public static PasswordRequirements AddPasswordRequirements(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+        ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
+
+        PasswordRequirements? passwordRequirements = configuration
+            .GetSection(nameof(PasswordRequirements))
+            .Get<PasswordRequirements>();
+
+        if (passwordRequirements is null)
+            throw new ConfigurationException("Password requirements not specified");
+
+        _ = services.AddSingleton(passwordRequirements!);
+
+        return passwordRequirements;
+    }
 
     public static IServiceCollection AddMapper(this IServiceCollection services)
     {
@@ -123,18 +143,21 @@ public static class StartupExtensions
         });
     }
 
-    public static IdentityBuilder AddIdentity(this IServiceCollection services)
+    public static IdentityBuilder AddIdentity(
+        this IServiceCollection services,
+        PasswordRequirements passwordRequirements)
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
+        ArgumentNullException.ThrowIfNull(passwordRequirements, nameof(passwordRequirements));
 
         IdentityBuilder builder = services.AddIdentity<User, IdentityRole<int>>(setup =>
         {
-            setup.Password.RequireDigit = true;
-            setup.Password.RequireNonAlphanumeric = false;
-            setup.Password.RequireLowercase = true;
-            setup.Password.RequireUppercase = true;
-            setup.Password.RequiredUniqueChars = 1;
-            setup.Password.RequiredLength = 8;
+            setup.Password.RequiredLength = passwordRequirements.MinimumLength;
+            setup.Password.RequiredUniqueChars = passwordRequirements.RequiredUniqueChars;
+            setup.Password.RequireDigit = passwordRequirements.RequireDigit;
+            setup.Password.RequireNonAlphanumeric = passwordRequirements.RequireNonAlphanumeric;
+            setup.Password.RequireLowercase = passwordRequirements.RequireLowercase;
+            setup.Password.RequireUppercase = passwordRequirements.RequireUppercase;
         });
 
         return builder

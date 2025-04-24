@@ -5,7 +5,7 @@ namespace Ypdf.Web.AccoutAPI.Data.Repositories;
 
 public interface IUserRepository
 {
-    Task<User> AddAsync(string email, string password, string userName);
+    Task<User> AddAsync(string email, string password, string nickname);
     Task DeleteByEmailAsync(string email);
 
     Task<User?> GetByEmailWithDependenciesAsync(string email);

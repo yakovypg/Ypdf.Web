@@ -76,14 +76,14 @@ public class TokenGenerationService : ITokenGenerationService
 
         string id = user.Id.ToString(CultureInfo.InvariantCulture);
         string email = user.Email ?? string.Empty;
-        string userName = user.UserName ?? string.Empty;
+        string nickname = user.Nickname ?? string.Empty;
         string jti = Guid.NewGuid().ToString();
 
         List<Claim> claims =
         [
             new(JwtRegisteredClaimNames.Sub, id),
             new(JwtRegisteredClaimNames.Email, email),
-            new(JwtRegisteredClaimNames.Name, userName),
+            new(JwtRegisteredClaimNames.Name, nickname),
             new(JwtRegisteredClaimNames.Jti, jti)
         ];
 

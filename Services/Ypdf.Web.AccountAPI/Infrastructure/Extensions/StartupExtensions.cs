@@ -152,6 +152,7 @@ public static class StartupExtensions
 
         IdentityBuilder builder = services.AddIdentity<User, IdentityRole<int>>(setup =>
         {
+            setup.User.RequireUniqueEmail = true;
             setup.Password.RequiredLength = passwordRequirements.MinimumLength;
             setup.Password.RequiredUniqueChars = passwordRequirements.RequiredUniqueChars;
             setup.Password.RequireDigit = passwordRequirements.RequireDigit;
@@ -190,7 +191,7 @@ public static class StartupExtensions
         return services
             .AddScoped<IEmailVerifierService, EmailVerifierService>()
             .AddScoped<IPasswordVerifierService, PasswordVerifierService>()
-            .AddScoped<IUserNameVerifierService, UserNameVerifierService>()
+            .AddScoped<INicknameVerifierService, NicknameVerifierService>()
             .AddScoped<IUserSubscriptionService, UserSubscriptionService>()
             .AddScoped<ITokenGenerationService, TokenGenerationService>()
             .AddScoped<ISignInService, SignInService>();

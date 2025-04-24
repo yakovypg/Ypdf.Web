@@ -22,14 +22,14 @@ public class RegisterUserCommand : BaseCommand, ICommand<RegisterUserRequest, Re
     private readonly IUserRepository _userRepository;
     private readonly IEmailVerifierService _emailVerifierService;
     private readonly IPasswordVerifierService _passwordVerifierService;
-    private readonly IUserNameVerifierService _userNameVerifierService;
+    private readonly INicknameVerifierService _nicknameVerifierService;
     private readonly IUserSubscriptionService _userSubscriptionService;
 
     public RegisterUserCommand(
         IUserRepository userRepository,
         IEmailVerifierService emailVerifierService,
         IPasswordVerifierService passwordVerifierService,
-        IUserNameVerifierService userNameVerifierService,
+        INicknameVerifierService nicknameVerifierService,
         IUserSubscriptionService userSubscriptionService,
         IMapper mapper,
         ILogger<BaseCommand> logger)
@@ -40,13 +40,13 @@ public class RegisterUserCommand : BaseCommand, ICommand<RegisterUserRequest, Re
         ArgumentNullException.ThrowIfNull(userRepository, nameof(userRepository));
         ArgumentNullException.ThrowIfNull(emailVerifierService, nameof(emailVerifierService));
         ArgumentNullException.ThrowIfNull(passwordVerifierService, nameof(passwordVerifierService));
-        ArgumentNullException.ThrowIfNull(userNameVerifierService, nameof(userNameVerifierService));
+        ArgumentNullException.ThrowIfNull(nicknameVerifierService, nameof(nicknameVerifierService));
         ArgumentNullException.ThrowIfNull(userSubscriptionService, nameof(userSubscriptionService));
 
         _userRepository = userRepository;
         _emailVerifierService = emailVerifierService;
         _passwordVerifierService = passwordVerifierService;
-        _userNameVerifierService = userNameVerifierService;
+        _nicknameVerifierService = nicknameVerifierService;
         _userSubscriptionService = userSubscriptionService;
     }
 
@@ -54,7 +54,7 @@ public class RegisterUserCommand : BaseCommand, ICommand<RegisterUserRequest, Re
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        SetDefaultUserNameIfNeeded(request);
+        SetDefaultNicknameIfNeeded(request);
         ValidateRequestParameters(request);
 
         Logger.LogInformation("Trying to register user with email {Email}", request.Email);
@@ -63,7 +63,7 @@ public class RegisterUserCommand : BaseCommand, ICommand<RegisterUserRequest, Re
             .ConfigureAwait(false);
 
         User user = await _userRepository
-            .AddAsync(request.Email!, request.Password!, request.UserName!)
+            .AddAsync(request.Email!, request.Password!, request.Nickname!)
             .ConfigureAwait(false);
 
         await _userSubscriptionService
@@ -78,14 +78,14 @@ public class RegisterUserCommand : BaseCommand, ICommand<RegisterUserRequest, Re
         return response;
     }
 
-    private void SetDefaultUserNameIfNeeded(RegisterUserRequest request)
+    private void SetDefaultNicknameIfNeeded(RegisterUserRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        if (request.UseDefaultUserName && string.IsNullOrEmpty(request.UserName))
+        if (request.UseDefaultNickname && string.IsNullOrEmpty(request.Nickname))
         {
-            request.UserName = request.Email;
-            Logger.LogInformation("User name is set to {Email}", request.Email);
+            request.Nickname = request.Email;
+            Logger.LogInformation("Nickname is set to {Email}", request.Email);
         }
     }
 
@@ -105,10 +105,10 @@ public class RegisterUserCommand : BaseCommand, ICommand<RegisterUserRequest, Re
             throw new BadRequestException("Password is incorrect");
         }
 
-        if (!_userNameVerifierService.IsGood(request.UserName))
+        if (!_nicknameVerifierService.IsGood(request.Nickname))
         {
-            Logger.LogWarning("User name {UserName} is incorrect", request.UserName);
-            throw new BadRequestException("User name is incorrect");
+            Logger.LogWarning("Nickname {Nickname} is incorrect", request.Nickname);
+            throw new BadRequestException("Nickname is incorrect");
         }
     }
 

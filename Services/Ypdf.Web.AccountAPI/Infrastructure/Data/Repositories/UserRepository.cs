@@ -31,18 +31,19 @@ public class UserRepository : IUserRepository
         _logger = logger;
     }
 
-    public async Task<User> AddAsync(string email, string password, string userName)
+    public async Task<User> AddAsync(string email, string password, string nickname)
     {
         ArgumentNullException.ThrowIfNull(email, nameof(email));
         ArgumentNullException.ThrowIfNull(password, nameof(password));
-        ArgumentNullException.ThrowIfNull(userName, nameof(userName));
+        ArgumentNullException.ThrowIfNull(nickname, nameof(nickname));
 
         _logger.LogInformation("Trying to add user with email {Email}", email);
 
         var user = new User()
         {
             Email = email,
-            UserName = userName
+            UserName = email,
+            Nickname = nickname
         };
 
         IdentityResult createUserResult = await _userManager

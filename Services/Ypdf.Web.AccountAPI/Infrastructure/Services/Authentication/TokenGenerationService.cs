@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
@@ -59,7 +60,17 @@ public class TokenGenerationService : ITokenGenerationService
         return token;
     }
 
-    private static List<Claim> CreateClaims(User user)
+    private static SigningCredentials CreateSigningCredentials(string key)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
+
+        byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+        var signingKey = new SymmetricSecurityKey(keyBytes);
+
+        return new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+    }
+
+    private List<Claim> CreateClaims(User user)
     {
         ArgumentNullException.ThrowIfNull(user, nameof(user));
 
@@ -84,17 +95,11 @@ public class TokenGenerationService : ITokenGenerationService
             claims.Add(subscriptionClaim);
         }
 
+        _logger.LogInformation(
+            "Token will contain the following claims: {Claims}",
+            claims.Select(t => (t.Type, t.Value)));
+
         return claims;
-    }
-
-    private static SigningCredentials CreateSigningCredentials(string key)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
-
-        byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-        var signingKey = new SymmetricSecurityKey(keyBytes);
-
-        return new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
     }
 
     private string ExtractIssuerFromConfiguration()

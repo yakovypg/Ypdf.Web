@@ -31,6 +31,11 @@ public class SubscriptionInfoService : ISubscriptionInfoService
         ArgumentNullException.ThrowIfNull(subscriptionName, nameof(subscriptionName));
         ArgumentNullException.ThrowIfNull(operationName, nameof(operationName));
 
+        _logger.LogInformation(
+            "Checking if operation {Operation} is allowed for subscription {Subscription}",
+            operationName,
+            subscriptionName);
+
         SubscriptionAllowedOperations? allowedOperations = await
             GetSubscriptionAllowedOperations(subscriptionName)
             .ConfigureAwait(false);
@@ -45,7 +50,7 @@ public class SubscriptionInfoService : ISubscriptionInfoService
         }
 
         bool operationAllowed = allowedOperations.AllowedOperations.Contains(operationName);
-        LogAvailabilityOfOperation(subscriptionName, operationName, operationAllowed);
+        LogAvailabilityOfOperation(operationName, subscriptionName, operationAllowed);
 
         return operationAllowed;
     }
@@ -82,7 +87,7 @@ public class SubscriptionInfoService : ISubscriptionInfoService
         string notItem = operationAllowed ? string.Empty : "n't";
 
         _logger.LogInformation(
-                "Operation {OperationName} is{NotItem} allowed for subscription {SubscriptionName}",
+                "Operation {Operation} is{NotItem} allowed for subscription {Subscription}",
                 operationName,
                 notItem,
                 subscriptionName);

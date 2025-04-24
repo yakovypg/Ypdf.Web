@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -10,9 +13,11 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Handlers;
+using Ypdf.Web.Domain.Models.Configuration;
 using Ypdf.Web.PdfProcessingAPI.Commands;
 using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
 using Ypdf.Web.PdfProcessingAPI.Models.Requests;
@@ -29,6 +34,46 @@ public static class StartupExtensions
 
     private const string ApiVersion = "v1";
     private const string ApiTitle = "Ypdf API";
+
+    public static AuthenticationBuilder AddAuthentication(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+        ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
+
+        AuthenticationBuilder builder = services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        });
+
+        string issuer = configuration["Jwt:Issuer"]
+            ?? throw new ConfigurationException("Issuer for Jwt not specified");
+
+        string audience = configuration["Jwt:Audience"]
+            ?? throw new ConfigurationException("Audience for Jwt not specified");
+
+        string key = configuration["Jwt:Key"]
+            ?? throw new ConfigurationException("Key for Jwt not specified");
+
+        byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+        var issuerSigningKey = new SymmetricSecurityKey(keyBytes);
+
+        return builder.AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = issuer,
+                ValidAudience = audience,
+                IssuerSigningKey = issuerSigningKey
+            };
+        });
+    }
 
     public static IServiceCollection AddMapper(this IServiceCollection services)
     {
@@ -107,6 +152,28 @@ public static class StartupExtensions
         return services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc(ApiVersion, apiInfo);
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Description = "Enter **Bearer {TOKEN}** to access this API",
+                Type = SecuritySchemeType.ApiKey,
+                In = ParameterLocation.Header
+            });
+
+            var openApiSecurityScheme = new OpenApiSecurityScheme()
+            {
+                Reference = new OpenApiReference()
+                {
+                    Id = "Bearer",
+                    Type = ReferenceType.SecurityScheme
+                }
+            };
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+            {
+                { openApiSecurityScheme, Array.Empty<string>() }
+            });
 
             // options.IncludeXmlComments(assemblyXmlPath);
         });

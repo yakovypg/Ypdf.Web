@@ -1,5 +1,4 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -131,7 +130,7 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, IProtectedCommand<
         {
             Logger.LogWarning(
                 "User {@User} doesn't have access to the {OperationType} operation",
-                userClaims,
+                userClaims.ToTypeValuePairs(),
                 OperationType);
 
             throw new ForbiddenException("User doesn't have access to the resource");
@@ -158,12 +157,18 @@ public abstract class BasePdfCommand<TRequest> : BaseCommand, IProtectedCommand<
         TRequest request,
         string outputFilePath);
 
-    private static int GetUserId(ClaimsPrincipal userClaims)
+    private int GetUserId(ClaimsPrincipal userClaims)
     {
         ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
 
-        if (!userClaims.Get(JwtRegisteredClaimNames.Sub, out int userId))
+        if (!userClaims.Get(NetCoreIdentityClaimNames.Sub, out int userId))
+        {
+            Logger.LogWarning(
+                "Cannot get user id from claims: {UserClaims}",
+                userClaims.ToTypeValuePairs());
+
             throw new ForbiddenException();
+        }
 
         return userId;
     }

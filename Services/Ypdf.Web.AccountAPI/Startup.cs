@@ -62,7 +62,7 @@ public class Startup
             .ConfigureEndpoints();
 
         _ = services.AddIdentity();
-        _ = services.AddAuthentication();
+        _ = services.AddAuthentication(Configuration);
 
         _ = services
             .AddControllersWithViews()

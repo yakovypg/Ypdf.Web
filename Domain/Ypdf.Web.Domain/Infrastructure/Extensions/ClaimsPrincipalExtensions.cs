@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using Ypdf.Web.Domain.Models.Api.Exceptions;
@@ -83,5 +84,14 @@ public static class ClaimsPrincipalExtensions
 
         if (!allowed)
             throw new ForbiddenException();
+    }
+
+    public static IEnumerable<(string Type, string Value)> ToTypeValuePairs(
+        this ClaimsPrincipal userClaims)
+    {
+        ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
+
+        return userClaims.Claims
+            .Select(t => (t.Type, t.Value));
     }
 }

@@ -30,17 +30,13 @@ public class SignInService : ISignInService
 
     public async Task<User> SignInAsync(string email, string password)
     {
+        ArgumentNullException.ThrowIfNull(email, nameof(email));
+        ArgumentNullException.ThrowIfNull(password, nameof(password));
+
         _logger.LogInformation("Trying to authenticate user with email {Email}", email);
 
-        User? user = await _userRepository
-            .GetByEmailWithDependenciesAsync(email)
+        User user = await FindUserAsync(email)
             .ConfigureAwait(false);
-
-        if (user is null)
-        {
-            _logger.LogWarning("User with email {Email} not exists", email);
-            throw new BadRequestException($"User email {email} is invalid");
-        }
 
         SignInResult signInResult = await _signInManager
             .PasswordSignInAsync(user, password, false, false)
@@ -57,6 +53,23 @@ public class SignInService : ISignInService
         }
 
         _logger.LogInformation("User with email {Email} authenticated successfully", email);
+
+        return user;
+    }
+
+    private async Task<User> FindUserAsync(string email)
+    {
+        ArgumentNullException.ThrowIfNull(email, nameof(email));
+
+        User? user = await _userRepository
+            .GetByEmailWithDependenciesAsync(email)
+            .ConfigureAwait(false);
+
+        if (user is null)
+        {
+            _logger.LogWarning("User with email {Email} not exists", email);
+            throw new BadRequestException($"Invalid email or password");
+        }
 
         return user;
     }

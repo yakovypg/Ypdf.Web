@@ -10,50 +10,61 @@ using RabbitMQ.Client;
 using Ypdf.Web.Domain.Infrastructure.Extensions;
 using Ypdf.Web.Domain.Models.Configuration;
 
-namespace Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
+namespace Ypdf.Web.Domain.Infrastructure.Connections;
 
-public class RabbitMqProducerService : IRabbitMqProducerService, IDisposable
+public class RabbitMqProducer : IRabbitMqProducer, IDisposable
 {
-    private readonly ILogger<RabbitMqProducerService> _logger;
+    private const string DefaultHostNameConfigPath = "RabbitMQ:HostName";
+    private const string DefaultQueueNameConfigPath = "RabbitMQ:QueueName";
+    private const string DefaultUserNameConfigPath = "RabbitMQ:UserName";
+    private const string DefaultPasswordConfigPath = "RabbitMQ:Password";
 
-    private readonly string _hostName;
-    private readonly string _queueName;
     private readonly SecureString _userName;
     private readonly SecureString _password;
 
     private bool _isDisposed;
 
-    public RabbitMqProducerService(
+    public RabbitMqProducer(IConfiguration configuration, ILogger<RabbitMqProducer> logger)
+        : this(configuration, logger, DefaultUserNameConfigPath, DefaultPasswordConfigPath)
+    {
+    }
+
+    public RabbitMqProducer(
         IConfiguration configuration,
-        ILogger<RabbitMqProducerService> logger)
+        ILogger<RabbitMqProducer> logger,
+        string userNameConfigPath,
+        string passwordConfigPath)
     {
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
+        ArgumentNullException.ThrowIfNull(userNameConfigPath, nameof(userNameConfigPath));
+        ArgumentNullException.ThrowIfNull(passwordConfigPath, nameof(passwordConfigPath));
 
-        _logger = logger;
-
-        _hostName = configuration.GetSection("RabbitMQ:HostName").Value
-            ?? throw new ConfigurationException("Host name for RabbitMQ not specified");
-
-        _queueName = configuration.GetSection("RabbitMQ:QueueName").Value
-            ?? throw new ConfigurationException("Queue name for RabbitMQ not specified");
+        Configuration = configuration;
+        Logger = logger;
 
         _userName = new SecureString();
         _password = new SecureString();
 
         _userName.Enrich(
-            configuration["RabbitMQ:UserName"]
+            configuration[userNameConfigPath]
                 ?? throw new ConfigurationException("User name for RabbitMQ not specified"));
 
         _password.Enrich(
-            configuration["RabbitMQ:Password"]
+            configuration[passwordConfigPath]
                 ?? throw new ConfigurationException("Password for RabbitMQ user not specified"));
     }
 
-    ~RabbitMqProducerService()
+    ~RabbitMqProducer()
     {
         Dispose(false);
     }
+
+    protected IConfiguration Configuration { get; }
+    protected ILogger<RabbitMqProducer> Logger { get; }
+
+    protected virtual string HostNameConfigPath => DefaultHostNameConfigPath;
+    protected virtual string QueueNameConfigPath => DefaultQueueNameConfigPath;
 
     public async Task SendMessageAsync(object obj)
     {
@@ -67,11 +78,14 @@ public class RabbitMqProducerService : IRabbitMqProducerService, IDisposable
     {
         ArgumentNullException.ThrowIfNull(message, nameof(message));
 
-        _logger.LogInformation("Trying to connect to RabbitMQ");
+        Logger.LogInformation("Trying to connect to RabbitMQ");
+
+        string hostName = GetHostName();
+        string queueName = GetQueueName();
 
         var factory = new ConnectionFactory()
         {
-            HostName = _hostName,
+            HostName = hostName,
             UserName = new NetworkCredential(string.Empty, _userName).Password,
             Password = new NetworkCredential(string.Empty, _password).Password
         };
@@ -85,7 +99,7 @@ public class RabbitMqProducerService : IRabbitMqProducerService, IDisposable
             .ConfigureAwait(false);
 
         Task<QueueDeclareOk> queueDeclareTask = channel.QueueDeclareAsync(
-            queue: _queueName,
+            queue: queueName,
             durable: false,
             exclusive: false,
             autoDelete: false,
@@ -93,17 +107,17 @@ public class RabbitMqProducerService : IRabbitMqProducerService, IDisposable
 
         _ = await queueDeclareTask.ConfigureAwait(false);
 
-        _logger.LogInformation("Connection to RabbitMQ established");
+        Logger.LogInformation("Connection to RabbitMQ established");
 
         byte[] body = Encoding.UTF8.GetBytes(message);
 
-        _logger.LogInformation("Trying to send message to RabbitMQ: {Message}", message);
+        Logger.LogInformation("Trying to send message to RabbitMQ: {Message}", message);
 
         await channel
-            .BasicPublishAsync(string.Empty, _queueName, body)
+            .BasicPublishAsync(string.Empty, queueName, body)
             .ConfigureAwait(false);
 
-        _logger.LogInformation("Message to RabbitMQ was sent");
+        Logger.LogInformation("Message to RabbitMQ was sent");
     }
 
     public void Dispose()
@@ -124,5 +138,17 @@ public class RabbitMqProducerService : IRabbitMqProducerService, IDisposable
 
             _isDisposed = true;
         }
+    }
+
+    private string GetHostName()
+    {
+        return Configuration.GetSection(HostNameConfigPath).Value
+            ?? throw new ConfigurationException("Host name for RabbitMQ not specified");
+    }
+
+    private string GetQueueName()
+    {
+        return Configuration.GetSection(QueueNameConfigPath).Value
+            ?? throw new ConfigurationException("Queue name for RabbitMQ not specified");
     }
 }

@@ -12,15 +12,20 @@ using RabbitMQ.Client.Events;
 using Ypdf.Web.Domain.Infrastructure.Extensions;
 using Ypdf.Web.Domain.Models.Configuration;
 
-namespace Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Services;
+namespace Ypdf.Web.Domain.Infrastructure.Connections;
 
 public abstract class RabbitMqConsumer : BackgroundService
 {
-    private readonly string _hostName;
-    private readonly string _queueName;
+    private const string DefaultHostNameConfigPath = "RabbitMQ:HostName";
+    private const string DefaultQueueNameConfigPath = "RabbitMQ:QueueName";
+    private const string DefaultUserNameConfigPath = "RabbitMQ:UserName";
+    private const string DefaultPasswordConfigPath = "RabbitMQ:Password";
 
-    private readonly SecureString? _userName;
-    private readonly SecureString? _password;
+    private string? _hostName;
+    private string? _queueName;
+
+    private SecureString? _userName;
+    private SecureString? _password;
 
     private IConnection? _connection;
     private IChannel? _channel;
@@ -34,58 +39,30 @@ public abstract class RabbitMqConsumer : BackgroundService
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
 
+        Configuration = configuration;
         Logger = logger;
-
-        _hostName = configuration.GetSection("RabbitMQ:HostName").Value
-            ?? throw new ConfigurationException("Host name for RabbitMQ not specified");
-
-        _queueName = configuration.GetSection("RabbitMQ:QueueName").Value
-            ?? throw new ConfigurationException("Queue name for RabbitMQ not specified");
-
-        _userName = new SecureString();
-        _password = new SecureString();
-
-        _userName.Enrich(
-            configuration["RabbitMQ:UserName"]
-                ?? throw new ConfigurationException("User name for RabbitMQ not specified"));
-
-        _password.Enrich(
-            configuration["RabbitMQ:Password"]
-                ?? throw new ConfigurationException("Password for RabbitMQ user not specified"));
     }
 
+    protected IConfiguration Configuration { get; }
     protected ILogger<RabbitMqConsumer> Logger { get; }
+
+    protected virtual string HostNameConfigPath => DefaultHostNameConfigPath;
+    protected virtual string QueueNameConfigPath => DefaultQueueNameConfigPath;
+    protected virtual string UserNameConfigPath => DefaultUserNameConfigPath;
+    protected virtual string PasswordConfigPath => DefaultPasswordConfigPath;
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(cancellationToken, nameof(cancellationToken));
-
         Logger.LogInformation("Trying to connect to RabbitMQ");
 
-        var factory = new ConnectionFactory()
-        {
-            HostName = _hostName,
-            UserName = new NetworkCredential(string.Empty, _userName).Password,
-            Password = new NetworkCredential(string.Empty, _password).Password
-        };
+        InitNames();
+        InitCredentials();
 
-        _connection = await factory
-            .CreateConnectionAsync(cancellationToken: cancellationToken)
+        await InitConnectionAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        _channel = await _connection
-            .CreateChannelAsync(cancellationToken: cancellationToken)
+        await InitQueueAsync(cancellationToken)
             .ConfigureAwait(false);
-
-        Task<QueueDeclareOk> queueDeclareTask = _channel.QueueDeclareAsync(
-            queue: _queueName,
-            durable: false,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null,
-            cancellationToken: cancellationToken);
-
-        await queueDeclareTask.ConfigureAwait(false);
 
         Logger.LogInformation("Connection to RabbitMQ established");
 
@@ -96,8 +73,6 @@ public abstract class RabbitMqConsumer : BackgroundService
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(cancellationToken, nameof(cancellationToken));
-
         if (_channel is not null)
         {
             await _channel
@@ -163,13 +138,14 @@ public abstract class RabbitMqConsumer : BackgroundService
 
             Logger.LogInformation("Recieved content from RabbitMQ: {Content}", content);
 
-            SaveRecievedData(content);
+            await SaveRecievedDataAsync(content)
+                .ConfigureAwait(false);
 
             await _channel.BasicAckAsync(e.DeliveryTag, false).ConfigureAwait(false);
         };
 
         Task<string> consumeTask = _channel.BasicConsumeAsync(
-            queue: _queueName,
+            queue: _queueName!,
             autoAck: false,
             consumer: consumer,
             cancellationToken: stoppingToken);
@@ -179,5 +155,57 @@ public abstract class RabbitMqConsumer : BackgroundService
         _ = await consumeTask.ConfigureAwait(false);
     }
 
-    protected abstract void SaveRecievedData(string content);
+    protected abstract Task SaveRecievedDataAsync(string content);
+
+    private void InitNames()
+    {
+        _hostName = Configuration.GetSection(HostNameConfigPath).Value
+            ?? throw new ConfigurationException("Host name for RabbitMQ not specified");
+
+        _queueName = Configuration.GetSection(QueueNameConfigPath).Value
+            ?? throw new ConfigurationException("Queue name for RabbitMQ not specified");
+    }
+
+    private void InitCredentials()
+    {
+        _userName = new SecureString();
+        _password = new SecureString();
+
+        _userName.Enrich(Configuration[UserNameConfigPath]
+            ?? throw new ConfigurationException("User name for RabbitMQ not specified"));
+
+        _password.Enrich(Configuration[PasswordConfigPath]
+            ?? throw new ConfigurationException("Password for RabbitMQ user not specified"));
+    }
+
+    private async Task InitConnectionAsync(CancellationToken cancellationToken)
+    {
+        var factory = new ConnectionFactory()
+        {
+            HostName = _hostName!,
+            UserName = new NetworkCredential(string.Empty, _userName).Password,
+            Password = new NetworkCredential(string.Empty, _password).Password
+        };
+
+        _connection = await factory
+            .CreateConnectionAsync(cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        _channel = await _connection
+            .CreateChannelAsync(cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private async Task InitQueueAsync(CancellationToken cancellationToken)
+    {
+        Task<QueueDeclareOk> queueDeclareTask = _channel!.QueueDeclareAsync(
+            queue: _queueName!,
+            durable: false,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null,
+            cancellationToken: cancellationToken);
+
+        await queueDeclareTask.ConfigureAwait(false);
+    }
 }

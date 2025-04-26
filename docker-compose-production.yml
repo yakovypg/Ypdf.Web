@@ -46,6 +46,7 @@ services:
     volumes:
       - ./Certificates:/https
       - output_files:/output
+      - intput_files:/input
 
   pdf_operations_history_api:
     build:
@@ -101,3 +102,4 @@ services:
 volumes:
   db_data:
   output_files:
+  intput_files:

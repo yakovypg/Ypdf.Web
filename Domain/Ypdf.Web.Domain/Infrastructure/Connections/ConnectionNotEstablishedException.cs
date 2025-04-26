@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Services;
+namespace Ypdf.Web.Domain.Infrastructure.Connections;
 
 [Serializable]
 public class ConnectionNotEstablishedException : Exception

@@ -2,51 +2,43 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Informing;
-using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
+using Ypdf.Web.FilesAPI.Infrastructure.Connections;
 using Ypdf.Web.PdfProcessingAPI.Infrastructure.Timing;
-using Ypdf.Web.PdfProcessingAPI.Models.Requests;
+using Ypdf.Web.PdfProcessingAPI.Tools;
 
 namespace Ypdf.Web.PdfProcessingAPI.Commands;
 
-public class SplitCommand : BasePdfCommand<SplitRequest>
+public class SplitCommand : BasePdfCommand
 {
     public SplitCommand(
-        ISubscriptionInfoService subscriptionInfoService,
-        IOutputFilePathService outputFilePathService,
-        IRabbitMqProducerService rabbitMqSenderService,
-        IConfiguration configuration,
+        PdfOperationResultRabbitMqProducer rabbitMqProducer,
         IMapper mapper,
         ILogger<BaseCommand> logger)
         : base(
-            nameof(SplitCommand),
             PdfOperationType.Split,
-            subscriptionInfoService ?? throw new ArgumentNullException(nameof(subscriptionInfoService)),
-            outputFilePathService ?? throw new ArgumentNullException(nameof(outputFilePathService)),
-            rabbitMqSenderService ?? throw new ArgumentNullException(nameof(rabbitMqSenderService)),
-            configuration ?? throw new ArgumentNullException(nameof(configuration)),
+            rabbitMqProducer ?? throw new ArgumentNullException(nameof(rabbitMqProducer)),
             mapper ?? throw new ArgumentNullException(nameof(mapper)),
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
     }
 
     protected override Task<(DateTimeOffset OperationStart, DateTimeOffset OperationEnd)> GetCommandTask(
-        SplitRequest request,
-        string outputFilePath)
+        PdfOperationData pdfOperationData)
     {
-        ArgumentNullException.ThrowIfNull(request, nameof(request));
-        ArgumentException.ThrowIfNullOrWhiteSpace(outputFilePath, nameof(outputFilePath));
+        ArgumentNullException.ThrowIfNull(pdfOperationData, nameof(pdfOperationData));
 
-        ValidateRequestParameters(request);
+        string inputFilePath = pdfOperationData.InputFilePaths.First();
 
         return TimedInvoke.InvokeAsync(() =>
         {
-            return System.IO.File.WriteAllBytesAsync(
-                outputFilePath,
-                request.File!.ToArray());
+            return Task.Run(() =>
+            {
+                var splitTool = new SplitTool(["1-1"]);
+                splitTool.Execute(inputFilePath, pdfOperationData.OutputFilePath);
+            });
         });
     }
 }

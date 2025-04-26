@@ -1,52 +1,41 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Informing;
-using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
+using Ypdf.Web.FilesAPI.Infrastructure.Connections;
 using Ypdf.Web.PdfProcessingAPI.Infrastructure.Timing;
-using Ypdf.Web.PdfProcessingAPI.Models.Requests;
+using Ypdf.Web.PdfProcessingAPI.Tools;
 
 namespace Ypdf.Web.PdfProcessingAPI.Commands;
 
-public class MergeCommand : BasePdfCommand<MergeRequest>
+public class MergeCommand : BasePdfCommand
 {
     public MergeCommand(
-        ISubscriptionInfoService subscriptionInfoService,
-        IOutputFilePathService outputFilePathService,
-        IRabbitMqProducerService rabbitMqSenderService,
-        IConfiguration configuration,
+        PdfOperationResultRabbitMqProducer rabbitMqProducer,
         IMapper mapper,
         ILogger<BaseCommand> logger)
         : base(
-            nameof(MergeCommand),
             PdfOperationType.Merge,
-            subscriptionInfoService ?? throw new ArgumentNullException(nameof(subscriptionInfoService)),
-            outputFilePathService ?? throw new ArgumentNullException(nameof(outputFilePathService)),
-            rabbitMqSenderService ?? throw new ArgumentNullException(nameof(rabbitMqSenderService)),
-            configuration ?? throw new ArgumentNullException(nameof(configuration)),
+            rabbitMqProducer ?? throw new ArgumentNullException(nameof(rabbitMqProducer)),
             mapper ?? throw new ArgumentNullException(nameof(mapper)),
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
     }
 
     protected override Task<(DateTimeOffset OperationStart, DateTimeOffset OperationEnd)> GetCommandTask(
-        MergeRequest request,
-        string outputFilePath)
+        PdfOperationData pdfOperationData)
     {
-        ArgumentNullException.ThrowIfNull(request, nameof(request));
-        ArgumentException.ThrowIfNullOrWhiteSpace(outputFilePath, nameof(outputFilePath));
-
-        ValidateRequestParameters(request);
+        ArgumentNullException.ThrowIfNull(pdfOperationData, nameof(pdfOperationData));
 
         return TimedInvoke.InvokeAsync(() =>
         {
-            return System.IO.File.WriteAllBytesAsync(
-                outputFilePath,
-                request.File!.ToArray());
+            return Task.Run(() =>
+            {
+                var mergeTool = new MergeTool();
+                mergeTool.Execute(pdfOperationData.InputFilePaths, pdfOperationData.OutputFilePath);
+            });
         });
     }
 }

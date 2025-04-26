@@ -2,10 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -13,15 +10,10 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Handlers;
-using Ypdf.Web.Domain.Models.Configuration;
+using Ypdf.Web.FilesAPI.Infrastructure.Connections;
 using Ypdf.Web.PdfProcessingAPI.Commands;
-using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
-using Ypdf.Web.PdfProcessingAPI.Models.Requests;
-using Ypdf.Web.PdfProcessingAPI.Models.Responses;
 
 namespace Ypdf.Web.PdfProcessingAPI.Infrastructure.Extensions;
 
@@ -34,46 +26,6 @@ public static class StartupExtensions
 
     private const string ApiVersion = "v1";
     private const string ApiTitle = "Ypdf API";
-
-    public static AuthenticationBuilder AddAuthentication(
-        this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        ArgumentNullException.ThrowIfNull(services, nameof(services));
-        ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
-
-        AuthenticationBuilder builder = services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        });
-
-        string issuer = configuration["Jwt:Issuer"]
-            ?? throw new ConfigurationException("Issuer for Jwt not specified");
-
-        string audience = configuration["Jwt:Audience"]
-            ?? throw new ConfigurationException("Audience for Jwt not specified");
-
-        string key = configuration["Jwt:Key"]
-            ?? throw new ConfigurationException("Key for Jwt not specified");
-
-        byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-        var issuerSigningKey = new SymmetricSecurityKey(keyBytes);
-
-        return builder.AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters()
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = issuer,
-                ValidAudience = audience,
-                IssuerSigningKey = issuerSigningKey
-            };
-        });
-    }
 
     public static IServiceCollection AddMapper(this IServiceCollection services)
     {
@@ -95,19 +47,17 @@ public static class StartupExtensions
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
         return services
-            .AddScoped<ICommand<GetOutputFileRequest, GetOutputFileResponse>, GetOutputFileCommand>()
-            .AddScoped<IProtectedCommand<MergeRequest, PdfOperationResponse>, MergeCommand>()
-            .AddScoped<IProtectedCommand<SplitRequest, PdfOperationResponse>, SplitCommand>();
+            .AddScoped<MergeCommand>()
+            .AddScoped<SplitCommand>();
     }
 
-    public static IServiceCollection AddServices(this IServiceCollection services)
+    public static IServiceCollection AddRabbitMq(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
         return services
-            .AddScoped<IOutputFilePathService, OutputFilePathService>()
-            .AddScoped<IRabbitMqProducerService, RabbitMqProducerService>()
-            .AddScoped<ISubscriptionInfoService, SubscriptionInfoService>();
+            .AddScoped<PdfOperationResultRabbitMqProducer>()
+            .AddHostedService<SavedFileRabbitMqConsumer>();
     }
 
     public static IServiceCollection AddApiVersioning(this IServiceCollection services, IConfiguration configuration)

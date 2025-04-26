@@ -35,8 +35,6 @@ public class Startup
 
         _ = application
             .UseRouting()
-            .UseAuthentication()
-            .UseAuthorization()
             .UseHttpsRedirection()
             .UseExceptionHandler(logger)
             .UseEndpoints(endpoints => { endpoints.MapControllers(); })
@@ -52,18 +50,12 @@ public class Startup
             .AddControllers();
 
         _ = services
-            .AddServices()
+            .AddRabbitMq()
             .AddCommands()
             .AddMapper()
             .AddApiVersioning(Configuration)
             .AddSwaggerGen()
             .ConfigureEndpoints();
-
-        _ = services
-            .AddAuthentication(Configuration);
-
-        _ = services
-            .AddAuthorization();
 
         _ = services
             .AddControllersWithViews()

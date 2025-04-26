@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 
-namespace Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
+namespace Ypdf.Web.Domain.Infrastructure.Connections;
 
-public interface IRabbitMqProducerService
+public interface IRabbitMqProducer
 {
     Task SendMessageAsync(object obj);
     Task SendMessageAsync(string message);

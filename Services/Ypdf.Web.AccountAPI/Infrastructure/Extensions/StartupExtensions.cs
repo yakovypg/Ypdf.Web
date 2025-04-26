@@ -171,6 +171,7 @@ public static class StartupExtensions
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
         return services
+            .AddScoped<ICommand<AddSubscriptionRequest, AddSubscriptionResponse>, AddSubscriptionCommand>()
             .AddScoped<ICommand<RegisterUserRequest, RegisterUserResponse>, RegisterUserCommand>()
             .AddScoped<ICommand<LoginRequest, LoginResponse>, LoginCommand>();
     }
@@ -239,6 +240,28 @@ public static class StartupExtensions
         return services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc(ApiVersion, apiInfo);
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Description = "Enter **Bearer {TOKEN}** to access this API",
+                Type = SecuritySchemeType.ApiKey,
+                In = ParameterLocation.Header
+            });
+
+            var openApiSecurityScheme = new OpenApiSecurityScheme()
+            {
+                Reference = new OpenApiReference()
+                {
+                    Id = "Bearer",
+                    Type = ReferenceType.SecurityScheme
+                }
+            };
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+            {
+                { openApiSecurityScheme, Array.Empty<string>() }
+            });
 
             // options.IncludeXmlComments(assemblyXmlPath);
         });

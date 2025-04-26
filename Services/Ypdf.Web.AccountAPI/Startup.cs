@@ -67,6 +67,7 @@ public class Startup
 
         _ = services.AddIdentity(passwordRequirements);
         _ = services.AddAuthentication(Configuration);
+        _ = services.AddAuthorization();
 
         _ = services
             .AddControllersWithViews()

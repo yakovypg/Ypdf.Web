@@ -22,11 +22,11 @@ services:
     volumes:
       - ./Certificates:/https
 
-  pdf_processing_api:
+  files_api:
     build:
       context: .
-      dockerfile: ./Services/Ypdf.Web.PdfProcessingAPI/Dockerfile
-    container_name: PdfProcessingAPI
+      dockerfile: ./Services/Ypdf.Web.FilesAPI/Dockerfile
+    container_name: FilesAPI
     depends_on:
       - rabbitmq
     expose:
@@ -73,6 +73,32 @@ services:
       - ./Certificates:/https
       - db_data:/db
 
+  pdf_processing_api:
+    build:
+      context: .
+      dockerfile: ./Services/Ypdf.Web.PdfProcessingAPI/Dockerfile
+    container_name: PdfProcessingAPI
+    depends_on:
+      - rabbitmq
+    expose:
+      - 8084
+    ports:
+      - 8084:443
+    restart: on-failure
+    environment:
+      ASPNETCORE_URLS: https://+;http://+
+      ASPNETCORE_ENVIRONMENT: Production
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: Ypdf
+      RABBITMQ_PASSWORD: Ypdf2025
+      ASPNETCORE_HTTPS_PORT: 8084
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
+    volumes:
+      - ./Certificates:/https
+      - output_files:/output
+      - intput_files:/input
+
   accounts_database:
     image: postgis/postgis:13-master
     container_name: AccountsDbPostgres
@@ -91,9 +117,12 @@ services:
   rabbitmq:
     image: rabbitmq:management
     container_name: RabbitMQ
+    expose:
+      - 5672
+      - 15672
     ports:
-      - "5672:5672"   # RabbitMQ port
-      - "15672:15672" # RabbitMQ management UI
+      - 5672:5672   # RabbitMQ port
+      - 15672:15672 # RabbitMQ management UI
     restart: on-failure
     environment:
       RABBITMQ_DEFAULT_USER: Ypdf

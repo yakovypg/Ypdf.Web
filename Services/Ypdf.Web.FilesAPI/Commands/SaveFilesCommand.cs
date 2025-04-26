@@ -141,7 +141,7 @@ public class SaveFilesCommand : BaseCommand, IProtectedCommand<SaveFilesRequest,
     {
         ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
 
-        if (!userClaims.Get(NetCoreIdentityClaimNames.Sub, out int userId))
+        if (!userClaims.Get(ClaimTypes.NameIdentifier, out int userId))
         {
             Logger.LogWarning(
                 "Cannot get user id from claims: {UserClaims}",

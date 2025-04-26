@@ -60,7 +60,7 @@ public class GetHistoryCommand : BaseCommand, IProtectedCommand<GetHistoryReques
         ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
 
         bool allowed = userClaims.VerifyAccess(
-            NetCoreIdentityClaimNames.Sub,
+            ClaimTypes.NameIdentifier,
             pdfOperationResultUserId);
 
         if (!allowed)

@@ -5,6 +5,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -15,20 +17,25 @@ namespace Ypdf.Web.AccoutAPI.Infrastructure.Services.Authentication;
 
 public class TokenGenerationService : ITokenGenerationService
 {
+    private readonly UserManager<User> _userManager;
     private readonly IConfiguration _configuration;
     private readonly ILogger<TokenGenerationService> _logger;
 
     public TokenGenerationService(
+        UserManager<User> userManager,
         IConfiguration configuration,
         ILogger<TokenGenerationService> logger)
     {
+        ArgumentNullException.ThrowIfNull(userManager, nameof(userManager));
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
+        ArgumentNullException.ThrowIfNull(logger, nameof(logger));
 
+        _userManager = userManager;
         _configuration = configuration;
         _logger = logger;
     }
 
-    public string Generate(User user)
+    public async Task<string> GenerateAsync(User user)
     {
         ArgumentNullException.ThrowIfNull(user, nameof(user));
 
@@ -43,7 +50,8 @@ public class TokenGenerationService : ITokenGenerationService
         string key = ExtractKeyFromConfiguration();
         SigningCredentials signingCredentials = CreateSigningCredentials(key);
 
-        IEnumerable<Claim> claims = CreateClaims(user);
+        IEnumerable<Claim> claims = await CreateClaimsAsync(user)
+            .ConfigureAwait(false);
 
         var jwtSecurityToken = new JwtSecurityToken(
             issuer: issuer,
@@ -70,7 +78,37 @@ public class TokenGenerationService : ITokenGenerationService
         return new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
     }
 
-    private List<Claim> CreateClaims(User user)
+    private static void AddSubscriptionClaim(User user, List<Claim> claims)
+    {
+        ArgumentNullException.ThrowIfNull(user, nameof(user));
+        ArgumentNullException.ThrowIfNull(claims, nameof(claims));
+
+        if (user.UserSubscription is null)
+            return;
+
+        string subscription = user.UserSubscription.Subscription.SubscriptionType.ToString();
+        var subscriptionClaim = new Claim(JwtCustomClaimNames.Subscription, subscription);
+
+        claims.Add(subscriptionClaim);
+    }
+
+    private async Task AddRoleClaimsAsync(User user, List<Claim> claims)
+    {
+        ArgumentNullException.ThrowIfNull(user, nameof(user));
+        ArgumentNullException.ThrowIfNull(claims, nameof(claims));
+
+        IList<string> roles = await _userManager
+            .GetRolesAsync(user)
+            .ConfigureAwait(false);
+
+        foreach (string role in roles)
+        {
+            var claim = new Claim(ClaimTypes.Role, role);
+            claims.Add(claim);
+        }
+    }
+
+    private async Task<List<Claim>> CreateClaimsAsync(User user)
     {
         ArgumentNullException.ThrowIfNull(user, nameof(user));
 
@@ -81,19 +119,16 @@ public class TokenGenerationService : ITokenGenerationService
 
         List<Claim> claims =
         [
-            new(JwtRegisteredClaimNames.Sub, id),
-            new(JwtRegisteredClaimNames.Email, email),
-            new(JwtRegisteredClaimNames.Name, nickname),
+            new(ClaimTypes.NameIdentifier, id),
+            new(ClaimTypes.Email, email),
+            new(ClaimTypes.Name, nickname),
             new(JwtRegisteredClaimNames.Jti, jti)
         ];
 
-        if (user.UserSubscription is not null)
-        {
-            string subscription = user.UserSubscription.Subscription.SubscriptionType.ToString();
-            var subscriptionClaim = new Claim(JwtCustomClaimNames.Subscription, subscription);
+        AddSubscriptionClaim(user, claims);
 
-            claims.Add(subscriptionClaim);
-        }
+        await AddRoleClaimsAsync(user, claims)
+            .ConfigureAwait(false);
 
         _logger.LogInformation(
             "Token will contain the following claims: {Claims}",

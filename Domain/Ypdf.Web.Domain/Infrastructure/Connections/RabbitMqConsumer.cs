@@ -2,7 +2,6 @@ using System;
 using System.Net;
 using System.Security;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -12,16 +11,11 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Ypdf.Web.Domain.Infrastructure.Extensions;
 using Ypdf.Web.Domain.Models.Configuration;
-using Ypdf.Web.Domain.Models.Informing;
-using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Data.Repositories;
 
 namespace Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Services;
 
-public class RabbitMqConsumer : BackgroundService
+public abstract class RabbitMqConsumer : BackgroundService
 {
-    private readonly IPdfOperationResultRepository _pdfOperationResultRepository;
-    private readonly ILogger<RabbitMqConsumer> _logger;
-
     private readonly string _hostName;
     private readonly string _queueName;
 
@@ -33,17 +27,14 @@ public class RabbitMqConsumer : BackgroundService
 
     private bool _isDisposed;
 
-    public RabbitMqConsumer(
-        IPdfOperationResultRepository pdfOperationResultRepository,
+    protected RabbitMqConsumer(
         IConfiguration configuration,
         ILogger<RabbitMqConsumer> logger)
     {
-        ArgumentNullException.ThrowIfNull(pdfOperationResultRepository, nameof(pdfOperationResultRepository));
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
 
-        _pdfOperationResultRepository = pdfOperationResultRepository;
-        _logger = logger;
+        Logger = logger;
 
         _hostName = configuration.GetSection("RabbitMQ:HostName").Value
             ?? throw new ConfigurationException("Host name for RabbitMQ not specified");
@@ -63,11 +54,13 @@ public class RabbitMqConsumer : BackgroundService
                 ?? throw new ConfigurationException("Password for RabbitMQ user not specified"));
     }
 
+    protected ILogger<RabbitMqConsumer> Logger { get; }
+
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(cancellationToken, nameof(cancellationToken));
 
-        _logger.LogInformation("Trying to connect to RabbitMQ");
+        Logger.LogInformation("Trying to connect to RabbitMQ");
 
         var factory = new ConnectionFactory()
         {
@@ -94,7 +87,7 @@ public class RabbitMqConsumer : BackgroundService
 
         await queueDeclareTask.ConfigureAwait(false);
 
-        _logger.LogInformation("Connection to RabbitMQ established");
+        Logger.LogInformation("Connection to RabbitMQ established");
 
         await base
             .StartAsync(cancellationToken)
@@ -159,7 +152,7 @@ public class RabbitMqConsumer : BackgroundService
         if (_channel is null)
             throw new ConnectionNotEstablishedException("Connection with RabbitMQ not established");
 
-        _logger.LogInformation("Trying to start listening RabbitMQ");
+        Logger.LogInformation("Trying to start listening RabbitMQ");
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
 
@@ -168,7 +161,7 @@ public class RabbitMqConsumer : BackgroundService
             byte[] body = e.Body.ToArray();
             string content = Encoding.UTF8.GetString(body);
 
-            _logger.LogInformation("Recieved content from RabbitMQ: {Content}", content);
+            Logger.LogInformation("Recieved content from RabbitMQ: {Content}", content);
 
             SaveRecievedData(content);
 
@@ -181,32 +174,10 @@ public class RabbitMqConsumer : BackgroundService
             consumer: consumer,
             cancellationToken: stoppingToken);
 
-        _logger.LogInformation("RabbitMQ consume task created");
+        Logger.LogInformation("RabbitMQ consume task created");
 
         _ = await consumeTask.ConfigureAwait(false);
     }
 
-    private void SaveRecievedData(string content)
-    {
-        ArgumentNullException.ThrowIfNull(content, nameof(content));
-
-        try
-        {
-            _logger.LogInformation("Trying to deserialize recieved data: {Content}", content);
-
-            PdfOperationResult result = JsonSerializer.Deserialize<PdfOperationResult>(content)
-                ?? throw new InvalidOperationException();
-
-            _logger.LogInformation("Recieved data successfully deserialized");
-            _logger.LogInformation("Trying to save deserialized data");
-
-            _pdfOperationResultRepository.Add(result);
-
-            _logger.LogInformation("Deserialized data successfully saved");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Failed to save recieved data. Exception: {@Exception}", ex);
-        }
-    }
+    protected abstract void SaveRecievedData(string content);
 }

@@ -102,7 +102,7 @@ public static class StartupExtensions
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
-        return services.AddHostedService<RabbitMqConsumer>();
+        return services.AddHostedService<RabbitMqConsumerService>();
     }
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)

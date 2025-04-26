@@ -1,61 +1,227 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Ypdf.Web.AccoutAPI.Models;
 
 namespace Ypdf.Web.AccoutAPI.Infrastructure.Data;
 
-public static class AccountsDatabaseInitializer
+public class AccountsDatabaseInitializer
 {
-    public static void InitializeDatabase(IServiceProvider provider)
+    private readonly AccountsDbContext _accountsDbContext;
+    private readonly UserManager<User> _userManager;
+    private readonly RoleManager<IdentityRole<int>> _roleManager;
+
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<AccountsDatabaseInitializer> _logger;
+
+    public AccountsDatabaseInitializer(IServiceProvider serviceProvider)
     {
-        ArgumentNullException.ThrowIfNull(provider, nameof(provider));
+        ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
 
-        AccountsDbContext accountsDbContext = provider.GetRequiredService<AccountsDbContext>();
+        _accountsDbContext = serviceProvider.GetRequiredService<AccountsDbContext>();
+        _userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+        _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
 
-        ApplyMigrations(accountsDbContext);
-        AddInitialData(accountsDbContext);
+        _configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        _logger = serviceProvider.GetRequiredService<ILogger<AccountsDatabaseInitializer>>();
     }
 
-    private static void ApplyMigrations(AccountsDbContext context)
+    public async Task InitializeDatabaseAsync()
     {
-        ArgumentNullException.ThrowIfNull(context, nameof(context));
+        _logger.LogInformation("Start database initialization");
 
-        context.Database.Migrate();
+        ApplyMigrations();
 
-        IEnumerable<string> pendingMigrations = context.Database.GetPendingMigrations();
-        IMigrator migrator = context.GetService<IMigrator>();
+        await AddInitialDataAsync()
+            .ConfigureAwait(false);
+
+        _logger.LogInformation("Database initialized");
+    }
+
+    private void ApplyMigrations()
+    {
+        _logger.LogInformation("Start applying migrations");
+
+        _accountsDbContext.Database.Migrate();
+
+        IEnumerable<string> pendingMigrations = _accountsDbContext.Database.GetPendingMigrations();
+        IMigrator migrator = _accountsDbContext.GetService<IMigrator>();
 
         foreach (string migration in pendingMigrations)
         {
+            _logger.LogInformation("Trying apply migration {Migration}", migration);
             migrator.Migrate(migration);
+            _logger.LogInformation("Migration {Migration} applied", migration);
         }
+
+        _logger.LogInformation("Migrations applied");
     }
 
-    private static void AddInitialData(AccountsDbContext context)
+    private async Task AddInitialDataAsync()
     {
-        ArgumentNullException.ThrowIfNull(context, nameof(context));
-        AddInitialSubscriptions(context);
+        _logger.LogInformation("Start adding initial data");
+
+        await AddInitialSubscriptionsAsync()
+            .ConfigureAwait(false);
+
+        await AddInitialRolesAsync()
+            .ConfigureAwait(false);
+
+        await AddInitialUsersAsync()
+            .ConfigureAwait(false);
+
+        _logger.LogInformation("Initial data added");
     }
 
-    private static void AddInitialSubscriptions(AccountsDbContext context)
+    private async Task AddInitialSubscriptionsAsync()
     {
-        ArgumentNullException.ThrowIfNull(context, nameof(context));
+        _logger.LogInformation("Start adding initial subscriptions");
 
-        DbSet<Subscription> subscriptions = context.Set<Subscription>();
+        DbSet<Subscription> subscriptions = _accountsDbContext.Set<Subscription>();
 
         if (subscriptions.Any())
+        {
+            _logger.LogInformation("Initial subscriptions already added");
             return;
+        }
 
         foreach (Subscription subscription in AccountsDatabaseInitialData.Subscriptions)
         {
-            subscriptions.Add(subscription);
+            AddSubsciption(subscriptions, subscription);
         }
 
-        context.SaveChanges();
+        _logger.LogInformation("Trying to save changes");
+
+        await _accountsDbContext
+            .SaveChangesAsync()
+            .ConfigureAwait(false);
+
+        _logger.LogInformation("Changes saved");
+        _logger.LogInformation("Initial subscriptions added");
+    }
+
+    private void AddSubsciption(DbSet<Subscription> subscriptions, Subscription subscription)
+    {
+        ArgumentNullException.ThrowIfNull(subscriptions, nameof(subscriptions));
+        ArgumentNullException.ThrowIfNull(subscription, nameof(subscription));
+
+        _logger.LogInformation(
+            "Trying to add {Subscription} subscription",
+            subscription.SubscriptionType);
+
+        subscriptions.Add(subscription);
+
+        _logger.LogInformation(
+            "Subscription {Subscription} added",
+            subscription.SubscriptionType);
+    }
+
+    private async Task AddInitialRolesAsync()
+    {
+        _logger.LogInformation("Start adding initial roles");
+
+        string[] roles = Enum.GetNames<UserRole>();
+
+        foreach (string role in roles)
+        {
+            bool roleExists = await _roleManager
+                .RoleExistsAsync(role)
+                .ConfigureAwait(false);
+
+            if (roleExists)
+            {
+                _logger.LogInformation("Role {Role} already exists", role);
+                continue;
+            }
+
+            await AddRoleAsync(role)
+                .ConfigureAwait(false);
+        }
+
+        _logger.LogInformation("Initial roles added");
+    }
+
+    private async Task AddRoleAsync(string role)
+    {
+        ArgumentNullException.ThrowIfNull(role, nameof(role));
+
+        _logger.LogInformation("Trying to add {Role} role", role);
+
+        IdentityResult createRoleResult = await _roleManager
+            .CreateAsync(new IdentityRole<int>(role))
+            .ConfigureAwait(false);
+
+        _logger.LogInformation(
+            "Result of adding {Role} role: {@Result}",
+            role,
+            createRoleResult);
+    }
+
+    private async Task AddInitialUsersAsync()
+    {
+        _logger.LogInformation("Start adding initial users");
+
+        await AddAdminAsync()
+            .ConfigureAwait(false);
+
+        _logger.LogInformation("Initial users added");
+    }
+
+    private async Task AddAdminAsync()
+    {
+        (User user, UserRole role, string password) = AccountsDatabaseInitialData
+            .GetAdmin(_configuration);
+
+        await AddUserAsync(user, role, password)
+            .ConfigureAwait(false);
+    }
+
+    private async Task AddUserAsync(User user, UserRole role, string password)
+    {
+        ArgumentNullException.ThrowIfNull(user, nameof(user));
+        ArgumentNullException.ThrowIfNull(user.Email, nameof(user.Email));
+        ArgumentNullException.ThrowIfNull(password, nameof(password));
+
+        _logger.LogInformation("Trying to add user with email {Email}", user.Email);
+
+        User? foundUser = await _userManager
+            .FindByEmailAsync(user.Email)
+            .ConfigureAwait(false);
+
+        if (foundUser is not null)
+        {
+            _logger.LogInformation("User with email {Email} already exists", user.Email);
+            return;
+        }
+
+        IdentityResult createUserResult = await _userManager
+            .CreateAsync(user, password)
+            .ConfigureAwait(false);
+
+        _logger.LogInformation(
+            "Result of adding user with email {Email}: {@Result}",
+            user.Email,
+            createUserResult);
+
+        if (!createUserResult.Succeeded)
+            return;
+
+        IdentityResult addToRoleResult = await _userManager
+            .AddToRoleAsync(user, role.ToString())
+            .ConfigureAwait(false);
+
+        _logger.LogInformation(
+            "Result of adding role {Role} to user with email {Email}: {@Result}",
+            role,
+            user.Email,
+            addToRoleResult);
     }
 }

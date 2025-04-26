@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,9 +11,15 @@ IHostBuilder hostBuilder = CreateHostBuilder(args);
 IHost host = hostBuilder.Build();
 
 using IServiceScope scope = host.Services.CreateScope();
-AccountsDatabaseInitializer.InitializeDatabase(scope.ServiceProvider);
+var accountsDatabaseInitializer = new AccountsDatabaseInitializer(scope.ServiceProvider);
 
-host.Run();
+await accountsDatabaseInitializer
+    .InitializeDatabaseAsync()
+    .ConfigureAwait(false);
+
+await host
+    .RunAsync()
+    .ConfigureAwait(false);
 
 static IHostBuilder CreateHostBuilder(string[] args)
 {

@@ -1,15 +1,21 @@
 using System;
-using System.Collections.Generic;
 
 namespace Ypdf.Web.FilesAPI.Models.Responses;
 
 public class GetOutputFileResponse
 {
-    public GetOutputFileResponse(byte[] fileBytes)
+    public GetOutputFileResponse(string filePath, string fileContentType, string fileDownloadName)
     {
-        ArgumentNullException.ThrowIfNull(fileBytes, nameof(fileBytes));
-        FileBytes = fileBytes;
+        ArgumentException.ThrowIfNullOrWhiteSpace(filePath, nameof(filePath));
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileContentType, nameof(fileContentType));
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileDownloadName, nameof(fileDownloadName));
+
+        FilePath = filePath;
+        FileContentType = fileContentType;
+        FileDownloadName = fileDownloadName;
     }
 
-    public IReadOnlyCollection<byte> FileBytes { get; }
+    public string FilePath { get; }
+    public string FileContentType { get; }
+    public string FileDownloadName { get; }
 }

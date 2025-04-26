@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -16,12 +17,11 @@ public class OutputController : ControllerBase
 {
     [HttpGet("{name}")]
     [AllowAnonymous]
-    public async Task<ApiResponse<GetOutputFileResponse>> GetOutputFile(
+    public async Task<FileResult> GetOutputFile(
         string name,
         [FromServices] ICommand<GetOutputFileRequest, GetOutputFileResponse> getOutputFileCommand)
     {
-        if (getOutputFileCommand is null)
-            return new(null, HttpStatusCode.InternalServerError);
+        ArgumentNullException.ThrowIfNull(getOutputFileCommand, nameof(getOutputFileCommand));
 
         var request = new GetOutputFileRequest()
         {
@@ -32,7 +32,10 @@ public class OutputController : ControllerBase
             .ExecuteAsync(request)
             .ConfigureAwait(false);
 
-        return new(response, HttpStatusCode.OK);
+        return PhysicalFile(
+            response.FilePath,
+            response.FileContentType,
+            response.FileDownloadName);
     }
 
     [HttpGet("check/{name}")]

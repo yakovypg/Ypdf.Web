@@ -109,6 +109,7 @@ public static class StartupExtensions
         return services
             .AddScoped<InputFilePathService>()
             .AddScoped<OutputFilePathService>()
+            .AddScoped<IFileContentService, FileContentService>()
             .AddScoped<ISubscriptionInfoService, SubscriptionInfoService>();
     }
 

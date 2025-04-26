@@ -14,9 +14,11 @@ namespace Ypdf.Web.FilesAPI.Commands;
 public class GetOutputFileCommand : BaseCommand, ICommand<GetOutputFileRequest, GetOutputFileResponse>
 {
     private readonly OutputFilePathService _outputFilePathService;
+    private readonly IFileContentService _fileContentService;
 
     public GetOutputFileCommand(
         OutputFilePathService outputFilePathService,
+        IFileContentService fileContentService,
         IMapper mapper,
         ILogger<BaseCommand> logger)
         : base(
@@ -24,28 +26,28 @@ public class GetOutputFileCommand : BaseCommand, ICommand<GetOutputFileRequest, 
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
         ArgumentNullException.ThrowIfNull(outputFilePathService, nameof(outputFilePathService));
+        ArgumentNullException.ThrowIfNull(fileContentService, nameof(fileContentService));
+
         _outputFilePathService = outputFilePathService;
+        _fileContentService = fileContentService;
     }
 
-    public async Task<GetOutputFileResponse> ExecuteAsync(GetOutputFileRequest request)
+    public Task<GetOutputFileResponse> ExecuteAsync(GetOutputFileRequest request)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
         ValidateRequestParameters(request);
         Logger.LogInformation("Trying to get output file: {FileName}", request.FileName);
 
-        string outputFilePath = _outputFilePathService.GetFilePath(request.FileName!);
-        Logger.LogInformation("Output file path: {OutputFilePath}", outputFilePath);
+        string filePath = _outputFilePathService.GetFilePath(request.FileName!);
+        Logger.LogInformation("Output file path: {FilePath}", filePath);
 
-        ValidateFileExists(outputFilePath);
+        ValidateFileExists(filePath);
 
-        byte[] fileBytes = await File
-            .ReadAllBytesAsync(outputFilePath)
-            .ConfigureAwait(false);
+        string fileContentType = _fileContentService.GetContentType(filePath);
+        var response = new GetOutputFileResponse(filePath, fileContentType, request.FileName!);
 
-        Logger.LogInformation("Read {ReadBytesCount} bytes from file", fileBytes.Length);
-
-        return new GetOutputFileResponse(fileBytes);
+        return Task.FromResult(response);
     }
 
     private static void ValidateRequestParameters(GetOutputFileRequest request)

@@ -53,7 +53,7 @@ public class Startup
 
         _ = services
             .AddCommands()
-            .AddServices()
+            .AddRabbitMq()
             .AddRepositories()
             .AddMapper()
             .AddApiVersioning(Configuration)

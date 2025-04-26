@@ -19,8 +19,8 @@ using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Handlers;
 using Ypdf.Web.Domain.Models.Configuration;
 using Ypdf.Web.PdfOperationsHistoryAPI.Commands;
+using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Connections;
 using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Data.Repositories;
-using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Services;
 using Ypdf.Web.PdfOperationsHistoryAPI.Models.Requests;
 using Ypdf.Web.PdfOperationsHistoryAPI.Models.Responses;
 
@@ -99,10 +99,10 @@ public static class StartupExtensions
             .AddScoped<IProtectedCommand<GetHistoryRequest, GetHistoryResponse>, GetHistoryCommand>();
     }
 
-    public static IServiceCollection AddServices(this IServiceCollection services)
+    public static IServiceCollection AddRabbitMq(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
-        return services.AddHostedService<RabbitMqConsumerService>();
+        return services.AddHostedService<PdfOperationResultRabbitMqConsumer>();
     }
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)

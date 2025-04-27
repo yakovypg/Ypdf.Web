@@ -3,24 +3,121 @@
 
 <PageTitle>Profile</PageTitle>
 
-<h1>Profile</h1>
+<div class="container my-5">
+    <h2 class="text-center mb-4">Profile</h2>
 
-@if (!isProfileLoaded)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <p>Data loaded</p>
-}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-header">
+                    <h5>User Information</h5>
+                </div>
+                <div class="card-body">
+                    <i class="fas fa-user-circle fa-5x mb-3" style="color: #007bff;"></i>
+                    <h5 class="card-title">John Doe</h5>
+                    <p class="card-text">License Type: <strong>Premium</strong></p>
+                </div>
+            </div>
+        </div>
 
-@code
-{
-    private bool isProfileLoaded = false;
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h5>Operation History</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped" id="operationTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Operation</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Operations will be added here -->
+                        </tbody>
+                    </table>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <button id="prevButton" class="btn btn-secondary rounded-circle" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span class="mx-3" id="pageInfo">Page 1</span>
+                        <button id="nextButton" class="btn btn-secondary rounded-circle">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    protected override async Task OnInitializedAsync()
-    {
-        await Task.Delay(500);
-        isProfileLoaded = true;
-    }
-}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        const operations = [
+            { date: "2023-10-01", operation: "Merge", status: "Completed" },
+            { date: "2023-09-25", operation: "Split", status: "Completed" },
+            { date: "2023-09-20", operation: "Compress", status: "Failed" },
+            { date: "2023-09-15", operation: "Merge", status: "Completed" },
+            { date: "2023-09-10", operation: "Merge", status: "Completed" },
+            { date: "2023-09-05", operation: "Split", status: "Failed" },
+            { date: "2023-09-01", operation: "Images to PDF", status: "Completed" },
+            { date: "2023-08-25", operation: "Split", status: "Completed" },
+            { date: "2023-08-24", operation: "Split", status: "Completed" },
+            { date: "2023-08-20", operation: "Compress", status: "Completed" },
+            { date: "2023-08-19", operation: "Merge", status: "Completed" },
+            { date: "2023-08-17", operation: "Merge", status: "Completed" },
+            { date: "2023-08-17", operation: "Compress", status: "Completed" },
+            { date: "2023-08-16", operation: "Compress", status: "Completed" },
+            { date: "2023-08-15", operation: "Images to PDF", status: "Completed" },
+            { date: "2023-08-14", operation: "Split", status: "Completed" },
+            { date: "2023-08-14", operation: "Images to PDF", status: "Completed" },
+        ];
+
+        const recordsPerPage = 7;
+        let currentPage = 1;
+
+        function displayRecords() {
+            const startIndex = (currentPage - 1) * recordsPerPage;
+            const endIndex = startIndex + recordsPerPage;
+            const paginatedOperations = operations.slice(startIndex, endIndex);
+
+            $('#operationTable tbody').empty();
+            paginatedOperations.forEach(op => {
+                $('#operationTable tbody').append(`
+                    <tr>
+                        <td>${op.date}</td>
+                        <td>${op.operation}</td>
+                        <td>${op.status}</td>
+                    </tr>
+                `);
+            });
+
+            // Обновление информации о текущей странице
+            $('#pageInfo').text(`Page ${currentPage}`);
+
+            // Включение/выключение кнопок в зависимости от текущей страницы
+            $('#prevButton').prop('disabled', currentPage === 1);
+            $('#nextButton').prop('disabled', endIndex >= operations.length);
+        }
+
+        $('#prevButton').on('click', function () {
+            if (currentPage > 1) {
+                currentPage--;
+                displayRecords();
+            }
+        });
+
+        $('#nextButton').on('click', function () {
+            if ((currentPage * recordsPerPage) < operations.length) {
+                currentPage++;
+                displayRecords();
+            }
+        });
+
+        // Первоначальный вывод
+        displayRecords();
+    });
+</script>

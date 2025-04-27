@@ -1,0 +1,9 @@
+.developer-name {
+    font-weight: 600;
+    line-height: 0.5em;
+}
+
+.developer-role {
+    color: gray;
+    line-height: 0.5em;
+}

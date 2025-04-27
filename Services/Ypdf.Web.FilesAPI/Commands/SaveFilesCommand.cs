@@ -128,6 +128,8 @@ public class SaveFilesCommand : BaseCommand, IProtectedCommand<SaveFilesRequest,
     {
         string extension = operationType switch
         {
+            PdfOperationType.Split => "zip",
+
             _ => "pdf"
         };
 

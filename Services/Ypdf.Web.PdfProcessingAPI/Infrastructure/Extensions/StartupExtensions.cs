@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using Ypdf.Web.Domain.Infrastructure.Handlers;
 using Ypdf.Web.FilesAPI.Infrastructure.Connections;
 using Ypdf.Web.PdfProcessingAPI.Commands;
+using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
 
 namespace Ypdf.Web.PdfProcessingAPI.Infrastructure.Extensions;
 
@@ -49,6 +50,12 @@ public static class StartupExtensions
         return services
             .AddScoped<MergeCommand>()
             .AddScoped<SplitCommand>();
+    }
+
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+        return services.AddScoped<IZipService, ZipService>();
     }
 
     public static IServiceCollection AddRabbitMq(this IServiceCollection services)

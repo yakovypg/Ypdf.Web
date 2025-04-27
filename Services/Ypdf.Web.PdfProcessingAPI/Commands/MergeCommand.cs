@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Informing;
 using Ypdf.Web.FilesAPI.Infrastructure.Connections;
+using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
 using Ypdf.Web.PdfProcessingAPI.Infrastructure.Timing;
 using Ypdf.Web.PdfProcessingAPI.Tools;
 
@@ -14,11 +15,15 @@ public class MergeCommand : BasePdfCommand
 {
     public MergeCommand(
         PdfOperationResultRabbitMqProducer rabbitMqProducer,
+        ITempFileService tempFileService,
+        IZipService zipService,
         IMapper mapper,
         ILogger<BaseCommand> logger)
         : base(
             PdfOperationType.Merge,
             rabbitMqProducer ?? throw new ArgumentNullException(nameof(rabbitMqProducer)),
+            tempFileService ?? throw new ArgumentNullException(nameof(tempFileService)),
+            zipService ?? throw new ArgumentNullException(nameof(zipService)),
             mapper ?? throw new ArgumentNullException(nameof(mapper)),
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
@@ -33,8 +38,11 @@ public class MergeCommand : BasePdfCommand
         {
             return Task.Run(() =>
             {
-                var mergeTool = new MergeTool();
-                mergeTool.Execute(pdfOperationData.InputFilePaths, pdfOperationData.OutputFilePath);
+                ExecuteWithTempFile(pdfOperationData.OutputFilePath, outputFilePath =>
+                {
+                    var mergeTool = new MergeTool();
+                    mergeTool.Execute(pdfOperationData.InputFilePaths, outputFilePath);
+                });
             });
         });
     }

@@ -15,21 +15,20 @@ namespace Ypdf.Web.PdfProcessingAPI.Commands;
 
 public class SplitCommand : BasePdfCommand
 {
-    private readonly IZipService _zipService;
-
     public SplitCommand(
-        IZipService zipService,
         PdfOperationResultRabbitMqProducer rabbitMqProducer,
+        ITempFileService tempFileService,
+        IZipService zipService,
         IMapper mapper,
         ILogger<BaseCommand> logger)
         : base(
             PdfOperationType.Split,
             rabbitMqProducer ?? throw new ArgumentNullException(nameof(rabbitMqProducer)),
+            tempFileService ?? throw new ArgumentNullException(nameof(tempFileService)),
+            zipService ?? throw new ArgumentNullException(nameof(zipService)),
             mapper ?? throw new ArgumentNullException(nameof(mapper)),
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
-        ArgumentNullException.ThrowIfNull(zipService, nameof(zipService));
-        _zipService = zipService;
     }
 
     protected override Task<(DateTimeOffset OperationStart, DateTimeOffset OperationEnd)> GetCommandTask(
@@ -38,20 +37,17 @@ public class SplitCommand : BasePdfCommand
         ArgumentNullException.ThrowIfNull(pdfOperationData, nameof(pdfOperationData));
 
         string inputFilePath = pdfOperationData.InputFilePaths.First();
-        string inputFileName = Path.GetFileNameWithoutExtension(inputFilePath);
-
         string outputFilePath = pdfOperationData.OutputFilePath;
-        string outputDirectoryPath = Path.GetDirectoryName(outputFilePath) ?? string.Empty;
-        string outputFilesPattern = $"{inputFileName}_*";
 
         return TimedInvoke.InvokeAsync(() =>
         {
             return Task.Run(() =>
             {
-                var splitTool = new SplitTool(["1-1"]);
-                splitTool.Execute(inputFilePath, outputDirectoryPath);
-
-                _zipService.ZipFiles(outputDirectoryPath, outputFilesPattern, outputFilePath);
+                ExecuteAndZip(inputFilePath, outputFilePath, (input, output) =>
+                {
+                    var splitTool = new SplitTool(["1-1"]);
+                    splitTool.Execute(input, output);
+                });
             });
         });
     }

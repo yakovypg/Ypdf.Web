@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -8,6 +9,7 @@ using Ypdf.Web.Domain.Infrastructure.Extensions;
 using Ypdf.Web.Domain.Models.Api.Exceptions;
 using Ypdf.Web.Domain.Models.Informing;
 using Ypdf.Web.FilesAPI.Infrastructure.Connections;
+using Ypdf.Web.PdfProcessingAPI.Infrastructure.Services;
 using Ypdf.Web.PdfProcessingAPI.Models.Requests;
 using Ypdf.Web.PdfProcessingAPI.Models.Responses;
 
@@ -16,10 +18,14 @@ namespace Ypdf.Web.PdfProcessingAPI.Commands;
 public abstract class BasePdfCommand : BaseCommand, ICommand<ExecuteToolRequest, ExecuteToolResponse>
 {
     private readonly PdfOperationResultRabbitMqProducer _rabbitMqProducer;
+    private readonly ITempFileService _tempFileService;
+    private readonly IZipService _zipService;
 
     protected BasePdfCommand(
         PdfOperationType operationType,
         PdfOperationResultRabbitMqProducer rabbitMqProducer,
+        ITempFileService tempFileService,
+        IZipService zipService,
         IMapper mapper,
         ILogger<BaseCommand> logger)
         : base(
@@ -29,7 +35,10 @@ public abstract class BasePdfCommand : BaseCommand, ICommand<ExecuteToolRequest,
         ArgumentNullException.ThrowIfNull(rabbitMqProducer, nameof(rabbitMqProducer));
 
         OperationType = operationType;
+
         _rabbitMqProducer = rabbitMqProducer;
+        _tempFileService = tempFileService;
+        _zipService = zipService;
     }
 
     protected PdfOperationType OperationType { get; }
@@ -68,6 +77,34 @@ public abstract class BasePdfCommand : BaseCommand, ICommand<ExecuteToolRequest,
             .ConfigureAwait(false);
 
         return new ExecuteToolResponse(operationResult);
+    }
+
+    protected virtual void ExecuteWithTempFile(string outputFilePath, Action<string> action)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(outputFilePath, nameof(outputFilePath));
+        ArgumentNullException.ThrowIfNull(action, nameof(action));
+
+        string tempFilePath = _tempFileService.AddTempPostfix(outputFilePath);
+
+        action.Invoke(tempFilePath);
+        File.Move(tempFilePath, outputFilePath);
+    }
+
+    protected virtual void ExecuteAndZip(
+        string inputFilePath,
+        string outputFilePath,
+        Action<string, string> action)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(inputFilePath, nameof(inputFilePath));
+        ArgumentException.ThrowIfNullOrWhiteSpace(outputFilePath, nameof(outputFilePath));
+        ArgumentNullException.ThrowIfNull(action, nameof(action));
+
+        string inputFileName = Path.GetFileNameWithoutExtension(inputFilePath);
+        string outputDirectoryPath = Path.GetDirectoryName(outputFilePath) ?? string.Empty;
+        string outputFilesPattern = $"{inputFileName}_*";
+
+        action.Invoke(inputFilePath, outputDirectoryPath);
+        _zipService.ZipFiles(outputDirectoryPath, outputFilesPattern, outputFilePath);
     }
 
     protected abstract Task<(DateTimeOffset OperationStart, DateTimeOffset OperationEnd)> GetCommandTask(

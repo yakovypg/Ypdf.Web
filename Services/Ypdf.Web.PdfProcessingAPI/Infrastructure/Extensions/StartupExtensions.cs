@@ -55,7 +55,10 @@ public static class StartupExtensions
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
-        return services.AddScoped<IZipService, ZipService>();
+
+        return services
+            .AddScoped<IZipService, ZipService>()
+            .AddScoped<ITempFileService, TempFileService>();
     }
 
     public static IServiceCollection AddRabbitMq(this IServiceCollection services)

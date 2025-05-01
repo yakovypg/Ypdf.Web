@@ -12,7 +12,7 @@
 </p>
 
 ## About
-> **_NOTE:_**  The project is in the development stage. At the moment it may not work correctly. But soon the first release will appear, in which it will be possible to explore the application.
+> **_NOTE:_** The project is in the development stage. Now it may not work correctly. The first release will be coming soon, where you can explore the application.
 
 **Ypdf** is a cross-platform, free and open source PDF document processing application that combines the best features of existing solutions and provides the most popular and requested functionality for free to its users.
 

@@ -12,6 +12,8 @@
 </p>
 
 ## About
+> **_NOTE:_**  The project is in the development stage. At the moment it may not work correctly. But soon the first release will appear, in which it will be possible to explore the application.
+
 **Ypdf** is a cross-platform, free and open source PDF document processing application that combines the best features of existing solutions and provides the most popular and requested functionality for free to its users.
 
 [![Contributors](https://img.shields.io/github/contributors/yakovypg/Ypdf.Web)](https://github.com/yakovypg/Ypdf.Web/graphs/contributors)

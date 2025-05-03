@@ -4,6 +4,7 @@
     <PackageReference Include="Blazorise.Bootstrap" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" />
+    <PackageReference Include="TinyMCE" />
     <PackageReference Include="TinyMCE.Blazor" />
   </ItemGroup>
 

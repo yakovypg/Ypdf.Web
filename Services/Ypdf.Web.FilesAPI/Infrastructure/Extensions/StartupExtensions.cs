@@ -16,11 +16,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ypdf.Web.Domain.Commands;
-using Ypdf.Web.Domain.Infrastructure.Connections;
 using Ypdf.Web.Domain.Infrastructure.Handlers;
 using Ypdf.Web.Domain.Models.Configuration;
 using Ypdf.Web.FilesAPI.Commands;
 using Ypdf.Web.FilesAPI.Infrastructure.Connections;
+using Ypdf.Web.FilesAPI.Infrastructure.IO;
 using Ypdf.Web.FilesAPI.Infrastructure.Services;
 using Ypdf.Web.FilesAPI.Models.Requests;
 using Ypdf.Web.FilesAPI.Models.Responses;
@@ -111,6 +111,12 @@ public static class StartupExtensions
             .AddScoped<OutputFilePathService>()
             .AddScoped<IFileContentService, FileContentService>()
             .AddScoped<ISubscriptionInfoService, SubscriptionInfoService>();
+    }
+
+    public static IServiceCollection AddHostedServices(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+        return services.AddHostedService<OutputFileCleaner>();
     }
 
     public static IServiceCollection AddRabbitMq(this IServiceCollection services)

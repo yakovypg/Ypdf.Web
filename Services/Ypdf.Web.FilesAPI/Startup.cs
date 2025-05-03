@@ -53,6 +53,7 @@ public class Startup
 
         _ = services
             .AddServices()
+            .AddHostedServices()
             .AddCommands()
             .AddMapper()
             .AddRabbitMq()

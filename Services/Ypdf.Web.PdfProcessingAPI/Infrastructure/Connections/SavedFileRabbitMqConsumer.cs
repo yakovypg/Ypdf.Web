@@ -20,7 +20,9 @@ public class SavedFileRabbitMqConsumer : RabbitMqConsumer
         SplitCommand splitCommand,
         IConfiguration configuration,
         ILogger<RabbitMqConsumer> logger)
-        : base(configuration, logger)
+        : base(
+            configuration ?? throw new ArgumentNullException(nameof(configuration)),
+            logger ?? throw new ArgumentNullException(nameof(logger)))
     {
         _commands = new()
         {
@@ -51,8 +53,8 @@ public class SavedFileRabbitMqConsumer : RabbitMqConsumer
         }
         catch (Exception ex)
         {
-            Logger.LogWarning("Failed process operation");
-            Logger.LogError("{@Exception}", ex);
+            Logger.LogWarning("Failed to process operation");
+            Logger.LogError(ex, "{@Exception}", ex);
         }
     }
 

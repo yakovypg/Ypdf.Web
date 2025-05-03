@@ -17,7 +17,9 @@ public class PdfOperationResultRabbitMqConsumer : RabbitMqConsumer
         IPdfOperationResultRepository pdfOperationResultRepository,
         IConfiguration configuration,
         ILogger<RabbitMqConsumer> logger)
-        : base(configuration, logger)
+        : base(
+            configuration ?? throw new ArgumentNullException(nameof(configuration)),
+            logger ?? throw new ArgumentNullException(nameof(logger)))
     {
         ArgumentNullException.ThrowIfNull(pdfOperationResultRepository, nameof(pdfOperationResultRepository));
         _pdfOperationResultRepository = pdfOperationResultRepository;
@@ -37,7 +39,7 @@ public class PdfOperationResultRabbitMqConsumer : RabbitMqConsumer
         catch (Exception ex)
         {
             Logger.LogWarning("Failed to save recieved data");
-            Logger.LogError("{@Exception}", ex);
+            Logger.LogError(ex, "{@Exception}", ex);
         }
 
         return Task.CompletedTask;

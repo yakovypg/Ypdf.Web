@@ -32,7 +32,7 @@ public class Splitter : PdfSplitter, IDisposable
     }
 
     private Splitter(PdfDocument sourceDocument)
-        : base(sourceDocument)
+        : base(sourceDocument ?? throw new ArgumentNullException(nameof(sourceDocument)))
     {
         _sourceDocument = sourceDocument;
     }

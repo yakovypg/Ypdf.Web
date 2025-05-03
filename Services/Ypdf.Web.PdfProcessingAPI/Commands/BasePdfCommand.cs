@@ -33,6 +33,8 @@ public abstract class BasePdfCommand : BaseCommand, ICommand<ExecuteToolRequest,
             logger ?? throw new ArgumentNullException(nameof(logger)))
     {
         ArgumentNullException.ThrowIfNull(rabbitMqProducer, nameof(rabbitMqProducer));
+        ArgumentNullException.ThrowIfNull(tempFileService, nameof(tempFileService));
+        ArgumentNullException.ThrowIfNull(zipService, nameof(zipService));
 
         OperationType = operationType;
 

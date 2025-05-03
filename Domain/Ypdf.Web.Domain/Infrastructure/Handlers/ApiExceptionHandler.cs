@@ -59,7 +59,10 @@ public static class ApiExceptionHandler
         Exception? exception = exceptionFeature?.Error;
 
         if (exception is not null)
-            logger.LogError("Exception {@Exception} occurred", exception);
+        {
+            logger.LogWarning("Exception occured: {Message}", exception.Message);
+            logger.LogError(exception, "{@Exception}", exception);
+        }
 
         ApiError apiError = exception switch
         {

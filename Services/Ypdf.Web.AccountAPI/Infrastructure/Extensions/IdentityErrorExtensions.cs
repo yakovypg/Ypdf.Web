@@ -11,7 +11,7 @@ public static class IdentityErrorExtensions
         ArgumentNullException.ThrowIfNull(error, nameof(error));
 
         string normalizedPrefix = "PASSWORD";
-        string normalizedErrorCode = error.Code.ToUpper(CultureInfo.InvariantCulture);
+        string normalizedErrorCode = error.Code.ToUpperInvariant();
 
         return normalizedErrorCode.StartsWith(
             normalizedPrefix,

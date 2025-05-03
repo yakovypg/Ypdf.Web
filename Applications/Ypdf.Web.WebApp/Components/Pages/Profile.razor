@@ -1,29 +1,85 @@
 ﻿@page "/profile"
-@attribute [StreamRendering]
+@rendermode InteractiveServer
 
 <PageTitle>Profile</PageTitle>
 
-<div class="container my-5">
-    <h2 class="text-center mb-4">Profile</h2>
+<h2 class="text-center my-4 bold-title">
+    User Profile
+</h2>
+<h4 class="text-center mb-4 gray-subtitle">
+    All tools are completely free and have no limitations
+</h4>
 
+<div class="container my-4">
     <div class="row">
         <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-header">
-                    <h5>User Information</h5>
+            <div class="card text-center mb-3 border-secondary">
+                <div class="card-header bg-dark text-white" style="background-color: #006bb7 !important;">
+                    <h5 class="mb-0">User Information</h5>
                 </div>
                 <div class="card-body">
-                    <i class="fas fa-user-circle fa-5x mb-3" style="color: #007bff;"></i>
+                    <i class="fas fa-user-circle fa-5x mb-3" style="color: #006bb7;"></i>
                     <h5 class="card-title">John Doe</h5>
-                    <p class="card-text">License Type: <strong>Premium</strong></p>
+                    <p class="card-text">Subscription Type: <strong>Standard</strong></p>
+                </div>
+            </div>
+
+            <div class="card text-center border-secondary">
+                <div class="card-header bg-primary text-white" style="background-color: #006bb7 !important;">
+                    <h5 class="mb-0">Subscription</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <h5 class="form-check-label mb-2" id="toggleLabel">Trial</h5>
+                        <div class="form-check form-switch d-flex justify-content-center">
+                            <input class="form-check-input cursor-pointer" type="checkbox" role="switch" id="subscriptionToggle" />
+                        </div>
+                    </div>
+                    <div class="text-start my-4">
+                        <ul id="benefitsList" class="list-unstyled" style="font-size: 17px;">
+                            <li class="trial-benefit">
+                                <i class="fas fa-plus-circle" style="color: #006bb7;"></i>
+                                Discover the potential of the app
+                            </li>
+                            <li class="trial-benefit">
+                                <i class="fas fa-plus-circle" style="color: #006bb7;"></i>
+                                Enjoy unrestricted access
+                            </li>
+                            <li class="trial-benefit">
+                                <i class="fas fa-minus-circle" style="color: #006bb7;"></i>
+                                Some tools are unavailable
+                            </li>
+                            <li class="trial-benefit">
+                                <i class="fas fa-minus-circle" style="color: #006bb7;"></i>
+                                Suitable for a trial experience only
+                            </li>
+                            <li class="standard-benefit" style="display: none;">
+                                <i class="fas fa-plus-circle" style="color: #006bb7;"></i>
+                                Explore the full capabilities of the app
+                            </li>
+                            <li class="standard-benefit" style="display: none;">
+                                <i class="fas fa-plus-circle" style="color: #006bb7;"></i>
+                                Experience unlimited access
+                            </li>
+                            <li class="standard-benefit" style="display: none;">
+                                <i class="fas fa-plus-circle" style="color: #006bb7;"></i>
+                                Gain access to all tools and features
+                            </li>
+                            <li class="standard-benefit" style="display: none;">
+                                <i class="fas fa-plus-circle" style="color: #006bb7;"></i>
+                                Ideal for everyday needs
+                            </li>
+                        </ul>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-block" id="changeSubscriptionButton">Change Subscription</button>
                 </div>
             </div>
         </div>
 
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header text-center">
-                    <h5>Operation History</h5>
+            <div class="card h-100 border-secondary">
+                <div class="card-header bg-primary text-white text-center" style="background-color: #006bb7 !important;">
+                    <h5 class="mb-0">Operation History</h5>
                 </div>
                 <div class="card-body">
                     <table class="table table-striped" id="operationTable">
@@ -38,22 +94,63 @@
                             <!-- Operations will be added here -->
                         </tbody>
                     </table>
-                    <div class="d-flex justify-content-center align-items-center">
-                        <button id="prevButton" class="btn btn-secondary rounded-circle" disabled>
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <span class="mx-3" id="pageInfo">Page 1</span>
-                        <button id="nextButton" class="btn btn-secondary rounded-circle">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-center align-items-center">
+                    <button id="prevButton" class="btn btn-secondary rounded-circle" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="mx-3" id="pageInfo">Page 1</span>
+                    <button id="nextButton" class="btn btn-secondary rounded-circle">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+    .form-check-input {
+        transform: scale(2.0);
+        background-color: LightGray;
+        border-color: Gray;
+    }
+
+    .form-check-input:checked {
+        background-color: #006bb7;
+        border-color: #004272;
+    }
+
+    .form-check-input:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .form-check-label {
+        font-size: 18px;
+        font-weight: 600;
+    }
+</style>
+
+<link rel="stylesheet" href="titles.css" />
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.getElementById('subscriptionToggle').addEventListener('change', function() {
+        const isChecked = this.checked;
+        const toggleLabel = document.getElementById('toggleLabel');
+
+        if (isChecked) {
+            toggleLabel.textContent = 'Standard';
+            document.querySelectorAll('.trial-benefit').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.standard-benefit').forEach(el => el.style.display = 'block');
+        } else {
+            toggleLabel.textContent = 'Trial';
+            document.querySelectorAll('.trial-benefit').forEach(el => el.style.display = 'block');
+            document.querySelectorAll('.standard-benefit').forEach(el => el.style.display = 'none');
+        }
+    });
+</script>
 <script>
     $(document).ready(function () {
         const operations = [
@@ -74,9 +171,26 @@
             { date: "2023-08-15", operation: "Images to PDF", status: "Completed" },
             { date: "2023-08-14", operation: "Split", status: "Completed" },
             { date: "2023-08-14", operation: "Images to PDF", status: "Completed" },
+            { date: "2022-10-01", operation: "Merge", status: "Completed" },
+            { date: "2022-09-25", operation: "Split", status: "Completed" },
+            { date: "2022-09-20", operation: "Compress", status: "Failed" },
+            { date: "2022-09-15", operation: "Merge", status: "Completed" },
+            { date: "2022-09-10", operation: "Merge", status: "Completed" },
+            { date: "2022-09-05", operation: "Split", status: "Failed" },
+            { date: "2022-09-01", operation: "Images to PDF", status: "Completed" },
+            { date: "2022-08-25", operation: "Split", status: "Completed" },
+            { date: "2022-08-24", operation: "Split", status: "Completed" },
+            { date: "2022-08-20", operation: "Compress", status: "Completed" },
+            { date: "2022-08-19", operation: "Merge", status: "Completed" },
+            { date: "2022-08-17", operation: "Merge", status: "Completed" },
+            { date: "2022-08-17", operation: "Compress", status: "Completed" },
+            { date: "2022-08-16", operation: "Compress", status: "Completed" },
+            { date: "2022-08-15", operation: "Images to PDF", status: "Completed" },
+            { date: "2022-08-14", operation: "Split", status: "Completed" },
+            { date: "2022-08-14", operation: "Images to PDF", status: "Completed" },
         ];
 
-        const recordsPerPage = 7;
+        const recordsPerPage = 9;
         let currentPage = 1;
 
         function displayRecords() {

@@ -7,3 +7,13 @@
     color: gray;
     line-height: 0.5em;
 }
+
+.developer-image-container {
+    width: 150px;
+    height: 150px;
+}
+
+.developer-image {
+    width: 100%;
+    height: auto;
+}

@@ -3,8 +3,6 @@
 
 <PageTitle>Merge</PageTitle>
 
-<PageTitle>Merge PDF</PageTitle>
-
 <h2 class="text-center my-4 bold-title">
     Merge PDF
 </h2>
@@ -16,80 +14,25 @@
     <div class="row">
         <div class="col-md-12">
             <div class="form-group mb-4">
-                <div class="border p-2" style="border: 2px solid #007bff; border-radius: 5px;">
-                    <input type="file" id="fileUpload" class="form-control-file" multiple accept=".pdf" />
+                <div class="border p-2 file-upload-container">
+                    <input id="file-upload"
+                           type="file"
+                           class="form-control-file"
+                           multiple accept=".pdf" />
                 </div>
             </div>
-            <ul id="fileList" class="list-group mb-4" style="border: 1px solid LightGray; border-radius: 5px;">
-                <!-- Список загруженных файлов будет добавлен здесь -->
+            <ul id="file-list" class="list-group mb-4 file-list">
+                <!-- Files will be added here using JS -->
             </ul>
-            <button id="mergeButton" class="btn btn-primary">Merge PDFs</button>
+            <button id="merge-button" class="btn btn-primary">Merge PDFs</button>
         </div>
     </div>
 </div>
 
-<link rel="stylesheet" href="titles.css" />
+<link rel="stylesheet" href="css/components/files.css" />
+<link rel="stylesheet" href="css/components/title.css" />
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-<script>
-    $(document).ready(function () {
-        let files = [];
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" defer></script>
 
-        // Handle file upload
-        $('#fileUpload').on('change', function (event) {
-            const newFiles = Array.from(event.target.files);
-            files = files.concat(newFiles);
-            updateFileList();
-
-            // Uncomment to reset last uploaded files label text
-            // event.target.value = '';
-        });
-
-        // Update the file list display
-        function updateFileList() {
-            $('#fileList').empty();
-
-            files.forEach((file, index) => {
-                const listItem = $(`
-                    <li class="list-group-item d-flex justify-content-between align-items-center" data-index="${index}">
-                        ${file.name}
-                        <div>
-                            <button class="btn btn-danger btn-sm remove-file">Remove</button>
-                        </div>
-                    </li>
-                `);
-
-                $('#fileList').append(listItem);
-            });
-
-            makeListSortable();
-        }
-
-        // Make the file list sortable
-        function makeListSortable() {
-            $('#fileList').sortable({
-                items: 'li',
-                update: function (event, ui) {
-                    const newOrder = $(this).sortable('toArray', { attribute: 'data-index' });
-                    files = newOrder.map(index => files[index]);
-                    updateFileList();
-                }
-            });
-        }
-
-        // Remove file from the list
-        $('#fileList').on('click', '.remove-file', function () {
-            const index = $(this).closest('li').data('index');
-            files.splice(index, 1);
-            updateFileList();
-        });
-
-        // Handle merge button click
-        $('#mergeButton').on('click', function () {
-            if (files.length < 2) {
-                alert("Upload at least 2 files");
-            }
-        });
-    });
-</script>
+<script src="js/pages/merge.js" defer></script>

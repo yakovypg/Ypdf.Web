@@ -1,0 +1,36 @@
+.blue-card-header {
+    background-color: #006bb7 !important
+}
+
+.benefits-list {
+    font-size: 17px;
+}
+
+.trial-benefit {
+    display: block;
+}
+
+.standard-benefit {
+    display: none;
+}
+
+.subscription-switch {
+    transform: scale(2.0);
+    background-color: LightGray;
+    border-color: Gray;
+}
+
+.subscription-switch:checked {
+    background-color: #006bb7;
+    border-color: #004272;
+}
+
+.subscription-switch:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.subscription-switch-header {
+    font-size: 18px;
+    font-weight: 600;
+}

@@ -4,12 +4,36 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Ypdf.Web.Domain.Models.Configuration;
+using Ypdf.Web.WebApp.Infrastructure.Services;
+using Ypdf.Web.WebApp.Infrastructure.Utils;
 
 namespace Ypdf.Web.WebApp.Infrastructure.Extensions;
 
 public static class StartupExtensions
 {
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+
+        return services
+            .AddScoped<IApiResponseReaderService, ApiResponseReaderService>()
+            .AddScoped<IHttpClientService, HttpClientService>()
+            .AddScoped<IHttpClientInteractorService, HttpClientInteractorService>()
+            .AddScoped<IUiMessageService, UiMessageService>()
+            .AddScoped<IJsElementInteractorService, JsElementInteractorService>();
+    }
+
+    public static IServiceCollection AddUtils(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+
+        return services
+            .AddScoped<AccountManager>()
+            .AddScoped<HistoryPageSwitcher>();
+    }
+
     public static IApplicationBuilder UseLocalization(
         this IApplicationBuilder application,
         IConfiguration configuration)

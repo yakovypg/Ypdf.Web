@@ -1,6 +1,13 @@
 ﻿@page "/profile"
 @rendermode InteractiveServer
 
+@using Blazorise.Extensions
+@using Ypdf.Web.Domain.Models.Informing
+@using Ypdf.Web.WebApp.Infrastructure.Utils
+
+@inject AccountManager AccountManager
+@inject HistoryPageSwitcher PageSwitcher
+
 <PageTitle>Profile</PageTitle>
 
 <h2 class="text-center my-4 bold-title">
@@ -10,114 +17,328 @@
     It grants access to your history and subscriptions, with the latter affecting only test tool access
 </h4>
 
-<div class="container my-4">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card text-center mb-3 border-secondary">
-                <div class="card-header bg-primary text-white blue-card-header">
-                    <h5 class="mb-0">User Information</h5>
+@if (loggedIn)
+{
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card text-center mb-3 border-secondary">
+                    <div class="card-header bg-primary text-white blue-card-header">
+                        <h5 class="mb-0">User Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <i class="fas fa-user-circle fa-5x mb-3 blue-icon"></i>
+                        <h5 class="card-title">John Doe</h5>
+                        <p class="card-text">Subscription Type: <strong>Standard</strong></p>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <i class="fas fa-user-circle fa-5x mb-3 blue-icon"></i>
-                    <h5 class="card-title">John Doe</h5>
-                    <p class="card-text">Subscription Type: <strong>Standard</strong></p>
-                </div>
-            </div>
 
-            <div class="card text-center border-secondary">
-                <div class="card-header bg-primary text-white blue-card-header">
-                    <h5 class="mb-0">Subscription</h5>
-                </div>
-                <div class="card-body">
-                    <div class="text-center">
-                        <h5 id="toggle-label" class="subscription-switch-header mb-2">Trial</h5>
-                        <div class="form-check form-switch d-flex justify-content-center">
-                            <input id="subscription-toggle"
-                                   class="form-check-input cursor-pointer subscription-switch"
-                                   type="checkbox"
-                                   role="switch" />
+                <div class="card text-center border-secondary">
+                    <div class="card-header bg-primary text-white blue-card-header">
+                        <h5 class="mb-0">Subscription</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <h5 id="toggle-label" class="subscription-switch-header mb-2">Trial</h5>
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <input id="subscription-toggle"
+                                    class="form-check-input cursor-pointer subscription-switch"
+                                    type="checkbox"
+                                    role="switch" />
+                            </div>
                         </div>
+                        <div class="text-start my-4">
+                            <ul class="list-unstyled benefits-list">
+                                <li class="trial-benefit">
+                                    <i class="fas fa-plus-circle blue-icon"></i>
+                                    Discover the potential of the app
+                                </li>
+                                <li class="trial-benefit">
+                                    <i class="fas fa-plus-circle blue-icon"></i>
+                                    Enjoy unrestricted access
+                                </li>
+                                <li class="trial-benefit">
+                                    <i class="fas fa-minus-circle blue-icon"></i>
+                                    Some test tools are unavailable
+                                </li>
+                                <li class="trial-benefit">
+                                    <i class="fas fa-minus-circle blue-icon"></i>
+                                    Suitable for a trial experience only
+                                </li>
+                                <li class="standard-benefit">
+                                    <i class="fas fa-plus-circle blue-icon"></i>
+                                    Explore the full capabilities of the app
+                                </li>
+                                <li class="standard-benefit">
+                                    <i class="fas fa-plus-circle blue-icon"></i>
+                                    Experience unlimited access
+                                </li>
+                                <li class="standard-benefit">
+                                    <i class="fas fa-plus-circle blue-icon"></i>
+                                    Gain access to all tools and features
+                                </li>
+                                <li class="standard-benefit">
+                                    <i class="fas fa-plus-circle blue-icon"></i>
+                                    Ideal for everyday needs
+    using Ypdf.Web.WebApp.Infrastructure.Services;
+                                </li>
+                            </ul>
+                        </div>
+                        <button id="changeSubscriptionButton"
+                                class="btn btn-primary btn-block"
+                                type="button">
+                            Activate
+                        </button>
                     </div>
-                    <div class="text-start my-4">
-                        <ul class="list-unstyled benefits-list">
-                            <li class="trial-benefit">
-                                <i class="fas fa-plus-circle blue-icon"></i>
-                                Discover the potential of the app
-                            </li>
-                            <li class="trial-benefit">
-                                <i class="fas fa-plus-circle blue-icon"></i>
-                                Enjoy unrestricted access
-                            </li>
-                            <li class="trial-benefit">
-                                <i class="fas fa-minus-circle blue-icon"></i>
-                                Some test tools are unavailable
-                            </li>
-                            <li class="trial-benefit">
-                                <i class="fas fa-minus-circle blue-icon"></i>
-                                Suitable for a trial experience only
-                            </li>
-                            <li class="standard-benefit">
-                                <i class="fas fa-plus-circle blue-icon"></i>
-                                Explore the full capabilities of the app
-                            </li>
-                            <li class="standard-benefit">
-                                <i class="fas fa-plus-circle blue-icon"></i>
-                                Experience unlimited access
-                            </li>
-                            <li class="standard-benefit">
-                                <i class="fas fa-plus-circle blue-icon"></i>
-                                Gain access to all tools and features
-                            </li>
-                            <li class="standard-benefit">
-                                <i class="fas fa-plus-circle blue-icon"></i>
-                                Ideal for everyday needs
-                            </li>
-                        </ul>
-                    </div>
-                    <button id="changeSubscriptionButton"
-                            class="btn btn-primary btn-block"
-                            type="button">
-                        Activate
-                    </button>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-8">
-            <div class="card border-secondary h-100">
-                <div class="card-header bg-primary text-white text-center blue-card-header">
-                    <h5 class="mb-0">Operation History</h5>
-                </div>
-                <div class="card-body">
-                    <table id="operationTable" class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Operation</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Operations will be added here using JS -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card-footer d-flex justify-content-center align-items-center">
-                    <button id="prev-button" class="btn btn-secondary rounded-circle" disabled>
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <span id="page-info" class="mx-3">Page 1</span>
-                    <button id="next-button" class="btn btn-secondary rounded-circle">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+            <div class="col-md-8">
+                <div class="card border-secondary h-100">
+                    <div class="card-header bg-primary text-white text-center blue-card-header">
+                        <h5 class="mb-0">Operation History</h5>
+                    </div>
+    using Ypdf.Web.Domain.Models.Informing;
+                    <div class="card-body">
+                        <table id="operationTable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Operation</th>
+                                    <th>Status</th>
+                                </tr>
+    using Blazorise.Extensions;
+                            </thead>
+                            <tbody>
+                                <!-- Operations will be added here using JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer d-flex justify-content-center align-items-center">
+                        <button id="prev-button"
+                                class="btn btn-secondary rounded-circle"
+                                @onclick="PageSwitcher.PreviousPageAsync"
+                                disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span id="page-info" class="mx-3">Page 1</span>
+                        <button id="next-button"
+                                class="btn btn-secondary rounded-circle"
+                                @onclick="PageSwitcher.NextPageAsync">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+}
+else if (showingRegister)
+{
+    <div class="card mx-auto authorization-form-container">
+        <div class="card-body">
+            <h4 class="text-center mb-3 semibold-text">
+                Create new account
+            </h4>
+            <form>
+                <div class="form-group">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text icon-container-before-input">
+                                <i class="fas fa-user"></i>
+                            </span>
+                        </div>
+                        <input class="form-control"
+                               type="text"
+                               placeholder="Nickname"
+                               @bind="registerNickname"
+                               required />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text icon-container-before-input">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                        </div>
+                        <input class="form-control"
+                               type="email"
+                               placeholder="Email"
+                               @bind="registerEmail"
+                               required />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text icon-container-before-input">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
+                        <input class="form-control"
+                               type="password"
+                               placeholder="Password"
+                               @bind="registerPassword"
+                               required />
+                    </div>
+                </div>
+                <div class="text-center mt-4 mb-2">
+                    <button class="btn btn-primary" type="button" @onclick="RegisterAsync">
+                        Sign up
+                    </button>
+                </div>
+                <div class="text-center">
+                    <span>Already have an account? </span>
+                    <span class="cursor-pointer" @onclick="ShowLoginTab">
+                        <a class="link-offset-1">Log in</a>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card mx-auto authorization-form-container">
+        <div class="card-body">
+            <h4 class="text-center mb-3 semibold-text">
+                Login to your account
+            </h4>
+            <form>
+                <div class="form-group">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text icon-container-before-input">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                        </div>
+                        <input class="form-control"
+                               type="email"
+                               placeholder="Email address"
+                               @bind="loginEmail"
+                               required />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text icon-container-before-input">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
+                        <input class="form-control"
+                               type="password"
+                               placeholder="Password"
+                               @bind="loginPassword"
+                               required />
+                    </div>
+                </div>
+                <div class="text-center cursor-pointer" @onclick="ChangePasswordAsync">
+                    <a class="link-offset-1">Forgot your password?</a>
+                </div>
+                <div class="text-center mt-4 mb-2">
+                    <button type="button" class="btn btn-primary" @onclick="LoginAsync">
+                        Log in
+                    </button>
+                </div>
+                <div class="text-center">
+                    <span>Don't have an account? </span>
+                    <span class="cursor-pointer" @onclick="ShowRegisterTab">
+                        <a class="link-offset-1">Create an account</a>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+}
 
 <link rel="stylesheet" href="css/profile.css" />
 <link rel="stylesheet" href="css/components/title.css" />
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
 <script src="js/profile.js" defer></script>
+
+@code
+{
+#region Login & Register
+
+    private bool loggedIn = false;
+    private bool showingRegister = false;
+
+    private string loginEmail = string.Empty;
+    private string loginPassword = string.Empty;
+    private string registerNickname = string.Empty;
+    private string registerEmail = string.Empty;
+    private string registerPassword = string.Empty;
+
+    private void ClearInputData()
+    {
+        loginEmail = string.Empty;
+        loginPassword = string.Empty;
+        registerNickname = string.Empty;
+        registerEmail = string.Empty;
+        registerPassword = string.Empty;
+    }
+
+    private void ShowLoginTab()
+    {
+        showingRegister = false;
+    }
+
+    private void ShowRegisterTab()
+    {
+        showingRegister = true;
+    }
+
+    private async Task ChangePasswordAsync()
+    {
+        await AccountManager
+            .ChangePasswordAsync()
+            .ConfigureAwait(false);
+    }
+
+    private async Task LoginAsync()
+    {
+        Action<LoginResponse> successHandler = async response =>
+        {
+            ClearInputData();
+
+            loggedIn = true;
+            PageSwitcher.UserId = response.User.Id.ToCultureInvariantString();
+
+            await LoadFirstHistoryPageAsync()
+                .ConfigureAwait(false);
+        };
+
+        await AccountManager
+            .LoginAsync(loginEmail, loginPassword, successHandler)
+            .ConfigureAwait(false);
+    }
+
+    private async Task RegisterAsync()
+    {
+        Action<RegisterUserResponse> successHandler = response =>
+        {
+            ClearInputData();
+            showingRegister = false;
+        };
+
+        await AccountManager
+            .RegisterAsync(registerNickname, registerEmail, registerPassword, successHandler)
+            .ConfigureAwait(false);
+    }
+
+#endregion
+
+#region Operations History
+
+    private async Task LoadFirstHistoryPageAsync()
+    {
+        await PageSwitcher
+            .ChangePageAsync(1)
+            .ConfigureAwait(false);
+    }
+
+#endregion
+}

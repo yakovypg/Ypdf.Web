@@ -1,3 +1,7 @@
+.semibold-text {
+    font-weight: 600;
+}
+
 .bold-title {
     font-weight: 600;
     line-height: 0.1em;

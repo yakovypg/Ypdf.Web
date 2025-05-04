@@ -39,5 +39,9 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
+
+        _ = services
+            .AddServices()
+            .AddUtils();
     }
 }

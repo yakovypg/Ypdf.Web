@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Ypdf.Web.WebApp.Components;
+using Ypdf.Web.WebApp.Infrastructure.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,10 @@ _ = builder.Services
     })
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
+
+_ = builder.Services
+    .AddServices()
+    .AddUtils();
 
 WebApplication webApplication = builder.Build();
 

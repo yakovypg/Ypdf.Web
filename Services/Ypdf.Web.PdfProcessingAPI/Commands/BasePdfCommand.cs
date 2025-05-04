@@ -66,12 +66,15 @@ public abstract class BasePdfCommand : BaseCommand, ICommand<ExecuteToolRequest,
 
         Logger.LogInformation("{OperationType} operation executed", OperationType);
 
+        string outputFileName = Path.GetFileName(request.PdfOperationData!.OutputFilePath);
+
         var operationResult = new PdfOperationResult()
         {
             UserId = request.PdfOperationData!.UserId,
             OperationType = OperationType,
             StartDate = operationStart,
-            EndDate = operationEnd
+            EndDate = operationEnd,
+            OutputFileName = outputFileName
         };
 
         await _rabbitMqProducer

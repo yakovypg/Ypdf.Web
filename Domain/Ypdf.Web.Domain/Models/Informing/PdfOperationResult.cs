@@ -8,4 +8,5 @@ public class PdfOperationResult
     public PdfOperationType OperationType { get; set; }
     public DateTimeOffset StartDate { get; set; }
     public DateTimeOffset EndDate { get; set; }
+    public required string OutputFileName { get; set; }
 }

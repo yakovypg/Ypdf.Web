@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -41,15 +42,10 @@ public class GetHistoryCommand : BaseCommand, IProtectedCommand<GetHistoryReques
         ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
 
         Logger.LogInformation("Trying to get history for user {UserId}", request.UserId);
-
         VerifyAccess(request.UserId, userClaims);
 
-        IEnumerable<PdfOperationResult> results = _pdfOperationResultRepository
-            .FindAll(t => t.UserId == request.UserId);
-
+        GetHistoryResponse response = GetHistoryPage(request);
         Logger.LogInformation("History for user {UserId} successfully recieved", request.UserId);
-
-        var response = new GetHistoryResponse(results);
 
         return Task.FromResult(response);
     }
@@ -71,5 +67,23 @@ public class GetHistoryCommand : BaseCommand, IProtectedCommand<GetHistoryReques
 
             throw new ForbiddenException("User doesn't have access to the resource");
         }
+    }
+
+    private GetHistoryResponse GetHistoryPage(GetHistoryRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+
+        int userOperationsCount = _pdfOperationResultRepository
+            .Count(t => t.UserId == request.UserId);
+
+        IEnumerable<PdfOperationResult> operations = _pdfOperationResultRepository
+            .FindAll(t => t.UserId == request.UserId)
+            .Skip(request.PageSize * (request.PageNumber - 1))
+            .Take(request.PageSize);
+
+        const int minPage = 1;
+        int maxPage = Math.Max(userOperationsCount, minPage);
+
+        return new GetHistoryResponse(minPage, maxPage, operations);
     }
 }

@@ -70,6 +70,11 @@ public class PdfOperationResultRepository : IPdfOperationResultRepository, IDisp
         return GetAll().FirstOrDefault(predicate);
     }
 
+    public int Count(Func<PdfOperationResult, bool> predicate)
+    {
+        return _operationResults.Count(t => predicate(t));
+    }
+
     public void Dispose()
     {
         Dispose(true);

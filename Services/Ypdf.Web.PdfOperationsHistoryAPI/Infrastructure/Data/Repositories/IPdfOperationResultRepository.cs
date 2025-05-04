@@ -15,4 +15,6 @@ public interface IPdfOperationResultRepository
     IEnumerable<PdfOperationResult> FindAll(Func<PdfOperationResult, bool> predicate);
     PdfOperationResult FindOne(Func<PdfOperationResult, bool> predicate);
     PdfOperationResult? FindOneOrDefault(Func<PdfOperationResult, bool> predicate);
+
+    int Count(Func<PdfOperationResult, bool> predicate);
 }

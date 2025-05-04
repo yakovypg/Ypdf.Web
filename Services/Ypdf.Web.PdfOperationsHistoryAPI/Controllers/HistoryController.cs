@@ -14,19 +14,14 @@ namespace Ypdf.Web.PdfOperationsHistoryAPI.Controllers;
 [ApiVersion("1.0")]
 public class HistoryController : ControllerBase
 {
-    [HttpGet("{id}")]
+    [HttpGet]
     [Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<ApiResponse<GetHistoryResponse>> GetHistory(
-        int id,
+        [FromQuery] GetHistoryRequest request,
         [FromServices] IProtectedCommand<GetHistoryRequest, GetHistoryResponse> getHistoryCommand)
     {
         if (getHistoryCommand is null)
             return new(null, HttpStatusCode.InternalServerError);
-
-        var request = new GetHistoryRequest()
-        {
-            UserId = id
-        };
 
         GetHistoryResponse response = await getHistoryCommand
             .ExecuteAsync(request, User)

@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Api;
-using Ypdf.Web.FilesAPI.Models.Requests;
-using Ypdf.Web.FilesAPI.Models.Responses;
+using Ypdf.Web.Domain.Models.Api.Requests;
+using Ypdf.Web.Domain.Models.Api.Responses;
 
 namespace Ypdf.Web.FilesAPI.Controllers;
 

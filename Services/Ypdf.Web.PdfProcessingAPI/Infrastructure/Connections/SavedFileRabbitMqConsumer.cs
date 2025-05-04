@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Infrastructure.Connections;
+using Ypdf.Web.Domain.Models.Api.Requests;
 using Ypdf.Web.Domain.Models.Informing;
 using Ypdf.Web.PdfProcessingAPI.Commands;
-using Ypdf.Web.PdfProcessingAPI.Models.Requests;
 
 namespace Ypdf.Web.FilesAPI.Infrastructure.Connections;
 

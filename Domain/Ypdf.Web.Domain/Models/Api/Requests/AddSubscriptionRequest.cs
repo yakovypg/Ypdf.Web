@@ -1,6 +1,6 @@
 using System;
 
-namespace Ypdf.Web.AccoutAPI.Models.Requests;
+namespace Ypdf.Web.Domain.Models.Api.Requests;
 
 public class AddSubscriptionRequest
 {

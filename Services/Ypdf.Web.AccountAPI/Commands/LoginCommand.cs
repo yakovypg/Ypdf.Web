@@ -4,11 +4,11 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.AccoutAPI.Infrastructure.Services.Authentication;
 using Ypdf.Web.AccoutAPI.Models;
-using Ypdf.Web.AccoutAPI.Models.Dto;
-using Ypdf.Web.AccoutAPI.Models.Requests;
-using Ypdf.Web.AccoutAPI.Models.Responses;
 using Ypdf.Web.Domain.Commands;
+using Ypdf.Web.Domain.Models.Api.Dto;
 using Ypdf.Web.Domain.Models.Api.Exceptions;
+using Ypdf.Web.Domain.Models.Api.Requests;
+using Ypdf.Web.Domain.Models.Api.Responses;
 
 namespace Ypdf.Web.AccoutAPI.Commands;
 

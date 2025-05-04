@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Ypdf.Web.Domain.Models.Informing;
 
-namespace Ypdf.Web.FilesAPI.Models.Requests;
+namespace Ypdf.Web.Domain.Models.Api.Requests;
 
 public class SaveFilesRequest
 {

@@ -1,7 +1,7 @@
 using System;
-using Ypdf.Web.AccoutAPI.Models.Dto;
+using Ypdf.Web.Domain.Models.Api.Dto;
 
-namespace Ypdf.Web.AccoutAPI.Models.Responses;
+namespace Ypdf.Web.Domain.Models.Api.Responses;
 
 public class LoginResponse
 {

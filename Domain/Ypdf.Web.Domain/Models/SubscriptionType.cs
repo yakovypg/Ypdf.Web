@@ -1,4 +1,4 @@
-namespace Ypdf.Web.AccoutAPI.Models;
+namespace Ypdf.Web.Domain.Models;
 
 public enum SubscriptionType
 {

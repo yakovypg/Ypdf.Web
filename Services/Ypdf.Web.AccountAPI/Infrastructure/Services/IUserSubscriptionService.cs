@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Ypdf.Web.AccoutAPI.Models;
+using Ypdf.Web.Domain.Models;
 
 namespace Ypdf.Web.AccoutAPI.Infrastructure.Services;
 

@@ -1,4 +1,4 @@
-namespace Ypdf.Web.AccoutAPI.Models.Dto;
+namespace Ypdf.Web.Domain.Models.Api.Dto;
 
 public class UserDto
 {

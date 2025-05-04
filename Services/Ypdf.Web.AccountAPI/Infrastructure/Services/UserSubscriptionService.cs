@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Ypdf.Web.AccoutAPI.Data.Repositories;
 using Ypdf.Web.AccoutAPI.Infrastructure.Data;
 using Ypdf.Web.AccoutAPI.Models;
+using Ypdf.Web.Domain.Models;
 using Ypdf.Web.Domain.Models.Api.Exceptions;
 
 namespace Ypdf.Web.AccoutAPI.Infrastructure.Services;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Ypdf.Web.AccoutAPI.Models;
+using Ypdf.Web.Domain.Models;
 using Ypdf.Web.Domain.Models.Configuration;
 
 namespace Ypdf.Web.AccoutAPI.Infrastructure.Data;

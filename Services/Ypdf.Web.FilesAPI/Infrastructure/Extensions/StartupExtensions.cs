@@ -17,13 +17,13 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Handlers;
+using Ypdf.Web.Domain.Models.Api.Requests;
+using Ypdf.Web.Domain.Models.Api.Responses;
 using Ypdf.Web.Domain.Models.Configuration;
 using Ypdf.Web.FilesAPI.Commands;
 using Ypdf.Web.FilesAPI.Infrastructure.Connections;
 using Ypdf.Web.FilesAPI.Infrastructure.IO;
 using Ypdf.Web.FilesAPI.Infrastructure.Services;
-using Ypdf.Web.FilesAPI.Models.Requests;
-using Ypdf.Web.FilesAPI.Models.Responses;
 
 namespace Ypdf.Web.FilesAPI.Infrastructure.Extensions;
 

@@ -1,6 +1,6 @@
 using AutoMapper;
 using Ypdf.Web.AccoutAPI.Models;
-using Ypdf.Web.AccoutAPI.Models.Dto;
+using Ypdf.Web.Domain.Models.Api.Dto;
 
 namespace Ypdf.Web.AccoutAPI.Mappings;
 

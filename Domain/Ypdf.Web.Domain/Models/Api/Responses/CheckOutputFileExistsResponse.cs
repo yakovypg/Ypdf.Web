@@ -1,4 +1,4 @@
-namespace Ypdf.Web.FilesAPI.Models.Responses;
+namespace Ypdf.Web.Domain.Models.Api.Responses;
 
 public class CheckOutputFileExistsResponse
 {

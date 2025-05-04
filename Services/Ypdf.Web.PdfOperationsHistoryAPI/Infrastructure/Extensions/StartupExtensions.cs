@@ -17,12 +17,12 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Handlers;
+using Ypdf.Web.Domain.Models.Api.Requests;
+using Ypdf.Web.Domain.Models.Api.Responses;
 using Ypdf.Web.Domain.Models.Configuration;
 using Ypdf.Web.PdfOperationsHistoryAPI.Commands;
 using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Connections;
 using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Data.Repositories;
-using Ypdf.Web.PdfOperationsHistoryAPI.Models.Requests;
-using Ypdf.Web.PdfOperationsHistoryAPI.Models.Responses;
 
 namespace Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Extensions;
 

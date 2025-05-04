@@ -27,10 +27,10 @@ using Ypdf.Web.AccoutAPI.Infrastructure.Services.Authentication;
 using Ypdf.Web.AccoutAPI.Infrastructure.Services.Verification;
 using Ypdf.Web.AccoutAPI.Mappings;
 using Ypdf.Web.AccoutAPI.Models;
-using Ypdf.Web.AccoutAPI.Models.Requests;
-using Ypdf.Web.AccoutAPI.Models.Responses;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Handlers;
+using Ypdf.Web.Domain.Models.Api.Requests;
+using Ypdf.Web.Domain.Models.Api.Responses;
 using Ypdf.Web.Domain.Models.Configuration;
 
 namespace Ypdf.Web.AccoutAPI.Infrastructure.Extensions;

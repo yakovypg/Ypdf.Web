@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Ypdf.Web.Domain.Models.Informing;
 
-namespace Ypdf.Web.PdfOperationsHistoryAPI.Models.Responses;
+namespace Ypdf.Web.Domain.Models.Api.Responses;
 
 public class GetHistoryResponse
 {

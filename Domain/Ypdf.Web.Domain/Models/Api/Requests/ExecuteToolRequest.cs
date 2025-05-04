@@ -1,6 +1,6 @@
 using Ypdf.Web.Domain.Models.Informing;
 
-namespace Ypdf.Web.PdfProcessingAPI.Models.Requests;
+namespace Ypdf.Web.Domain.Models.Api.Requests;
 
 public class ExecuteToolRequest
 {

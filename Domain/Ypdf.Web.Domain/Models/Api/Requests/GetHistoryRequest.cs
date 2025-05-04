@@ -1,4 +1,4 @@
-namespace Ypdf.Web.PdfOperationsHistoryAPI.Models.Requests;
+namespace Ypdf.Web.Domain.Models.Api.Requests;
 
 public class GetHistoryRequest
 {

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Ypdf.Web.AccoutAPI.Infrastructure.Data;
 using Ypdf.Web.AccoutAPI.Models;
+using Ypdf.Web.Domain.Models;
 
 namespace Ypdf.Web.AccoutAPI.Data.Repositories;
 

@@ -1,12 +1,11 @@
-using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Api;
-using Ypdf.Web.PdfOperationsHistoryAPI.Models.Requests;
-using Ypdf.Web.PdfOperationsHistoryAPI.Models.Responses;
+using Ypdf.Web.Domain.Models.Api.Requests;
+using Ypdf.Web.Domain.Models.Api.Responses;
 
 namespace Ypdf.Web.PdfOperationsHistoryAPI.Controllers;
 

@@ -7,11 +7,10 @@ using Microsoft.Extensions.Logging;
 using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Infrastructure.Extensions;
 using Ypdf.Web.Domain.Models.Api.Exceptions;
-using Ypdf.Web.Domain.Models.Configuration;
+using Ypdf.Web.Domain.Models.Api.Requests;
+using Ypdf.Web.Domain.Models.Api.Responses;
 using Ypdf.Web.Domain.Models.Informing;
 using Ypdf.Web.PdfOperationsHistoryAPI.Infrastructure.Data.Repositories;
-using Ypdf.Web.PdfOperationsHistoryAPI.Models.Requests;
-using Ypdf.Web.PdfOperationsHistoryAPI.Models.Responses;
 
 namespace Ypdf.Web.PdfOperationsHistoryAPI.Commands;
 

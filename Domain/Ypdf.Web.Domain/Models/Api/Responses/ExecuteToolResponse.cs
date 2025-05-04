@@ -1,7 +1,7 @@
 using System;
 using Ypdf.Web.Domain.Models.Informing;
 
-namespace Ypdf.Web.PdfProcessingAPI.Models.Responses;
+namespace Ypdf.Web.Domain.Models.Api.Responses;
 
 public class ExecuteToolResponse
 {

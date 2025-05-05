@@ -8,9 +8,9 @@ namespace Ypdf.Web.WebApp.Infrastructure.Configuration;
 
 public static class EndpointUrls
 {
-    public static Uri Login => new("https://localhost:8083/account/login/");
-    public static Uri Register => new("https://localhost:8083/account/register/");
-    public static Uri HistoryBase => new("https://localhost:8084/history/");
+    public static Uri Login => new("https://localhost:8081/api/account/login/");
+    public static Uri Register => new("https://localhost:8081/api/account/register/");
+    public static Uri HistoryBase => new("https://localhost:8083/api/history/");
 
     public static Uri History(string userId, int pageNumber, int pageSize)
     {

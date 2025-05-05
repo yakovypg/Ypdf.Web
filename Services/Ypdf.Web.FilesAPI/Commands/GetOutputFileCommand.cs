@@ -45,7 +45,13 @@ public class GetOutputFileCommand : BaseCommand, ICommand<GetOutputFileRequest, 
         ValidateFileExists(filePath);
 
         string fileContentType = _fileContentService.GetContentType(filePath);
-        var response = new GetOutputFileResponse(filePath, fileContentType, request.FileName!);
+
+        var response = new GetOutputFileResponse()
+        {
+            FilePath = filePath,
+            FileContentType = fileContentType,
+            FileDownloadName = request.FileName!
+        };
 
         return Task.FromResult(response);
     }

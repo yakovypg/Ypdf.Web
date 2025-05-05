@@ -57,7 +57,11 @@ public class LoginCommand : BaseCommand, ICommand<LoginRequest, LoginResponse>
 
         UserDto userDto = Mapper.Map<UserDto>(user);
 
-        return new LoginResponse(userDto, token);
+        return new LoginResponse()
+        {
+            User = userDto,
+            Token = token
+        };
     }
 
     private static void ValidateRequestParameters(LoginRequest request)

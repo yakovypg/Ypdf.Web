@@ -59,7 +59,10 @@ public class AddSubscriptionCommand : BaseCommand, ICommand<AddSubscriptionReque
 
         UserDto userDto = Mapper.Map<UserDto>(user);
 
-        return new AddSubscriptionResponse(userDto);
+        return new AddSubscriptionResponse()
+        {
+            User = userDto
+        };
     }
 
     private static void ValidateRequestParameters(AddSubscriptionRequest request)

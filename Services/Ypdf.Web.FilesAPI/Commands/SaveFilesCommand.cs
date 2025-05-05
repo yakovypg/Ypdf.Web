@@ -87,7 +87,10 @@ public class SaveFilesCommand : BaseCommand, IProtectedCommand<SaveFilesRequest,
             .SendMessageAsync(operationData)
             .ConfigureAwait(false);
 
-        return new SaveFilesResponse(outputFileName);
+        return new SaveFilesResponse()
+        {
+            OutputFileName = outputFileName
+        };
     }
 
     private static void ValidateRequestParameters(SaveFilesRequest request)

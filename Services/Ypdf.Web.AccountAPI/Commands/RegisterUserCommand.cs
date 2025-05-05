@@ -74,9 +74,11 @@ public class RegisterUserCommand : BaseCommand, ICommand<RegisterUserRequest, Re
         Logger.LogInformation("User with email {Email} registered", request.Email);
 
         UserDto userDto = Mapper.Map<UserDto>(user);
-        RegisterUserResponse response = new(userDto);
 
-        return response;
+        return new RegisterUserResponse()
+        {
+            User = userDto
+        };
     }
 
     private void SetDefaultNicknameIfNeeded(RegisterUserRequest request)

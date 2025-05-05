@@ -44,7 +44,10 @@ public class CheckOutputFileExistsCommand : BaseCommand, ICommand<CheckOutputFil
         else
             Logger.LogInformation("Output file {FileName} not exists", request.FileName);
 
-        var response = new CheckOutputFileExistsResponse(fileExists);
+        var response = new CheckOutputFileExistsResponse()
+        {
+            Exists = fileExists
+        };
 
         return Task.FromResult(response);
     }

@@ -7,5 +7,5 @@ namespace Ypdf.Web.Domain.Models.Api.Requests;
 public class SaveFilesRequest
 {
     public PdfOperationType OperationType { get; set; }
-    public required IReadOnlyCollection<IFormFile> Files { get; set; }
+    public IReadOnlyCollection<IFormFile>? Files { get; set; }
 }

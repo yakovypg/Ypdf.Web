@@ -1,19 +1,15 @@
-using System;
 using Ypdf.Web.Domain.Models.Api.Dto;
 
 namespace Ypdf.Web.Domain.Models.Api.Responses;
 
 public class LoginResponse
 {
-    public LoginResponse(UserDto user, string token)
+    public LoginResponse()
     {
-        ArgumentNullException.ThrowIfNull(user, nameof(user));
-        ArgumentException.ThrowIfNullOrWhiteSpace(token, nameof(token));
-
-        User = user;
-        Token = token;
+        User = new UserDto();
+        Token = string.Empty;
     }
 
-    public UserDto User { get; }
-    public string Token { get; }
+    public UserDto User { get; set; }
+    public string Token { get; set; }
 }

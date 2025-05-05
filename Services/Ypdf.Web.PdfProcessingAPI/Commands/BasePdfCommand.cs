@@ -81,7 +81,10 @@ public abstract class BasePdfCommand : BaseCommand, ICommand<ExecuteToolRequest,
             .SendMessageAsync(operationResult)
             .ConfigureAwait(false);
 
-        return new ExecuteToolResponse(operationResult);
+        return new ExecuteToolResponse()
+        {
+            OperationResult = operationResult
+        };
     }
 
     protected virtual void ExecuteWithTempFile(string outputFilePath, Action<string> action)

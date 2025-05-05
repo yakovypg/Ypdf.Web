@@ -1,21 +1,15 @@
-using System;
-
 namespace Ypdf.Web.Domain.Models.Api.Responses;
 
 public class GetOutputFileResponse
 {
-    public GetOutputFileResponse(string filePath, string fileContentType, string fileDownloadName)
+    public GetOutputFileResponse()
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(filePath, nameof(filePath));
-        ArgumentException.ThrowIfNullOrWhiteSpace(fileContentType, nameof(fileContentType));
-        ArgumentException.ThrowIfNullOrWhiteSpace(fileDownloadName, nameof(fileDownloadName));
-
-        FilePath = filePath;
-        FileContentType = fileContentType;
-        FileDownloadName = fileDownloadName;
+        FilePath = string.Empty;
+        FileContentType = string.Empty;
+        FileDownloadName = string.Empty;
     }
 
-    public string FilePath { get; }
-    public string FileContentType { get; }
-    public string FileDownloadName { get; }
+    public string FilePath { get; set; }
+    public string FileContentType { get; set; }
+    public string FileDownloadName { get; set; }
 }

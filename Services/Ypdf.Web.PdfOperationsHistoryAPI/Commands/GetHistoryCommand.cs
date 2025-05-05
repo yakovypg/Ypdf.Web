@@ -84,6 +84,11 @@ public class GetHistoryCommand : BaseCommand, IProtectedCommand<GetHistoryReques
         const int minPage = 1;
         int maxPage = Math.Max(userOperationsCount, minPage);
 
-        return new GetHistoryResponse(minPage, maxPage, operations);
+        return new GetHistoryResponse()
+        {
+            MinPage = minPage,
+            MaxPage = maxPage,
+            PdfOperationResults = operations
+        };
     }
 }

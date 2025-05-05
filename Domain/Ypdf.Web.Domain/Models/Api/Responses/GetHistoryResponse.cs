@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Ypdf.Web.Domain.Models.Informing;
 
@@ -6,21 +5,12 @@ namespace Ypdf.Web.Domain.Models.Api.Responses;
 
 public class GetHistoryResponse
 {
-    public GetHistoryResponse(
-        int minPage,
-        int maxPage,
-        IEnumerable<PdfOperationResult> pdfOperationResults)
+    public GetHistoryResponse()
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(minPage, nameof(minPage));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(minPage, maxPage, nameof(minPage));
-        ArgumentNullException.ThrowIfNull(pdfOperationResults, nameof(pdfOperationResults));
-
-        MinPage = minPage;
-        MaxPage = maxPage;
-        PdfOperationResults = pdfOperationResults;
+        PdfOperationResults = [];
     }
 
-    public int MinPage { get; }
-    public int MaxPage { get; }
-    public IEnumerable<PdfOperationResult> PdfOperationResults { get; }
+    public int MinPage { get; set; }
+    public int MaxPage { get; set; }
+    public IEnumerable<PdfOperationResult> PdfOperationResults { get; set; }
 }

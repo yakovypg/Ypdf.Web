@@ -1,15 +1,13 @@
-using System;
 using Ypdf.Web.Domain.Models.Api.Dto;
 
 namespace Ypdf.Web.Domain.Models.Api.Responses;
 
 public class RegisterUserResponse
 {
-    public RegisterUserResponse(UserDto user)
+    public RegisterUserResponse()
     {
-        ArgumentNullException.ThrowIfNull(user, nameof(user));
-        User = user;
+        User = new UserDto();
     }
 
-    public UserDto User { get; }
+    public UserDto User { get; set; }
 }

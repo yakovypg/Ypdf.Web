@@ -112,10 +112,10 @@ public class UserSubscriptionService : IUserSubscriptionService
         if (user.UserSubscription is null)
         {
             _logger.LogWarning(
-                "User {Id} doesn't have a subscription. It cannot be renewed",
+                "User {Id} does not have a subscription. It cannot be renewed",
                 user.Id);
 
-            throw new InternalException("User doesn't have a subscription");
+            throw new InternalException("User does not have a subscription");
         }
 
         user.UserSubscription.ExpiresAt = user.UserSubscription.ExpiresAt < DateTimeOffset.UtcNow

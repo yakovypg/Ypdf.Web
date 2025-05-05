@@ -29,6 +29,6 @@ public class ForbiddenException : ApiException
 
     private static string GetDefaultMessage()
     {
-        return "User doesn't have access to the resource";
+        return "User does not have access to the resource";
     }
 }

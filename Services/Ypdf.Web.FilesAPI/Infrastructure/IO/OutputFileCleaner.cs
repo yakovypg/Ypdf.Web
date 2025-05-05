@@ -63,7 +63,7 @@ public class OutputFileCleaner : BackgroundService
 
         if (!directoryInfo.Exists)
         {
-            _logger.LogWarning("Output files directory doesn't exist: {Directory}", _outputFilesDirectory);
+            _logger.LogWarning("Output files directory does not exist: {Directory}", _outputFilesDirectory);
             return;
         }
 

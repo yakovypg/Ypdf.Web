@@ -45,7 +45,7 @@ public class SignInService : ISignInService
         if (!signInResult.Succeeded)
         {
             _logger.LogWarning(
-                "User with email {Email} isn't authenticated. Result: {@Result}",
+                "User with email {Email} is not authenticated. Result: {@Result}",
                 email,
                 signInResult);
 

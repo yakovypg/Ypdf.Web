@@ -61,11 +61,11 @@ public class GetHistoryCommand : BaseCommand, IProtectedCommand<GetHistoryReques
         if (!allowed)
         {
             Logger.LogWarning(
-                "User {@User} doesn't have access to the resource owned by user {OwnerId}",
+                "User {@User} does not have access to the resource owned by user {OwnerId}",
                 userClaims.ToTypeValuePairs(),
                 pdfOperationResultUserId);
 
-            throw new ForbiddenException("User doesn't have access to the resource");
+            throw new ForbiddenException("User does not have access to the resource");
         }
     }
 

@@ -84,7 +84,7 @@ public class SubscriptionInfoService : ISubscriptionInfoService
         ArgumentNullException.ThrowIfNull(subscriptionName, nameof(subscriptionName));
         ArgumentNullException.ThrowIfNull(operationName, nameof(operationName));
 
-        string notItem = operationAllowed ? string.Empty : "n't";
+        string notItem = operationAllowed ? string.Empty : "not";
 
         _logger.LogInformation(
                 "Operation {Operation} is{NotItem} allowed for subscription {Subscription}",

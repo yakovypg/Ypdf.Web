@@ -169,11 +169,11 @@ public class SaveFilesCommand : BaseCommand, IProtectedCommand<SaveFilesRequest,
         if (!hasAccess)
         {
             Logger.LogWarning(
-                "User {@User} doesn't have access to the {OperationType} operation",
+                "User {@User} does not have access to the {OperationType} operation",
                 userClaims.ToTypeValuePairs(),
                 operationType);
 
-            throw new ForbiddenException("User doesn't have access to the resource");
+            throw new ForbiddenException("User does not have access to the resource");
         }
     }
 

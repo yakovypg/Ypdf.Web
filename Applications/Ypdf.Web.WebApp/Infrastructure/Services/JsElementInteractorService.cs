@@ -18,7 +18,13 @@ public class JsElementInteractorService : IJsElementInteractorService
     {
         ArgumentNullException.ThrowIfNull(itemId, nameof(itemId));
 
-        string js = $"document.getElementById('{itemId}').disabled = {disabled};";
+#pragma warning disable CA1308 // Normalize strings to uppercase
+        string disabledText = disabled
+            .ToString()
+            .ToLowerInvariant();
+#pragma warning restore CA1308 // Normalize strings to uppercase
+
+        string js = $"document.getElementById('{itemId}').disabled = {disabledText};";
 
         await _runtime
             .InvokeVoidAsync("eval", js)

@@ -18,6 +18,7 @@ public static class StartupExtensions
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
         _ = services
+            .AddSingleton<ICurrentUserService, CurrentUserService>()
             .AddSingleton<IHttpClientService, HttpClientService>();
 
         return services

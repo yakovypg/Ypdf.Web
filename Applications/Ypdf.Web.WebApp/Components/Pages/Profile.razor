@@ -7,6 +7,7 @@
 
 @inject AccountManager AccountManager
 @inject HistoryPageSwitcher PageSwitcher
+@inject ICurrentUserService CurrentUserService
 @inject IHttpClientService HttpClientService
 
 <PageTitle>Profile</PageTitle>
@@ -29,8 +30,15 @@
                     </div>
                     <div class="card-body">
                         <i class="fas fa-user-circle fa-5x mb-3 blue-icon"></i>
-                        <h5 class="card-title">John Doe</h5>
-                        <p class="card-text">Subscription Type: <strong>Standard</strong></p>
+                        <h5 class="card-title">
+                            @CurrentUserService.User?.Nickname
+                        </h5>
+                        <p class="card-text">
+                            Subscription Type:
+                            <strong>
+                                @CurrentUserService.User?.UserSubscription?.Subscription?.SubscriptionType
+                            </strong>
+                        </p>
                     </div>
                 </div>
 
@@ -300,6 +308,7 @@ else
     {
         Action<LoginResponse> successHandler = async response =>
         {
+            CurrentUserService.User = response.User;
             HttpClientService.SetAuthorizationToken(response.Token);
 
             ClearInputData();
@@ -308,8 +317,6 @@ else
             {
                 loggedIn = true;
                 PageSwitcher.UserId = response.User.Id.ToCultureInvariantString();
-
-                StateHasChanged();
             });
 
             await Task

@@ -54,7 +54,7 @@ public static class ClaimsPrincipalExtensions
 
         return valueParsed
             && claimValue is not null
-            && !allowPredicate.Invoke(claimValue);
+            && allowPredicate.Invoke(claimValue);
     }
 
     public static void VerifyAccessAndThrow<T>(

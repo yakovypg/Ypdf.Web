@@ -32,6 +32,9 @@ public class UiMessageService : IUiMessageService
             .ReadAsStringAsync()
             .ConfigureAwait(false);
 
+        if (string.IsNullOrEmpty(errorMessage))
+            errorMessage = responseMessage.ReasonPhrase ?? string.Empty;
+
         await ShowAlertAsync(errorMessage)
             .ConfigureAwait(false);
     }

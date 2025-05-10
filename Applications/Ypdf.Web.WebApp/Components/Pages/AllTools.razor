@@ -1,7 +1,9 @@
 ﻿@page "/tools"
 @rendermode InteractiveServer
 
-@using TinyMCE.Blazor
+@using Ypdf.Web.Domain.Models
+
+@inject ICurrentUserService CurrentUserService
 
 <PageTitle>Tools</PageTitle>
 
@@ -59,6 +61,30 @@
                 </div>
             </a>
         </div>
+        @if (CurrentUserService.User?.UserSubscription?.Subscription?.SubscriptionType == SubscriptionType.Trial)
+        {
+            <div class="col-md-3 mb-4">
+                <a href="/tools/echo" class="card text-center text-decoration-none">
+                    <div class="card-body">
+                        <i class="fas fa-redo fa-3x mb-2"></i>
+                        <h5 class="card-title">Echo PDF</h5>
+                        <p class="card-text">Repeat the content of a PDF document</p>
+                    </div>
+                </a>
+            </div>
+        }
+        @if (CurrentUserService.User?.UserSubscription?.Subscription?.SubscriptionType == SubscriptionType.Standard)
+        {
+            <div class="col-md-3 mb-4">
+                <a href="/tools/copy" class="card text-center text-decoration-none">
+                    <div class="card-body">
+                        <i class="fas fa-copy fa-3x mb-2"></i>
+                        <h5 class="card-title">Copy PDF</h5>
+                        <p class="card-text">Repeat the content of a PDF document</p>
+                    </div>
+                </a>
+            </div>
+        }
     </div>
 </div>
 

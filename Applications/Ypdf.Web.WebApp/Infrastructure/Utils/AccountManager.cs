@@ -29,7 +29,8 @@ public class AccountManager
 
     public async Task ChangePasswordAsync()
     {
-        await _messageService.ShowAlertAsync("Not supported yet")
+        await _messageService
+            .ShowAlertAsync("Not supported yet")
             .ConfigureAwait(false);
     }
 

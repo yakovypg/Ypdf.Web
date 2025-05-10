@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
@@ -7,17 +8,34 @@ namespace Ypdf.Web.WebApp.Infrastructure.Services;
 
 public class HttpClientService : IHttpClientService, IDisposable
 {
+    private const string Scheme = "Bearer";
+
+    private readonly HttpClientHandler _httpClientHandler;
     private readonly HttpClient _httpClient;
+
     private bool _isDisposed;
 
     public HttpClientService()
     {
-        _httpClient = new HttpClient();
+        _httpClientHandler = new HttpClientHandler()
+        {
+            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+        };
+
+        _httpClient = new HttpClient(_httpClientHandler);
     }
 
     ~HttpClientService()
     {
         Dispose(false);
+    }
+
+    public void SetAuthorizationToken(string token)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(token, nameof(token));
+
+        var authenticationHeaderValue = new AuthenticationHeaderValue(Scheme, token);
+        _httpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
     }
 
     public async Task<HttpResponseMessage> GetAsync(string url)
@@ -69,7 +87,10 @@ public class HttpClientService : IHttpClientService, IDisposable
         if (!_isDisposed)
         {
             if (disposing)
+            {
+                _httpClientHandler?.Dispose();
                 _httpClient?.Dispose();
+            }
 
             _isDisposed = true;
         }

@@ -17,9 +17,11 @@ public static class StartupExtensions
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
+        _ = services
+            .AddSingleton<IHttpClientService, HttpClientService>();
+
         return services
             .AddScoped<IApiResponseReaderService, ApiResponseReaderService>()
-            .AddScoped<IHttpClientService, HttpClientService>()
             .AddScoped<IHttpClientInteractorService, HttpClientInteractorService>()
             .AddScoped<IUiMessageService, UiMessageService>()
             .AddScoped<IJsElementInteractorService, JsElementInteractorService>();

@@ -52,27 +52,16 @@ public class PdfOperationResultRepository : IPdfOperationResultRepository, IDisp
         return _operationResults.FindAll();
     }
 
-    public IEnumerable<PdfOperationResult> FindAll(Func<PdfOperationResult, bool> predicate)
+    public IEnumerable<PdfOperationResult> GetUserOperations(int userId)
     {
-        ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
-        return GetAll().Where(predicate);
+        BsonExpression predicate = Query.EQ(nameof(PdfOperationResult.UserId), userId);
+        return _operationResults.Find(predicate);
     }
 
-    public PdfOperationResult FindOne(Func<PdfOperationResult, bool> predicate)
+    public int UserOperationsCount(int userId)
     {
-        ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
-        return GetAll().First(predicate);
-    }
-
-    public PdfOperationResult? FindOneOrDefault(Func<PdfOperationResult, bool> predicate)
-    {
-        ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
-        return GetAll().FirstOrDefault(predicate);
-    }
-
-    public int Count(Func<PdfOperationResult, bool> predicate)
-    {
-        return _operationResults.Count(t => predicate(t));
+        BsonExpression predicate = Query.EQ(nameof(PdfOperationResult.UserId), userId);
+        return _operationResults.Count(predicate);
     }
 
     public void Dispose()

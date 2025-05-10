@@ -74,12 +74,13 @@ public class GetHistoryCommand : BaseCommand, IProtectedCommand<GetHistoryReques
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
         int userOperationsCount = _pdfOperationResultRepository
-            .Count(t => t.UserId == request.UserId);
+            .UserOperationsCount(request.UserId);
 
-        IEnumerable<PdfOperationResult> operations = _pdfOperationResultRepository
-            .FindAll(t => t.UserId == request.UserId)
+        PdfOperationResult[] operations = _pdfOperationResultRepository
+            .GetUserOperations(request.UserId)
             .Skip(request.PageSize * (request.PageNumber - 1))
-            .Take(request.PageSize);
+            .Take(request.PageSize)
+            .ToArray();
 
         const int minPage = 1;
         int maxPage = Math.Max(userOperationsCount, minPage);

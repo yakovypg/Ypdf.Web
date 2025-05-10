@@ -7,6 +7,7 @@
 
 @inject AccountManager AccountManager
 @inject HistoryPageSwitcher PageSwitcher
+@inject IHttpClientService HttpClientService
 
 <PageTitle>Profile</PageTitle>
 
@@ -80,7 +81,6 @@
                                 <li class="standard-benefit">
                                     <i class="fas fa-plus-circle blue-icon"></i>
                                     Ideal for everyday needs
-    using Ypdf.Web.WebApp.Infrastructure.Services;
                                 </li>
                             </ul>
                         </div>
@@ -98,7 +98,6 @@
                     <div class="card-header bg-primary text-white text-center blue-card-header">
                         <h5 class="mb-0">Operation History</h5>
                     </div>
-    using Ypdf.Web.Domain.Models.Informing;
                     <div class="card-body">
                         <table id="operationTable" class="table table-striped">
                             <thead>
@@ -107,7 +106,6 @@
                                     <th>Operation</th>
                                     <th>Status</th>
                                 </tr>
-    using Blazorise.Extensions;
                             </thead>
                             <tbody>
                                 <!-- Operations will be added here using JS -->
@@ -302,10 +300,21 @@ else
     {
         Action<LoginResponse> successHandler = async response =>
         {
+            HttpClientService.SetAuthorizationToken(response.Token);
+
             ClearInputData();
 
-            loggedIn = true;
-            PageSwitcher.UserId = response.User.Id.ToCultureInvariantString();
+            await InvokeAsync(() =>
+            {
+                loggedIn = true;
+                PageSwitcher.UserId = response.User.Id.ToCultureInvariantString();
+
+                StateHasChanged();
+            });
+
+            await Task
+                .Delay(100)
+                .ConfigureAwait(false);
 
             await LoadFirstHistoryPageAsync()
                 .ConfigureAwait(false);

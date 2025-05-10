@@ -1,6 +1,10 @@
+using System.Text.Json.Serialization;
+using Ypdf.Web.Domain.Infrastructure.Converters;
+
 namespace Ypdf.Web.Domain.Models.Api.Dto;
 
 public class SubscriptionDto
 {
-    public SubscriptionDto? Subscription { get; set; }
+    [JsonConverter(typeof(EnumJsonConverter<SubscriptionType>))]
+    public SubscriptionType SubscriptionType { get; set; }
 }

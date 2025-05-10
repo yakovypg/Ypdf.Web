@@ -24,6 +24,7 @@ public static class StartupExtensions
         return services
             .AddScoped<IApiResponseReaderService, ApiResponseReaderService>()
             .AddScoped<IHttpClientInteractorService, HttpClientInteractorService>()
+            .AddScoped<ISubscriptionService, SubscriptionService>()
             .AddScoped<IUiMessageService, UiMessageService>()
             .AddScoped<IJsElementInteractorService, JsElementInteractorService>();
     }

@@ -17,14 +17,6 @@
     font-size: 17px;
 }
 
-.trial-benefit {
-    display: block;
-}
-
-.standard-benefit {
-    display: none;
-}
-
 .subscription-switch {
     transform: scale(2.0);
     background-color: LightGray;

@@ -2,13 +2,15 @@
 @rendermode InteractiveServer
 
 @using Blazorise.Extensions
+@using Ypdf.Web.Domain.Models
 @using Ypdf.Web.Domain.Models.Informing
 @using Ypdf.Web.WebApp.Infrastructure.Utils
 
 @inject AccountManager AccountManager
-@inject HistoryPageSwitcher PageSwitcher
+@inject HistoryPageSwitcher HistoryPageSwitcher
 @inject ICurrentUserService CurrentUserService
 @inject IHttpClientService HttpClientService
+@inject ISubscriptionService SubscriptionService
 
 <PageTitle>Profile</PageTitle>
 
@@ -48,53 +50,62 @@
                     </div>
                     <div class="card-body">
                         <div class="text-center">
-                            <h5 id="toggle-label" class="subscription-switch-header mb-2">Trial</h5>
+                            <h5 id="toggle-label" class="subscription-switch-header mb-2">
+                                @selectedSubscriptionType
+                            </h5>
                             <div class="form-check form-switch d-flex justify-content-center">
-                                <input id="subscription-toggle"
-                                    class="form-check-input cursor-pointer subscription-switch"
-                                    type="checkbox"
-                                    role="switch" />
+                                <input class="form-check-input cursor-pointer subscription-switch"
+                                       type="checkbox"
+                                       role="switch"
+                                       @bind="subscriptionSwitchChecked" />
                             </div>
                         </div>
                         <div class="text-start my-4">
                             <ul class="list-unstyled benefits-list">
-                                <li class="trial-benefit">
-                                    <i class="fas fa-plus-circle blue-icon"></i>
-                                    Discover the potential of the app
-                                </li>
-                                <li class="trial-benefit">
-                                    <i class="fas fa-plus-circle blue-icon"></i>
-                                    Enjoy unrestricted access
-                                </li>
-                                <li class="trial-benefit">
-                                    <i class="fas fa-minus-circle blue-icon"></i>
-                                    Some test tools are unavailable
-                                </li>
-                                <li class="trial-benefit">
-                                    <i class="fas fa-minus-circle blue-icon"></i>
-                                    Suitable for a trial experience only
-                                </li>
-                                <li class="standard-benefit">
-                                    <i class="fas fa-plus-circle blue-icon"></i>
-                                    Explore the full capabilities of the app
-                                </li>
-                                <li class="standard-benefit">
-                                    <i class="fas fa-plus-circle blue-icon"></i>
-                                    Experience unlimited access
-                                </li>
-                                <li class="standard-benefit">
-                                    <i class="fas fa-plus-circle blue-icon"></i>
-                                    Gain access to all tools and features
-                                </li>
-                                <li class="standard-benefit">
-                                    <i class="fas fa-plus-circle blue-icon"></i>
-                                    Ideal for everyday needs
-                                </li>
+                                @if (subscriptionSwitchChecked)
+                                {
+                                    <li>
+                                        <i class="fas fa-plus-circle blue-icon"></i>
+                                        Discover the potential of the app
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-plus-circle blue-icon"></i>
+                                        Enjoy unrestricted access
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-minus-circle blue-icon"></i>
+                                        Some test tools are unavailable
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-minus-circle blue-icon"></i>
+                                        Suitable for a trial experience only
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <i class="fas fa-plus-circle blue-icon"></i>
+                                        Explore the full capabilities of the app
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-plus-circle blue-icon"></i>
+                                        Experience unlimited access
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-plus-circle blue-icon"></i>
+                                        Gain access to all tools and features
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-plus-circle blue-icon"></i>
+                                        Ideal for everyday needs
+                                    </li>
+                                }
                             </ul>
                         </div>
                         <button id="changeSubscriptionButton"
                                 class="btn btn-primary btn-block"
-                                type="button">
+                                type="button"
+                                @onclick="ActivateSubscriptionAsync">
                             Activate
                         </button>
                     </div>
@@ -123,14 +134,14 @@
                     <div class="card-footer d-flex justify-content-center align-items-center">
                         <button id="prev-button"
                                 class="btn btn-secondary rounded-circle"
-                                @onclick="PageSwitcher.PreviousPageAsync"
+                                @onclick="HistoryPageSwitcher.PreviousPageAsync"
                                 disabled>
                             <i class="fas fa-chevron-left"></i>
                         </button>
                         <span id="page-info" class="mx-3">Page 1</span>
                         <button id="next-button"
                                 class="btn btn-secondary rounded-circle"
-                                @onclick="PageSwitcher.NextPageAsync">
+                                @onclick="HistoryPageSwitcher.NextPageAsync">
                             <i class="fas fa-chevron-right"></i>
                         </button>
                     </div>
@@ -262,9 +273,6 @@ else
 <link rel="stylesheet" href="css/profile.css" />
 <link rel="stylesheet" href="css/components/title.css" />
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
-<script src="js/profile.js" defer></script>
-
 @code
 {
 #region Login & Register
@@ -313,17 +321,13 @@ else
 
             ClearInputData();
 
-            await InvokeAsync(() =>
-            {
-                loggedIn = true;
-                PageSwitcher.UserId = response.User.Id.ToCultureInvariantString();
-            });
+            loggedIn = true;
+            HistoryPageSwitcher.UserId = response.User.Id.ToCultureInvariantString();
 
+            // Ensure all elements are rendered
             await Task
-                .Delay(100)
-                .ConfigureAwait(false);
-
-            await LoadFirstHistoryPageAsync()
+                .Delay(Timings.RenderMs)
+                .ContinueWith(t => LoadFirstHistoryPageAsync())
                 .ConfigureAwait(false);
         };
 
@@ -351,8 +355,25 @@ else
 
     private async Task LoadFirstHistoryPageAsync()
     {
-        await PageSwitcher
+        await HistoryPageSwitcher
             .ChangePageAsync(1)
+            .ConfigureAwait(false);
+    }
+
+#endregion
+
+#region Subscriptions
+
+    private bool subscriptionSwitchChecked = false;
+
+    private SubscriptionType selectedSubscriptionType => subscriptionSwitchChecked
+        ? SubscriptionType.Standard
+        : SubscriptionType.Trial;
+
+    private async Task ActivateSubscriptionAsync()
+    {
+        await SubscriptionService
+            .ActivateAsync(selectedSubscriptionType)
             .ConfigureAwait(false);
     }
 

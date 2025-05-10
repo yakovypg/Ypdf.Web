@@ -1,7 +1,6 @@
 $(document).ready(function () {
     let files = [];
 
-    // Update the file list display
     function updateFileList() {
         $('#file-list').empty();
 
@@ -18,11 +17,10 @@ $(document).ready(function () {
             $('#file-list').append(listItem);
         });
 
-        makeListSortable();
+        makeFileListSortable();
     }
 
-    // Make the file list sortable
-    function makeListSortable() {
+    function makeFileListSortable() {
         $('#file-list').sortable({
             items: 'li',
             update: function (event, ui) {
@@ -33,24 +31,17 @@ $(document).ready(function () {
         });
     }
 
-    // Handle file upload
     $('#file-upload').on('change', function (event) {
-        const newFiles = Array.from(event.target.files);
-        files = files.concat(newFiles);
+        files = Array.from(event.target.files);
         updateFileList();
-
-        // Uncomment to reset last uploaded files label text
-        // event.target.value = '';
     });
 
-    // Remove file from the list
     $('#file-list').on('click', '.remove-file', function () {
         const index = $(this).closest('li').data('index');
         files.splice(index, 1);
         updateFileList();
     });
 
-    // Handle merge button click
     $('#merge-button').on('click', function () {
         if (files.length < 2) {
             alert("Upload at least 2 files");

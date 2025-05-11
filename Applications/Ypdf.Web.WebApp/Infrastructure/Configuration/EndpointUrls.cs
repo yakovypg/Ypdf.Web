@@ -8,15 +8,25 @@ namespace Ypdf.Web.WebApp.Infrastructure.Configuration;
 
 public static class EndpointUrls
 {
-    public static Uri Login => new("https://localhost:8081/api/account/login/");
-    public static Uri Register => new("https://localhost:8081/api/account/register/");
+#if DEBUG
+    public const string AccountApiHost = "localhost:8081";
+    public const string FilesApiHost = "localhost:8082";
+    public const string HistoryApiHost = "localhost:8083";
+#else
+    public const string AccountApiHost = "account_api";
+    public const string FilesApiHost = "files_api";
+    public const string HistoryApiHost = "pdf_operations_history_api";
+#endif
 
-    public static Uri Merge => new("https://localhost:8082/api/tool/merge/");
-    public static Uri Split => new("https://localhost:8082/api/tool/split/");
+    public static Uri Login => new($"https://{AccountApiHost}/api/account/login/");
+    public static Uri Register => new($"https://{AccountApiHost}/api/account/register/");
 
-    public static Uri OutputFileBase => new("https://localhost:8082/api/output/");
-    public static Uri CheckOutputFileBase => new("https://localhost:8082/api/output/check/");
-    public static Uri HistoryBase => new("https://localhost:8083/api/history/");
+    public static Uri Merge => new($"https://{FilesApiHost}/api/tool/merge/");
+    public static Uri Split => new($"https://{FilesApiHost}/api/tool/split/");
+
+    public static Uri OutputFileBase => new($"https://{FilesApiHost}/api/output/");
+    public static Uri CheckOutputFileBase => new($"https://{FilesApiHost}/api/output/check/");
+    public static Uri HistoryBase => new($"https://{HistoryApiHost}/api/history/");
 
     public static Uri OutputFile(string fileName)
     {

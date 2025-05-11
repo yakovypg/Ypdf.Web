@@ -19,6 +19,7 @@ public class HttpClientService : IHttpClientService, IDisposable
     {
         _httpClientHandler = new HttpClientHandler()
         {
+            // Y-TODO: remove it
             ServerCertificateCustomValidationCallback = (_, _, _, _) => true
         };
 

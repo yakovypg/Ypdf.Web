@@ -125,13 +125,20 @@ public class HistoryPageSwitcher
         string operationName = result.OperationType.ToString();
         string operationEndDate = endDateLocal.Date.ToShortDateString();
         string outputFileName = result.OutputFileName;
-        string outputFileUrl = result.OutputFileName;
+        string outputFileUrl = $"/result/{outputFileName}";
+
+        DateTime currentTimeUtc = DateTime.UtcNow;
+        DateTime minLastWriteTimeUtc = currentTimeUtc.AddDays(-1);
+
+        string resultLinkHtml = result.EndDate >= minLastWriteTimeUtc
+            ? $"<a class='link-offset-1' href='{outputFileUrl}'>{outputFileName}</a>"
+            : "<span>outdate</span>";
 
         return $@"
             <tr>
                 <td>{operationEndDate}</td>
                 <td>{operationName}</td>
-                <td><a class='link-offset-1' href='{outputFileUrl}'>{outputFileName}</a></td>
+                <td>{resultLinkHtml}</td>
             </tr>
         ";
     }

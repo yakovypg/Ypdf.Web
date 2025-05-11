@@ -95,7 +95,8 @@
                     .ReadAsync<CheckOutputFileExistsResponse>(responseMessage)
                     .ConfigureAwait(false);
 
-                return response is not null && response.Exists;
+                if (response?.Exists ?? false)
+                    return true;
             }
 
             await Task.Delay(RequestIntervalMilliseconds);

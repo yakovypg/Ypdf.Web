@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-namespace Ypdf.Web.WebApp.Infrastructure.Services;
+namespace Ypdf.Web.WebApp.Infrastructure.Services.Http;
 
 public class HttpClientService : IHttpClientService, IDisposable
 {
@@ -38,31 +38,12 @@ public class HttpClientService : IHttpClientService, IDisposable
         _httpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
     }
 
-    public async Task<HttpResponseMessage> GetAsync(string url)
-    {
-        var uri = new Uri(url);
-
-        return await GetAsync(uri)
-            .ConfigureAwait(false);
-    }
-
     public async Task<HttpResponseMessage> GetAsync(Uri uri)
     {
         ArgumentNullException.ThrowIfNull(uri, nameof(uri));
 
         return await _httpClient
             .GetAsync(uri)
-            .ConfigureAwait(false);
-    }
-
-    public async Task<HttpResponseMessage> PostAsync(string url, object data)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(url, nameof(url));
-        ArgumentNullException.ThrowIfNull(data, nameof(data));
-
-        var uri = new Uri(url);
-
-        return await PostAsync(uri, data)
             .ConfigureAwait(false);
     }
 
@@ -73,17 +54,6 @@ public class HttpClientService : IHttpClientService, IDisposable
 
         return await _httpClient
             .PostAsJsonAsync(uri, data)
-            .ConfigureAwait(false);
-    }
-
-    public async Task<HttpResponseMessage> PostAsync(string url, HttpContent data)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(url, nameof(url));
-        ArgumentNullException.ThrowIfNull(data, nameof(data));
-
-        var uri = new Uri(url);
-
-        return await PostAsync(uri, data)
             .ConfigureAwait(false);
     }
 

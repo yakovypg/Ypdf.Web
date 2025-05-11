@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Ypdf.Web.WebApp.Infrastructure.Services;
+namespace Ypdf.Web.WebApp.Infrastructure.Services.UI;
 
 public interface IJsElementInteractorService
 {

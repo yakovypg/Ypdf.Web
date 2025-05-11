@@ -1,8 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Ypdf.Web.Domain.Models;
+using Ypdf.Web.WebApp.Infrastructure.Services.UI;
 
-namespace Ypdf.Web.WebApp.Infrastructure.Services;
+namespace Ypdf.Web.WebApp.Infrastructure.Services.Users;
 
 public class SubscriptionService : ISubscriptionService
 {

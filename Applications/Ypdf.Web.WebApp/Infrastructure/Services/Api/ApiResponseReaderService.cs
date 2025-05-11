@@ -1,11 +1,11 @@
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Ypdf.Web.Domain.Models.Api;
+using Ypdf.Web.WebApp.Infrastructure.Services.UI;
 
-namespace Ypdf.Web.WebApp.Infrastructure.Services;
+namespace Ypdf.Web.WebApp.Infrastructure.Services.Api;
 
 public class ApiResponseReaderService : IApiResponseReaderService
 {
@@ -30,7 +30,7 @@ public class ApiResponseReaderService : IApiResponseReaderService
             : response.Result;
     }
 
-    public async Task<(bool Success, T? Response)> TryReadAsync<T>(
+    public async Task<(bool Success, T? Response)> ReadWithInfoAsync<T>(
         HttpResponseMessage responseMessage)
     {
         ArgumentNullException.ThrowIfNull(responseMessage, nameof(responseMessage));

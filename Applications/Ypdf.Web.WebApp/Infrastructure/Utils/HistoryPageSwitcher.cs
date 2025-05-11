@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Ypdf.Web.Domain.Models.Api.Responses;
 using Ypdf.Web.Domain.Models.Informing;
 using Ypdf.Web.WebApp.Infrastructure.Configuration;
-using Ypdf.Web.WebApp.Infrastructure.Services;
+using Ypdf.Web.WebApp.Infrastructure.Services.Api;
+using Ypdf.Web.WebApp.Infrastructure.Services.Http;
+using Ypdf.Web.WebApp.Infrastructure.Services.UI;
 
 namespace Ypdf.Web.WebApp.Infrastructure.Utils;
 
@@ -145,7 +147,7 @@ public class HistoryPageSwitcher
         async void SuccessHandler(HttpResponseMessage responseMessage)
         {
             (bool success, GetHistoryResponse? response) = await _apiResponseReaderService
-                .TryReadAsync<GetHistoryResponse>(responseMessage)
+                .ReadWithInfoAsync<GetHistoryResponse>(responseMessage)
                 .ConfigureAwait(false);
 
             if (!success || response is null)

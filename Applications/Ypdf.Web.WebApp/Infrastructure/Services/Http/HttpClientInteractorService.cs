@@ -1,8 +1,9 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Ypdf.Web.WebApp.Infrastructure.Services.UI;
 
-namespace Ypdf.Web.WebApp.Infrastructure.Services;
+namespace Ypdf.Web.WebApp.Infrastructure.Services.Http;
 
 public class HttpClientInteractorService : IHttpClientInteractorService
 {
@@ -20,17 +21,6 @@ public class HttpClientInteractorService : IHttpClientInteractorService
         _messageService = messageService;
     }
 
-    public async Task GetAsync(string url, Action<HttpResponseMessage> successHandler)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(url, nameof(url));
-        ArgumentNullException.ThrowIfNull(successHandler, nameof(successHandler));
-
-        var uri = new Uri(url);
-
-        await GetAsync(uri, successHandler)
-            .ConfigureAwait(false);
-    }
-
     public async Task GetAsync(Uri uri, Action<HttpResponseMessage> successHandler)
     {
         ArgumentNullException.ThrowIfNull(uri, nameof(uri));
@@ -41,18 +31,6 @@ public class HttpClientInteractorService : IHttpClientInteractorService
             .ConfigureAwait(false);
 
         await HandleResponseAsync(responseMessage, successHandler)
-            .ConfigureAwait(false);
-    }
-
-    public async Task PostAsync(string url, object data, Action<HttpResponseMessage> successHandler)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(url, nameof(url));
-        ArgumentNullException.ThrowIfNull(data, nameof(data));
-        ArgumentNullException.ThrowIfNull(successHandler, nameof(successHandler));
-
-        var uri = new Uri(url);
-
-        await PostAsync(uri, data, successHandler)
             .ConfigureAwait(false);
     }
 
@@ -67,18 +45,6 @@ public class HttpClientInteractorService : IHttpClientInteractorService
             .ConfigureAwait(false);
 
         await HandleResponseAsync(responseMessage, successHandler)
-            .ConfigureAwait(false);
-    }
-
-    public async Task PostAsync(string url, HttpContent data, Action<HttpResponseMessage> successHandler)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(url, nameof(url));
-        ArgumentNullException.ThrowIfNull(data, nameof(data));
-        ArgumentNullException.ThrowIfNull(successHandler, nameof(successHandler));
-
-        var uri = new Uri(url);
-
-        await PostAsync(uri, data, successHandler)
             .ConfigureAwait(false);
     }
 

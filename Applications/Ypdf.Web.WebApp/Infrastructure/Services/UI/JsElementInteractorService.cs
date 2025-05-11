@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 
-namespace Ypdf.Web.WebApp.Infrastructure.Services;
+namespace Ypdf.Web.WebApp.Infrastructure.Services.UI;
 
 public class JsElementInteractorService : IJsElementInteractorService
 {

@@ -6,7 +6,11 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ypdf.Web.Domain.Models.Configuration;
-using Ypdf.Web.WebApp.Infrastructure.Services;
+using Ypdf.Web.WebApp.Infrastructure.Services.Api;
+using Ypdf.Web.WebApp.Infrastructure.Services.Files;
+using Ypdf.Web.WebApp.Infrastructure.Services.Http;
+using Ypdf.Web.WebApp.Infrastructure.Services.UI;
+using Ypdf.Web.WebApp.Infrastructure.Services.Users;
 using Ypdf.Web.WebApp.Infrastructure.Utils;
 
 namespace Ypdf.Web.WebApp.Infrastructure.Extensions;

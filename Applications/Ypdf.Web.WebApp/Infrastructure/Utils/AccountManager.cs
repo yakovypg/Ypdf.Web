@@ -3,7 +3,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Ypdf.Web.Domain.Models.Api.Responses;
 using Ypdf.Web.WebApp.Infrastructure.Configuration;
-using Ypdf.Web.WebApp.Infrastructure.Services;
+using Ypdf.Web.WebApp.Infrastructure.Services.Api;
+using Ypdf.Web.WebApp.Infrastructure.Services.Http;
+using Ypdf.Web.WebApp.Infrastructure.Services.UI;
 
 namespace Ypdf.Web.WebApp.Infrastructure.Utils;
 
@@ -46,7 +48,7 @@ public class AccountManager
         async void SuccessHandler(HttpResponseMessage responseMessage)
         {
             (bool success, LoginResponse? response) = await _apiResponseReaderService
-                .TryReadAsync<LoginResponse>(responseMessage)
+                .ReadWithInfoAsync<LoginResponse>(responseMessage)
                 .ConfigureAwait(false);
 
             if (!success || response is null)
@@ -86,7 +88,7 @@ public class AccountManager
         async void SuccessHandler(HttpResponseMessage responseMessage)
         {
             (bool success, RegisterUserResponse? response) = await _apiResponseReaderService
-                .TryReadAsync<RegisterUserResponse>(responseMessage)
+                .ReadWithInfoAsync<RegisterUserResponse>(responseMessage)
                 .ConfigureAwait(false);
 
             if (!success || response is null)

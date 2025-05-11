@@ -1,5 +1,11 @@
-@page "/waiting"
+@page "/waiting/{filename}"
 @attribute [StreamRendering]
+
+@using System.Timers
+
+@inject NavigationManager Navigation
+@inject IHttpClientService HttpClientService
+@inject IApiResponseReaderService ApiResponseReaderService
 
 <PageTitle>Waiting</PageTitle>
 
@@ -9,10 +15,98 @@
         <span class="visually-hidden">Loading...</span>
     </div>
     <div class="mt-4">
-        <h5>Elapsed Time: <span id="timer">0</span> seconds</h5>
+        <h5>Elapsed Time: <span>@elapsedSeconds</span> seconds</h5>
     </div>
-    <div id="result" class="mt-4"></div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="js/waiting.js"></script>
+@code
+{
+    private const int TimerIntervalMilliseconds = 1000;
+    private const int RequestIntervalMilliseconds = 3000;
+    private const int MaxRequestsCount = 100;
+
+    private Timer? timer;
+    private int elapsedSeconds = 0;
+
+    [Parameter]
+    public string? FileName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        InitTimer();
+
+        await CheckFileAsync1()
+            .ConfigureAwait(false);
+    }
+
+    private void InitTimer()
+    {
+        timer = new Timer(TimerIntervalMilliseconds)
+        {
+            AutoReset = true
+        };
+
+        timer.Elapsed += async (sender, e) =>
+        {
+            await InvokeAsync(UpdateElapsedSeconds);
+        };
+
+        timer.Start();
+    }
+
+    private void UpdateElapsedSeconds()
+    {
+        elapsedSeconds++;
+        StateHasChanged();
+    }
+
+    private async Task CheckFileAsync1()
+    {
+        if (string.IsNullOrEmpty(FileName))
+        {
+            return;
+        }
+
+        bool fileExists = await CheckFileExistsAsync()
+            .ConfigureAwait(false);
+
+        timer?.Stop();
+
+        string redirectUrl = fileExists
+            ? $"/result/{FileName}"
+            : "/result-not-recieved";
+
+        Navigation.NavigateTo(redirectUrl, false);
+    }
+
+    private async Task<bool> CheckFileExistsAsync()
+    {
+        for (int i = 0; i < MaxRequestsCount; ++i)
+        {
+            Uri uri = EndpointUrls.CheckOutputFile(FileName!);
+
+            HttpResponseMessage responseMessage = await HttpClientService
+                .GetAsync(uri)
+                .ConfigureAwait(false);
+
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                CheckOutputFileExistsResponse? response = await ApiResponseReaderService
+                    .ReadAsync<CheckOutputFileExistsResponse>(responseMessage)
+                    .ConfigureAwait(false);
+
+                return response is not null && response.Exists;
+            }
+
+            await Task.Delay(RequestIntervalMilliseconds);
+        }
+
+        return false;
+    }
+
+    public void Dispose()
+    {
+        timer?.Stop();
+        timer?.Dispose();
+    }
+}

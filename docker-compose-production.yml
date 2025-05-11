@@ -1,6 +1,29 @@
 name: ypdf
 
 services:
+  web_app:
+    build:
+      context: .
+      dockerfile: ./Applications/Ypdf.Web.WebApp/Dockerfile
+    container_name: WebApp
+    depends_on:
+      - account_api
+      - files_api
+      - pdf_operations_history_api
+    expose:
+      - 9001
+    ports:
+      - 9001:443
+    restart: on-failure
+    environment:
+      ASPNETCORE_URLS: https://+;http://+
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTPS_PORT: 9001
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
+    volumes:
+      - ./Certificates:/https
+
   account_api:
     build:
       context: .

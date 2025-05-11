@@ -8,6 +8,7 @@
 @inject ICurrentUserService CurrentUserService
 @inject IHttpClientInteractorService HttpClientInteractorService
 @inject IFileContentCreatingService FileContentCreatingService
+@inject IApiResponseReaderService ApiResponseReaderService
 @inject IUiMessageService MessageService
 
 <PageTitle>Merge</PageTitle>
@@ -76,9 +77,22 @@
             .CreateMultipartFormDataContentAsync(files)
             .ConfigureAwait(false);
 
-        Action<HttpResponseMessage> successHandler = responseMessage =>
+        Action<HttpResponseMessage> successHandler = async responseMessage =>
         {
-            Navigation.NavigateTo("/waiting", false);
+            SaveFilesResponse? response = await ApiResponseReaderService
+                .ReadAsync<SaveFilesResponse>(responseMessage)
+                .ConfigureAwait(false);
+
+            if (response is not null)
+            {
+                Navigation.NavigateTo($"/waiting/{response.OutputFileName}", false);
+            }
+            else
+            {
+                await MessageService
+                    .ShowAlertAsync("Something went wrong...")
+                    .ConfigureAwait(false);
+            }
         };
 
         await HttpClientInteractorService

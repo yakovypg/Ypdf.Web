@@ -18,15 +18,24 @@ public static class EndpointUrls
     public const string HistoryApiHost = "pdf_operations_history_api";
 #endif
 
+    public const string ExternalFilesApiHost = "localhost:8082";
+
     public static Uri Login => new($"https://{AccountApiHost}/api/account/login/");
     public static Uri Register => new($"https://{AccountApiHost}/api/account/register/");
 
     public static Uri Merge => new($"https://{FilesApiHost}/api/tool/merge/");
     public static Uri Split => new($"https://{FilesApiHost}/api/tool/split/");
 
+    public static Uri ExternalOutputFileBase => new($"https://{ExternalFilesApiHost}/api/output/");
     public static Uri OutputFileBase => new($"https://{FilesApiHost}/api/output/");
     public static Uri CheckOutputFileBase => new($"https://{FilesApiHost}/api/output/check/");
     public static Uri HistoryBase => new($"https://{HistoryApiHost}/api/history/");
+
+    public static Uri ExternalOutputFile(string fileName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(fileName, nameof(fileName));
+        return new Uri(ExternalOutputFileBase, fileName);
+    }
 
     public static Uri OutputFile(string fileName)
     {

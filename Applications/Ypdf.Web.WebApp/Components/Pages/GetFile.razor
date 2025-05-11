@@ -20,6 +20,6 @@
     public string? FileName { get; set; }
 
     private string ResultPath => !string.IsNullOrEmpty(FileName)
-        ? EndpointUrls.OutputFile(FileName).ToString()
+        ? EndpointUrls.ExternalOutputFile(FileName).ToString()
         : "/";
 }

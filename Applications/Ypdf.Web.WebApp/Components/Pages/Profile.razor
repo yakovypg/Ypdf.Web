@@ -138,7 +138,9 @@
                                 disabled>
                             <i class="fas fa-chevron-left"></i>
                         </button>
-                        <span id="page-info" class="mx-3">Page 1</span>
+                        <span id="page-info" class="mx-3">
+                            Page @HistoryPageSwitcher.CurrentPageNumber
+                        </span>
                         <button id="next-button"
                                 class="btn btn-secondary rounded-circle"
                                 @onclick="HistoryPageSwitcher.NextPageAsync">

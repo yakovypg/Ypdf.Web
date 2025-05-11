@@ -41,6 +41,8 @@ public class GetHistoryCommand : BaseCommand, IProtectedCommand<GetHistoryReques
         ArgumentNullException.ThrowIfNull(request, nameof(request));
         ArgumentNullException.ThrowIfNull(userClaims, nameof(userClaims));
 
+        ValidateRequestParameters(request);
+
         Logger.LogInformation("Trying to get history for user {UserId}", request.UserId);
         VerifyAccess(request.UserId, userClaims);
 
@@ -48,6 +50,17 @@ public class GetHistoryCommand : BaseCommand, IProtectedCommand<GetHistoryReques
         Logger.LogInformation("History for user {UserId} successfully recieved", request.UserId);
 
         return Task.FromResult(response);
+    }
+
+    private static void ValidateRequestParameters(GetHistoryRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+
+        if (request.PageNumber <= 0)
+            throw new BadRequestException("Page number is invalid");
+
+        if (request.PageSize <= 0)
+            throw new BadRequestException("Page size is invalid");
     }
 
     private void VerifyAccess(int pdfOperationResultUserId, ClaimsPrincipal userClaims)
@@ -83,7 +96,10 @@ public class GetHistoryCommand : BaseCommand, IProtectedCommand<GetHistoryReques
             .ToArray();
 
         const int minPage = 1;
-        int maxPage = Math.Max(userOperationsCount, minPage);
+        double realPagesCount = userOperationsCount / (double)request.PageSize;
+
+        int pagesCount = (int)Math.Ceiling(realPagesCount);
+        int maxPage = Math.Max(pagesCount, minPage);
 
         return new GetHistoryResponse()
         {

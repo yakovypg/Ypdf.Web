@@ -101,6 +101,9 @@ public class HistoryPageSwitcher
 
         CurrentPageNumber = newPageNumber;
 
+        await DisplayPageAsync(newPageNumber)
+            .ConfigureAwait(false);
+
         bool previousButtonDisabled = newPageNumber == _minHistoryPageNumber;
         bool nextButtonDisabled = newPageNumber == _maxHistoryPageNumber;
 
@@ -110,9 +113,6 @@ public class HistoryPageSwitcher
 
         await _elementInteractorService
             .SetDisabledAsync("next-button", nextButtonDisabled)
-            .ConfigureAwait(false);
-
-        await DisplayPageAsync(newPageNumber)
             .ConfigureAwait(false);
     }
 

@@ -70,6 +70,32 @@ public class HttpClientInteractorService : IHttpClientInteractorService
             .ConfigureAwait(false);
     }
 
+    public async Task PostAsync(string url, HttpContent data, Action<HttpResponseMessage> successHandler)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(url, nameof(url));
+        ArgumentNullException.ThrowIfNull(data, nameof(data));
+        ArgumentNullException.ThrowIfNull(successHandler, nameof(successHandler));
+
+        var uri = new Uri(url);
+
+        await PostAsync(uri, data, successHandler)
+            .ConfigureAwait(false);
+    }
+
+    public async Task PostAsync(Uri uri, HttpContent data, Action<HttpResponseMessage> successHandler)
+    {
+        ArgumentNullException.ThrowIfNull(uri, nameof(uri));
+        ArgumentNullException.ThrowIfNull(data, nameof(data));
+        ArgumentNullException.ThrowIfNull(successHandler, nameof(successHandler));
+
+        HttpResponseMessage responseMessage = await _httpClientService
+            .PostAsync(uri, data)
+            .ConfigureAwait(false);
+
+        await HandleResponseAsync(responseMessage, successHandler)
+            .ConfigureAwait(false);
+    }
+
     private async Task HandleResponseAsync(
         HttpResponseMessage responseMessage,
         Action<HttpResponseMessage> successHandler)

@@ -1,6 +1,15 @@
 @page "/tools/merge"
 @rendermode InteractiveServer
 
+@using BlazorSortableList
+@using Microsoft.AspNetCore.Http
+
+@inject NavigationManager Navigation
+@inject ICurrentUserService CurrentUserService
+@inject IHttpClientInteractorService HttpClientInteractorService
+@inject IFileContentCreatingService FileContentCreatingService
+@inject IUiMessageService MessageService
+
 <PageTitle>Merge</PageTitle>
 
 <h2 class="text-center my-4 bold-title">
@@ -14,17 +23,27 @@
     <div class="row">
         <div class="col-md-12">
             <div class="form-group mb-4">
-                <div class="border p-2 file-upload-container">
-                    <input id="file-upload"
-                           type="file"
-                           class="form-control-file"
-                           multiple accept=".pdf" />
+                <div class="p-2 file-upload-container">
+                    <InputFile class="form-control-file"
+                               accept=".pdf"
+                               OnChange="HandleFilesSelected"
+                               multiple />
                 </div>
             </div>
-            <ul id="file-list" class="list-group mb-4 file-list">
-                <!-- Files will be added here using JS -->
-            </ul>
-            <button id="merge-button" class="btn btn-primary">Merge PDFs</button>
+            <div class="list-group mb-4 file-list-container">
+                <SortableList Id="@FilesListId" GroupModel="@filesGroup" Context="item">
+                    <SortableItemTemplate>
+                        <div class="cursor-pointer d-flex align-items-center sortable-file-list-item px-2 py-2 ">
+                            <i class="fas fa-ellipsis-v text-secondary"></i>
+                            <i class="fas fa-ellipsis-v text-secondary"></i>
+                            <span class="mx-2">@item.Name</span>
+                        </div>
+                    </SortableItemTemplate>
+                </SortableList>
+            </div>
+            <button class="btn btn-primary" @onclick="ExecuteToolAsync">
+                Merge PDFs
+            </button>
         </div>
     </div>
 </div>
@@ -32,7 +51,38 @@
 <link rel="stylesheet" href="css/components/files.css" />
 <link rel="stylesheet" href="css/components/title.css" />
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" defer></script>
+@code
+{
+    private const string FilesListId = "files-list";
 
-<script src="js/pages/merge.js" defer></script>
+    private List<IBrowserFile> files = [];
+    private SingleSortableListGroup<IBrowserFile>? filesGroup;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        filesGroup = new(FilesListId, new SortableListModel<IBrowserFile>(files));
+    }
+
+    private void HandleFilesSelected(InputFileChangeEventArgs e)
+    {
+        IReadOnlyList<IBrowserFile> selectedFiles = e.GetMultipleFiles();
+        files.AddRange(selectedFiles);
+    }
+
+    private async Task ExecuteToolAsync()
+    {
+        MultipartFormDataContent content = await FileContentCreatingService
+            .CreateMultipartFormDataContentAsync(files)
+            .ConfigureAwait(false);
+
+        Action<HttpResponseMessage> successHandler = responseMessage =>
+        {
+            Navigation.NavigateTo("/waiting", false);
+        };
+
+        await HttpClientInteractorService
+            .PostAsync(EndpointUrls.Merge, content, successHandler)
+            .ConfigureAwait(false);
+    }
+}

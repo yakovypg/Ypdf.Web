@@ -12,4 +12,6 @@ public interface IHttpClientService
     Task<HttpResponseMessage> GetAsync(Uri uri);
     Task<HttpResponseMessage> PostAsync(string url, object data);
     Task<HttpResponseMessage> PostAsync(Uri uri, object data);
+    Task<HttpResponseMessage> PostAsync(string url, HttpContent data);
+    Task<HttpResponseMessage> PostAsync(Uri uri, HttpContent data);
 }

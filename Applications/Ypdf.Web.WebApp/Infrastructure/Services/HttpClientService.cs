@@ -76,6 +76,27 @@ public class HttpClientService : IHttpClientService, IDisposable
             .ConfigureAwait(false);
     }
 
+    public async Task<HttpResponseMessage> PostAsync(string url, HttpContent data)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(url, nameof(url));
+        ArgumentNullException.ThrowIfNull(data, nameof(data));
+
+        var uri = new Uri(url);
+
+        return await PostAsync(uri, data)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<HttpResponseMessage> PostAsync(Uri uri, HttpContent data)
+    {
+        ArgumentNullException.ThrowIfNull(uri, nameof(uri));
+        ArgumentNullException.ThrowIfNull(data, nameof(data));
+
+        return await _httpClient
+            .PostAsync(uri, data)
+            .ConfigureAwait(false);
+    }
+
     public void Dispose()
     {
         Dispose(true);

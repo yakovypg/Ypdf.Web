@@ -12,6 +12,9 @@ public static class EndpointUrls
     public static Uri Register => new("https://localhost:8081/api/account/register/");
     public static Uri HistoryBase => new("https://localhost:8083/api/history/");
 
+    public static Uri Merge => new("https://localhost:8082/api/tool/merge/");
+    public static Uri Split => new("https://localhost:8082/api/tool/split/");
+
     public static Uri History(string userId, int pageNumber, int pageSize)
     {
         ArgumentException.ThrowIfNullOrEmpty(userId, nameof(userId));

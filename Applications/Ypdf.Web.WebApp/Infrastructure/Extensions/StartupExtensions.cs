@@ -23,10 +23,12 @@ public static class StartupExtensions
 
         return services
             .AddScoped<IApiResponseReaderService, ApiResponseReaderService>()
+            .AddScoped<IBrowserFileSavingService, BrowserFileSavingService>()
+            .AddScoped<IFileContentCreatingService, FileContentCreatingService>()
             .AddScoped<IHttpClientInteractorService, HttpClientInteractorService>()
+            .AddScoped<IJsElementInteractorService, JsElementInteractorService>()
             .AddScoped<ISubscriptionService, SubscriptionService>()
-            .AddScoped<IUiMessageService, UiMessageService>()
-            .AddScoped<IJsElementInteractorService, JsElementInteractorService>();
+            .AddScoped<IUiMessageService, UiMessageService>();
     }
 
     public static IServiceCollection AddUtils(this IServiceCollection services)

@@ -1,7 +1,9 @@
 using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +44,18 @@ public static class StartupExtensions
         return services
             .AddScoped<AccountManager>()
             .AddScoped<HistoryPageSwitcher>();
+    }
+
+    public static IDataProtectionBuilder AddPersistentKeyStorage(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+
+        var keyFolder = new DirectoryInfo("/keys");
+
+        return services.AddDataProtection()
+            .SetApplicationName("ypdf")
+            .PersistKeysToFileSystem(keyFolder)
+            .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
     }
 
     public static IApplicationBuilder UseLocalization(

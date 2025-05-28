@@ -13,9 +13,9 @@ public static class EndpointUrls
     public const string FilesApiHost = "localhost:8082";
     public const string HistoryApiHost = "localhost:8083";
 #else
-    public const string AccountApiHost = "account_api";
-    public const string FilesApiHost = "files_api";
-    public const string HistoryApiHost = "pdf_operations_history_api";
+    public const string AccountApiHost = "account-api.ypdf.svc.cluster.local:8081";
+    public const string FilesApiHost = "files-api.ypdf.svc.cluster.local:8082";
+    public const string HistoryApiHost = "pdf-operations-history-api.ypdf.svc.cluster.local:8083";
 #endif
 
     public const string ExternalFilesApiHost = "localhost:8082";

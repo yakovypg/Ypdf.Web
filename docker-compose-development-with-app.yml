@@ -1,15 +1,15 @@
 name: ypdf
 
 services:
-  web_app:
+  web-app:
     build:
       context: .
       dockerfile: ./Applications/Ypdf.Web.WebApp/Dockerfile
     container_name: WebApp
     depends_on:
-      - account_api
-      - files_api
-      - pdf_operations_history_api
+      - account-api
+      - files-api
+      - pdf-operations-history-api
     expose:
       - 9001
     ports:
@@ -17,20 +17,20 @@ services:
     restart: on-failure
     environment:
       ASPNETCORE_URLS: https://+;http://+
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTPS_PORT: 9001
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
     volumes:
       - ./Certificates:/https
 
-  account_api:
+  account-api:
     build:
       context: .
       dockerfile: ./Services/Ypdf.Web.AccountAPI/Dockerfile
     container_name: AccountAPI
     depends_on:
-      - accounts_database
+      - accounts-database
     expose:
       - 8081
     ports:
@@ -38,14 +38,14 @@ services:
     restart: on-failure
     environment:
       ASPNETCORE_URLS: https://+;http://+
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTPS_PORT: 8081
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
     volumes:
       - ./Certificates:/https
 
-  files_api:
+  files-api:
     build:
       context: .
       dockerfile: ./Services/Ypdf.Web.FilesAPI/Dockerfile
@@ -59,7 +59,7 @@ services:
     restart: on-failure
     environment:
       ASPNETCORE_URLS: https://+;http://+
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_USER: Ypdf
       RABBITMQ_PASSWORD: Ypdf2025
@@ -71,7 +71,7 @@ services:
       - output_files:/output
       - intput_files:/input
 
-  pdf_operations_history_api:
+  pdf-operations-history-api:
     build:
       context: .
       dockerfile: ./Services/Ypdf.Web.PdfOperationsHistoryAPI/Dockerfile
@@ -85,7 +85,7 @@ services:
     restart: on-failure
     environment:
       ASPNETCORE_URLS: https://+;http://+
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_USER: Ypdf
       RABBITMQ_PASSWORD: Ypdf2025
@@ -96,7 +96,7 @@ services:
       - ./Certificates:/https
       - db_data:/db
 
-  pdf_processing_api:
+  pdf-processing-api:
     build:
       context: .
       dockerfile: ./Services/Ypdf.Web.PdfProcessingAPI/Dockerfile
@@ -110,7 +110,7 @@ services:
     restart: on-failure
     environment:
       ASPNETCORE_URLS: https://+;http://+
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_USER: Ypdf
       RABBITMQ_PASSWORD: Ypdf2025
@@ -122,7 +122,7 @@ services:
       - output_files:/output
       - intput_files:/input
 
-  accounts_database:
+  accounts-database:
     image: postgis/postgis:13-master
     container_name: AccountsDbPostgres
     expose:

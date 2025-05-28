@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Ypdf.Web.Domain.Commands;
 using Ypdf.Web.Domain.Models.Api;
 using Ypdf.Web.Domain.Models.Api.Requests;
 using Ypdf.Web.Domain.Models.Api.Responses;
+using Ypdf.Web.Domain.Models.Configuration;
 using Ypdf.Web.Domain.Models.Informing;
 
 namespace Ypdf.Web.FilesAPI.Controllers;
@@ -17,6 +19,27 @@ namespace Ypdf.Web.FilesAPI.Controllers;
 [ApiVersion("1.0")]
 public class ToolController : ControllerBase
 {
+    [HttpPost("test")]
+    [AllowAnonymous]
+    public async Task<ApiResponse<SaveFilesResponse>> Test(
+        IReadOnlyCollection<IFormFile> files,
+        [FromServices] IProtectedCommand<SaveFilesRequest, SaveFilesResponse> saveFilesCommand)
+    {
+        IEnumerable<Claim> claims =
+        [
+            new(ClaimTypes.NameIdentifier, "1"),
+            new(ClaimTypes.Email, "admin@ypdf.com"),
+            new(ClaimTypes.Name, "Admin"),
+            new(JwtCustomClaimNames.Subscription, "Standard")
+        ];
+
+        var identity = new ClaimsIdentity(claims, "Bearer");
+        var principal = new ClaimsPrincipal(identity);
+
+        return await SaveFiles(files, PdfOperationType.Merge, saveFilesCommand, principal)
+            .ConfigureAwait(false);
+    }
+
     [HttpPost("merge")]
     [Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<ApiResponse<SaveFilesResponse>> Merge(
@@ -37,10 +60,11 @@ public class ToolController : ControllerBase
             .ConfigureAwait(false);
     }
 
-    private async Task<ApiResponse<SaveFilesResponse>> SaveFiles(
+    private static async Task<ApiResponse<SaveFilesResponse>> SaveFiles(
         IReadOnlyCollection<IFormFile> files,
         PdfOperationType operationType,
-        IProtectedCommand<SaveFilesRequest, SaveFilesResponse> saveFilesCommand)
+        IProtectedCommand<SaveFilesRequest, SaveFilesResponse> saveFilesCommand,
+        ClaimsPrincipal claimsPrincipal)
     {
         if (saveFilesCommand is null)
             return new(null, HttpStatusCode.InternalServerError);
@@ -55,9 +79,18 @@ public class ToolController : ControllerBase
         };
 
         SaveFilesResponse response = await saveFilesCommand
-            .ExecuteAsync(saveFilesRequest, User)
+            .ExecuteAsync(saveFilesRequest, claimsPrincipal)
             .ConfigureAwait(false);
 
         return new(response, HttpStatusCode.OK);
+    }
+
+    private async Task<ApiResponse<SaveFilesResponse>> SaveFiles(
+        IReadOnlyCollection<IFormFile> files,
+        PdfOperationType operationType,
+        IProtectedCommand<SaveFilesRequest, SaveFilesResponse> saveFilesCommand)
+    {
+        return await SaveFiles(files, operationType, saveFilesCommand, User)
+            .ConfigureAwait(false);
     }
 }

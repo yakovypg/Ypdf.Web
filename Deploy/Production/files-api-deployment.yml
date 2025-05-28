@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: files-api
+  namespace: ypdf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: files-api
+  template:
+    metadata:
+      labels:
+        app: files-api
+    spec:
+      containers:
+      - name: files-api
+        image: ypdf-files-api:latest
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 443
+        env:
+          - name: ASPNETCORE_URLS
+            value: "https://+;http://+"
+          - name: ASPNETCORE_ENVIRONMENT
+            value: "Production"
+          - name: RABBITMQ_HOST
+            value: "rabbitmq"
+          - name: RABBITMQ_USER
+            value: "Ypdf"
+          - name: RABBITMQ_PASSWORD
+            value: "Ypdf2025"
+          - name: ASPNETCORE_HTTPS_PORT
+            value: "8082"
+          - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+            value: "/https/tls.crt"
+          - name: ASPNETCORE_Kestrel__Certificates__Default__KeyPath
+            value: "/https/tls.key"
+        volumeMounts:
+          - name: tls-certificates
+            mountPath: /https
+          - name: output-files
+            mountPath: /output
+          - name: intput-files
+            mountPath: /input
+      volumes:
+        - name: tls-certificates
+          secret:
+            secretName: tls-secret
+        - name: output-files
+          persistentVolumeClaim:
+            claimName: output-files-pvc
+        - name: intput-files
+          persistentVolumeClaim:
+            claimName: intput-files-pvc
+      resources:
+        limits:
+          cpu: "200m"
+          memory: "400Mi"
+        requests:
+          cpu: "100m"
+          memory: "300Mi"

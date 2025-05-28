@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: ypdf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:management
+        env:
+          - name: RABBITMQ_DEFAULT_USER
+            value: "Ypdf"
+          - name: RABBITMQ_DEFAULT_PASS
+            value: "Ypdf2025"
+        ports:
+          - containerPort: 5672
+          - containerPort: 15672
+      resources:
+        limits:
+          cpu: "200m"
+          memory: "400Mi"
+        requests:
+          cpu: "100m"
+          memory: "300Mi"

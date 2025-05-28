@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accounts-database
+  namespace: ypdf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accounts-database
+  template:
+    metadata:
+      labels:
+        app: accounts-database
+    spec:
+      containers:
+      - name: accounts-database
+        image: postgis/postgis:13-master
+        env:
+          - name: POSTGRES_USER
+            value: "Ypdf"
+          - name: POSTGRES_PASSWORD
+            value: "Ypdf2025"
+          - name: POSTGRES_MULTIPLE_DATABASES
+            value: "AccountsDB"
+        ports:
+          - containerPort: 5432
+        volumeMounts:
+          - name: accounts-database-init
+            mountPath: /docker-entrypoint-initdb.d
+          - name: accounts-database-data
+            mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: accounts-database-init
+          hostPath:
+            path: /opt/ypdf/Docker/Postgres
+        - name: accounts-database-data
+          persistentVolumeClaim:
+            claimName: accounts-database-pvc
+      resources:
+        limits:
+          cpu: "200m"
+          memory: "400Mi"
+        requests:
+          cpu: "100m"
+          memory: "300Mi"

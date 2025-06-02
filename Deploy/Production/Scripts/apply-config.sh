@@ -4,6 +4,8 @@ apply_all_resources() {
     kubectl apply -f ../namespace.yml
 
     kubectl apply -f ../tls-secret.yml
+    kubectl apply -f ../extension-apiserver-authentication-rbac.yml
+
     kubectl apply -f ../accounts-database-pvc.yml
     kubectl apply -f ../db-data-pvc.yml
     kubectl apply -f ../intput-files-pvc.yml
@@ -26,6 +28,11 @@ apply_all_resources() {
     kubectl apply -f ../pdf-processing-api-service.yml
     kubectl apply -f ../pdf-operations-history-api-service.yml
     kubectl apply -f ../web-app-service.yml
+
+    kubectl apply -f ../prometheus-deployment.yml
+    kubectl apply -f ../prometheus-service.yml
+    kubectl apply -f ../rabbitmq-exporter-deployment.yml
+    kubectl apply -f ../prometheus-adapter-deployment.yml
 
     kubectl apply -f ../pdf-processing-api-hpa.yml
 }

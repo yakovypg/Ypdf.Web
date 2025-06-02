@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-adapter
+  namespace: ypdf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-adapter
+  template:
+    metadata:
+      labels:
+        app: prometheus-adapter
+    spec:
+      containers:
+      - name: prometheus-adapter
+        image: k8s.gcr.io/prometheus-adapter/prometheus-adapter:v0.10.0
+        workingDir: /tmp
+        ports:
+        - containerPort: 6443
+        args:
+        - --config=/etc/adapter/config.yaml
+        - --prometheus-url=http://prometheus.ypdf:9090
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/adapter/
+      volumes:
+      - name: config-volume
+        configMap:
+          name: adapter-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: adapter-config
+  namespace: ypdf
+data:
+  config.yaml: |
+    rules:
+    - seriesQuery: 'rabbitmq_queue_messages{queue!="",vhost!=""}'
+      resources:
+        overrides:
+          namespace:
+            resource: "namespace"
+          pod:
+            resource: "pod"
+      name:
+        as: "rabbitmq_queue_messages"
+      metricsQuery: 'sum(rate(rabbitmq_queue_messages{queue="$label_queue"}[2m])) by (namespace, queue)'

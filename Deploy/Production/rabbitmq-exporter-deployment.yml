@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-exporter
+  namespace: ypdf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq-exporter
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-exporter
+    spec:
+      containers:
+      - name: rabbitmq-exporter
+        image: kbudde/rabbitmq-exporter:1.0.0
+        ports:
+        - containerPort: 9419
+        env:
+        - name: RABBIT_URL
+          value: "http://rabbitmq.ypdf:15672"
+        - name: RABBIT_USER
+          value: Ypdf
+        - name: RABBIT_PASSWORD
+          value: Ypdf2025
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-exporter
+  namespace: ypdf
+spec:
+  ports:
+  - port: 9419
+    targetPort: 9419
+  selector:
+    app: rabbitmq-exporter

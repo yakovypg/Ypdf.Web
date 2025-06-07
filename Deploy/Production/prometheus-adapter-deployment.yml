@@ -13,22 +13,42 @@ spec:
       labels:
         app: prometheus-adapter
     spec:
+      serviceAccountName: prometheus-adapter
+      initContainers:
+      - name: wait-for-prometheus
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          until wget -qO- http://prometheus.ypdf:9090/metrics; do
+            echo "Waiting for Prometheus to be ready..."
+            sleep 3
+          done
       containers:
       - name: prometheus-adapter
-        image: k8s.gcr.io/prometheus-adapter/prometheus-adapter:v0.10.0
+        image: k8s.gcr.io/prometheus-adapter/prometheus-adapter:v0.12.0
         workingDir: /tmp
         ports:
         - containerPort: 6443
         args:
+        - --secure-port=6443
+        - --tls-cert-file=/var/run/serving-cert/tls.crt
+        - --tls-private-key-file=/var/run/serving-cert/tls.key
         - --config=/etc/adapter/config.yaml
         - --prometheus-url=http://prometheus.ypdf:9090
         volumeMounts:
         - name: config-volume
           mountPath: /etc/adapter/
+        - name: serving-cert
+          mountPath: /var/run/serving-cert
       volumes:
       - name: config-volume
         configMap:
           name: adapter-config
+      - name: serving-cert
+        secret:
+          secretName: prometheus-adapter-tls
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -38,7 +58,7 @@ metadata:
 data:
   config.yaml: |
     rules:
-    - seriesQuery: 'rabbitmq_queue_messages{queue!="",vhost!=""}'
+    - seriesQuery: 'rabbitmq_queue_messages'
       resources:
         overrides:
           namespace:
@@ -47,4 +67,5 @@ data:
             resource: "pod"
       name:
         as: "rabbitmq_queue_messages"
-      metricsQuery: 'sum(rate(rabbitmq_queue_messages{queue="$label_queue"}[2m])) by (namespace, queue)'
+      metricsQuery: 'sum(rate(rabbitmq_queue_messages{queue="SavedFileQueue"}[2m])) by (namespace,queue)'
+

@@ -4,6 +4,8 @@ apply_all_resources() {
     kubectl apply -f ../namespace.yml
 
     kubectl apply -f ../tls-secret.yml
+    kubectl apply -f ../prometheus-adapter-tls.yml
+    kubectl apply -f ../prometheus-adapter-serviceaccount.yml
     kubectl apply -f ../extension-apiserver-authentication-rbac.yml
 
     kubectl apply -f ../accounts-database-pvc.yml
@@ -33,8 +35,12 @@ apply_all_resources() {
     kubectl apply -f ../prometheus-service.yml
     kubectl apply -f ../rabbitmq-exporter-deployment.yml
     kubectl apply -f ../prometheus-adapter-deployment.yml
+    kubectl apply -f ../prometheus-adapter-service.yml
 
+    kubectl apply -f ../external-metrics.yml
     kubectl apply -f ../pdf-processing-api-hpa.yml
+
+    kubectl run curlpod -n ypdf --image=curlimages/curl --restart=Never --command -- sleep 3600
 }
 
 name=$1

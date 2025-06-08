@@ -31,9 +31,12 @@ kind: Service
 metadata:
   name: rabbitmq-exporter
   namespace: ypdf
+  labels:
+    app: rabbitmq-exporter
 spec:
   ports:
-  - port: 9419
+  - name: metrics
+    port: 9419
     targetPort: 9419
   selector:
     app: rabbitmq-exporter

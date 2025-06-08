@@ -1,0 +1,7 @@
+prometheus:
+  prometheusSpec:
+    serviceMonitorNamespaceSelector:
+      matchNames:
+        - monitoring
+        - ypdf
+    serviceMonitorSelectorNilUsesHelmValues: false

@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: rabbitmq-exporter
+  namespace: monitoring
+  labels:
+    release: kube-prom-stack
+spec:
+  namespaceSelector:
+    matchNames:
+      - monitoring
+      - ypdf
+  selector:
+    matchLabels:
+      app: rabbitmq-exporter
+  endpoints:
+    - port: "metrics"
+      interval: 5s
+      path: "/metrics"

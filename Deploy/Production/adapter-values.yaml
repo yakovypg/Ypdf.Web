@@ -1,0 +1,24 @@
+prometheus:
+  url: http://kube-prom-stack-kube-prome-prometheus.monitoring.svc.cluster.local
+  port: 9090
+
+metrics:
+  enabled:
+    external: true
+    custom: true
+
+rules:
+  external:
+    - seriesQuery: 'rabbitmq_queue_messages'
+      resources:
+        overrides:
+          namespace:
+            resource: namespace
+      name:
+        as: rabbitmq_queue_messages
+      metricsQuery: 'rabbitmq_queue_messages'
+
+extraArgs:
+  - --v=10
+
+metricsRelistInterval: 1m

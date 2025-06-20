@@ -1,25 +1,17 @@
 #!/bin/bash
 
-restart_all_deployments() {
-    kubectl rollout restart deployment accounts-database -n ypdf
-    kubectl rollout restart deployment rabbitmq -n ypdf
-
-    kubectl rollout restart deployment account-api -n ypdf
-    kubectl rollout restart deployment files-api -n ypdf
-    kubectl rollout restart deployment pdf-processing-api -n ypdf
-    kubectl rollout restart deployment pdf-operations-history-api -n ypdf
-    kubectl rollout restart deployment web-app -n ypdf
-}
+set -euo pipefail
 
 name=$1
-all_deployments="all"
+namespace=$2
 
 if [[ -z $name ]]; then
-    name=$all_deployments
+    echo 'error: deployment name not specified'
+    exit 1
 fi
 
-if [[ $name == $all_deployments ]]; then
-    restart_all_deployments
-else
-    kubectl rollout restart deployment $name -n ypdf
+if [[ -z $namespace ]]; then
+    namespace='ypdf'
 fi
+
+kubectl rollout restart deployment $name -n $namespace

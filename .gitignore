@@ -7,6 +7,12 @@
 Certificates/*
 !Certificates/*.sh
 
+# PDF documents
+*.pdf
+
+# Virtual environments
+.venv
+
 # dotenv files
 .env
 

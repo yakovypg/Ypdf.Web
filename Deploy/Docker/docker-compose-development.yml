@@ -19,6 +19,21 @@ services:
       ASPNETCORE_HTTPS_PORT: 8081
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
+      Jwt__Key: ${JWT_KEY}
+      ConnectionStrings__Accounts: >-
+        Host=accounts-database;
+        Port=5432;
+        Database=AccountsDB;
+        Username=${ACCOUNTS_DATABASE_USER};
+        Password=${ACCOUNTS_DATABASE_PASSWORD}
+      InitialUsers__Admin__Email: ${ADMIN_USER_EMAIL}
+      InitialUsers__Admin__UserName: ${ADMIN_USER_USERNAME}
+      InitialUsers__Admin__Nickname: ${ADMIN_USER_NICKNAME}
+      InitialUsers__Admin__Password: ${ADMIN_USER_PASSWORD}
+      InitialUsers__TestUser__Email: ${TEST_USER_EMAIL}
+      InitialUsers__TestUser__UserName: ${TEST_USER_USERNAME}
+      InitialUsers__TestUser__Nickname: ${TEST_USER_NICKNAME}
+      InitialUsers__TestUser__Password: ${TEST_USER_PASSWORD}
     volumes:
       - ../../Certificates:/https
 
@@ -37,12 +52,13 @@ services:
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Development
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_USER: Ypdf
-      RABBITMQ_PASSWORD: Ypdf2025
+      RabbitMq__HostName: rabbitmq
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
       ASPNETCORE_HTTPS_PORT: 8082
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
+      Jwt__Key: ${JWT_KEY}
     volumes:
       - ../../Certificates:/https
       - output_files:/output
@@ -63,12 +79,13 @@ services:
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Development
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_USER: Ypdf
-      RABBITMQ_PASSWORD: Ypdf2025
+      RabbitMq__HostName: rabbitmq
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
       ASPNETCORE_HTTPS_PORT: 8083
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
+      Jwt__Key: ${JWT_KEY}
     volumes:
       - ../../Certificates:/https
       - db_data:/db
@@ -88,9 +105,9 @@ services:
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Development
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_USER: Ypdf
-      RABBITMQ_PASSWORD: Ypdf2025
+      RabbitMq__HostName: rabbitmq
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
       ASPNETCORE_HTTPS_PORT: 8084
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
@@ -108,8 +125,8 @@ services:
       - 8080:5432
     restart: on-failure
     environment:
-      POSTGRES_USER: Ypdf
-      POSTGRES_PASSWORD: Ypdf2025
+      POSTGRES_USER: ${ACCOUNTS_DATABASE_USER}
+      POSTGRES_PASSWORD: ${ACCOUNTS_DATABASE_PASSWORD}
       POSTGRES_MULTIPLE_DATABASES: AccountsDB
 
   rabbitmq:
@@ -123,8 +140,8 @@ services:
       - 15672:15672 # RabbitMQ management UI
     restart: on-failure
     environment:
-      RABBITMQ_DEFAULT_USER: Ypdf
-      RABBITMQ_DEFAULT_PASS: Ypdf2025
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
 
 volumes:
   db_data:

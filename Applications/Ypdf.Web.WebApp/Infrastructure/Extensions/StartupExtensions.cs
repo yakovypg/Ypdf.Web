@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,15 +47,23 @@ public static class StartupExtensions
             .AddScoped<HistoryPageSwitcher>();
     }
 
-    public static IDataProtectionBuilder AddPersistentKeyStorage(this IServiceCollection services)
+    public static IDataProtectionBuilder AddPersistentKeyStorage(
+        this IServiceCollection services,
+        IWebHostEnvironment environment,
+        IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
+        ArgumentNullException.ThrowIfNull(environment, nameof(environment));
+        ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
 
-        var keyFolder = new DirectoryInfo("/keys");
+        string keysDirectoryPath = configuration["Storages:PersistentKeyStorage"]
+            ?? throw new ConfigurationException("Persistent key storage not specified");
+
+        var keysDirectory = new DirectoryInfo(keysDirectoryPath);
 
         return services.AddDataProtection()
-            .SetApplicationName("ypdf")
-            .PersistKeysToFileSystem(keyFolder)
+            .SetApplicationName(environment.ApplicationName)
+            .PersistKeysToFileSystem(keysDirectory)
             .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
     }
 

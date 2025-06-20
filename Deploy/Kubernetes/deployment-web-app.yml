@@ -34,7 +34,7 @@ spec:
           - name: tls-certificates
             mountPath: /https
           - name: web-app-keys
-            mountPath: /keys
+            mountPath: /Keys
       volumes:
         - name: tls-certificates
           secret:

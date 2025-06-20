@@ -26,7 +26,7 @@ _ = builder.Services
 _ = builder.Services
     .AddServices()
     .AddUtils()
-    .AddPersistentKeyStorage();
+    .AddPersistentKeyStorage(builder.Environment, builder.Configuration);
 
 WebApplication webApplication = builder.Build();
 

@@ -48,8 +48,8 @@ public static class StartupExtensions
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
         return services
-            .AddScoped<MergeCommand>()
-            .AddScoped<SplitCommand>();
+            .AddSingleton<MergeCommand>()
+            .AddSingleton<SplitCommand>();
     }
 
     public static IServiceCollection AddServices(this IServiceCollection services)
@@ -57,8 +57,8 @@ public static class StartupExtensions
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
         return services
-            .AddScoped<IZipService, ZipService>()
-            .AddScoped<ITempFileService, TempFileService>();
+            .AddSingleton<IZipService, ZipService>()
+            .AddSingleton<ITempFileService, TempFileService>();
     }
 
     public static IServiceCollection AddRabbitMq(this IServiceCollection services)
@@ -66,7 +66,7 @@ public static class StartupExtensions
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
         return services
-            .AddScoped<PdfOperationResultRabbitMqProducer>()
+            .AddSingleton<PdfOperationResultRabbitMqProducer>()
             .AddHostedService<SavedFileRabbitMqConsumer>();
     }
 

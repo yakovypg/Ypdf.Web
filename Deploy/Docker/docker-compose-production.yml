@@ -3,8 +3,8 @@ name: ypdf
 services:
   web-app:
     build:
-      context: .
-      dockerfile: ../../Applications/Ypdf.Web.WebApp/Dockerfile
+      context: ../../.
+      dockerfile: ./Applications/Ypdf.Web.WebApp/Dockerfile
     container_name: WebApp
     depends_on:
       - account-api
@@ -26,8 +26,8 @@ services:
 
   account-api:
     build:
-      context: .
-      dockerfile: ../../Services/Ypdf.Web.AccountAPI/Dockerfile
+      context: ../../.
+      dockerfile: ./Services/Ypdf.Web.AccountAPI/Dockerfile
     container_name: AccountAPI
     depends_on:
       - accounts-database
@@ -47,8 +47,8 @@ services:
 
   files-api:
     build:
-      context: .
-      dockerfile: ../../Services/Ypdf.Web.FilesAPI/Dockerfile
+      context: ../../.
+      dockerfile: ./Services/Ypdf.Web.FilesAPI/Dockerfile
     container_name: FilesAPI
     depends_on:
       - rabbitmq
@@ -73,8 +73,8 @@ services:
 
   pdf-operations-history-api:
     build:
-      context: .
-      dockerfile: ../../Services/Ypdf.Web.PdfOperationsHistoryAPI/Dockerfile
+      context: ../../.
+      dockerfile: ./Services/Ypdf.Web.PdfOperationsHistoryAPI/Dockerfile
     container_name: PdfOperationsHistoryAPI
     depends_on:
       - rabbitmq
@@ -98,8 +98,8 @@ services:
 
   pdf-processing-api:
     build:
-      context: .
-      dockerfile: ../../Services/Ypdf.Web.PdfProcessingAPI/Dockerfile
+      context: ../../.
+      dockerfile: ./Services/Ypdf.Web.PdfProcessingAPI/Dockerfile
     container_name: PdfProcessingAPI
     depends_on:
       - rabbitmq

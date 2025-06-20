@@ -4,9 +4,6 @@ apply_all_resources() {
     kubectl apply -f ../namespace.yml
 
     kubectl apply -f ../tls-secret.yml
-    #kubectl apply -f ../prometheus-adapter-tls.yml
-    #kubectl apply -f ../prometheus-adapter-serviceaccount.yml
-    #kubectl apply -f ../extension-apiserver-authentication-rbac.yml
 
     kubectl apply -f ../accounts-database-pvc.yml
     kubectl apply -f ../db-data-pvc.yml
@@ -31,13 +28,7 @@ apply_all_resources() {
     kubectl apply -f ../pdf-operations-history-api-service.yml
     kubectl apply -f ../web-app-service.yml
 
-    #kubectl apply -f ../prometheus-deployment.yml
-    #kubectl apply -f ../prometheus-service.yml
     kubectl apply -f ../rabbitmq-exporter-deployment.yml
-    #kubectl apply -f ../prometheus-adapter-deployment.yml
-    #kubectl apply -f ../prometheus-adapter-service.yml
-
-    #kubectl apply -f ../external-metrics.yml
 
     helm upgrade --install metrics-server metrics-server/metrics-server --namespace kube-system --create-namespace --set args[0]=--kubelet-insecure-tls --set args[1]="--kubelet-preferred-address-types=InternalIP\,Hostname\,ExternalIP"
     helm upgrade --install kube-prom-stack prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace --set grafana.enabled=true --set prometheusOperator.createCustomResource=true --set prometheusOperator.admissionWebhooks.enabled=false --set prometheusOperator.admissionWebhooks.patch.enabled=false --set prometheusOperator.tls.enabled=false --set prometheus.prometheusSpec.serviceMonitorSelector.matchLabels.release=kube-prom-stack --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false -f ../values.yml

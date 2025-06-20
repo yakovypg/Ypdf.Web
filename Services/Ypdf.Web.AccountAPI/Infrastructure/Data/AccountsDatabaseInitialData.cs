@@ -45,4 +45,30 @@ public static class AccountsDatabaseInitialData
 
         return (user, UserRole.Admin, password);
     }
+
+    public static (User User, UserRole Role, string Password) GetTestUser(IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
+
+        string email = configuration["InitialUsers:TestUser:Email"]
+            ?? throw new ConfigurationException("Email for test user not specified");
+
+        string userName = configuration["InitialUsers:TestUser:UserName"]
+            ?? throw new ConfigurationException("User name for test user not specified");
+
+        string nickname = configuration["InitialUsers:TestUser:Nickname"]
+            ?? throw new ConfigurationException("Nickname for test user not specified");
+
+        string password = configuration["InitialUsers:TestUser:Password"]
+            ?? throw new ConfigurationException("Password for test user not specified");
+
+        var user = new User()
+        {
+            Email = email,
+            UserName = userName,
+            Nickname = nickname
+        };
+
+        return (user, UserRole.User, password);
+    }
 }

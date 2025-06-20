@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Ypdf.Web.AccoutAPI.Models;
+using Ypdf.Web.Domain.Models;
 
 namespace Ypdf.Web.AccoutAPI.Infrastructure.Data;
 
@@ -172,6 +173,9 @@ public class AccountsDatabaseInitializer
         await AddAdminAsync()
             .ConfigureAwait(false);
 
+        await AddTestUserAsync()
+            .ConfigureAwait(false);
+
         _logger.LogInformation("Initial users added");
     }
 
@@ -181,6 +185,18 @@ public class AccountsDatabaseInitializer
             .GetAdmin(_configuration);
 
         await AddUserAsync(user, role, password)
+            .ConfigureAwait(false);
+    }
+
+    private async Task AddTestUserAsync()
+    {
+        (User user, UserRole role, string password) = AccountsDatabaseInitialData
+            .GetTestUser(_configuration);
+
+        await AddUserAsync(user, role, password)
+            .ConfigureAwait(false);
+
+        await AddSubscriptionToUserAsync(user, SubscriptionType.Standard)
             .ConfigureAwait(false);
     }
 
@@ -223,5 +239,51 @@ public class AccountsDatabaseInitializer
             role,
             user.Email,
             addToRoleResult);
+    }
+
+    private async Task AddSubscriptionToUserAsync(User user, SubscriptionType subscriptionType)
+    {
+        ArgumentNullException.ThrowIfNull(user, nameof(user));
+        ArgumentNullException.ThrowIfNull(user.Email, nameof(user.Email));
+
+        _logger.LogInformation(
+            "Trying to add subscription {SubscriptionType} to user with email {Email}",
+            subscriptionType,
+            user.Email);
+
+        Subscription? foundSubscription = AccountsDatabaseInitialData.Subscriptions
+            .FirstOrDefault(t => t.SubscriptionType == subscriptionType);
+
+        if (foundSubscription is null)
+        {
+            _logger.LogInformation(
+                "Subscription {SubscriptionType} not found. It cannot be added to user with email {Email}",
+                subscriptionType,
+                user.Email);
+
+            return;
+        }
+
+        var userSubscription = new UserSubscription()
+        {
+            Subscription = foundSubscription,
+            User = user,
+            ExpiresAt = DateTimeOffset.MaxValue
+        };
+
+        await _accountsDbContext.UserSubscriptions
+            .AddAsync(userSubscription)
+            .ConfigureAwait(false);
+
+        user.UserSubscription = userSubscription;
+
+        await _accountsDbContext
+            .SaveChangesAsync()
+            .ConfigureAwait(false);
+
+        _logger.LogInformation(
+            "Subscription {SubscriptionType} added to user with email {Email}",
+            subscriptionType,
+            user.Email);
     }
 }

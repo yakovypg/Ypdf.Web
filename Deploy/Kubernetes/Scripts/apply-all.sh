@@ -8,7 +8,7 @@ kubectl apply -f ../namespace-monitoring.yml
 kubectl apply -f ../pvc-accounts-database.yml
 kubectl apply -f ../pvc-db-data.yml
 kubectl apply -f ../pvc-intput-files.yml
-kubectl apply -f ../pvc-output-file.yml
+kubectl apply -f ../pvc-output-files.yml
 kubectl apply -f ../pvc-web-app-keys.yml
 
 kubectl apply -f ../secret-tls.yml

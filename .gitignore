@@ -4,7 +4,8 @@
 ## Get latest from `dotnet new gitignore`
 
 # Certificates
-Certificates
+Certificates/*
+!Certificates/*.sh
 
 # dotenv files
 .env

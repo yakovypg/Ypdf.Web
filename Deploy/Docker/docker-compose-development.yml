@@ -4,7 +4,7 @@ services:
   account-api:
     build:
       context: .
-      dockerfile: ./Services/Ypdf.Web.AccountAPI/Dockerfile
+      dockerfile: ../../Services/Ypdf.Web.AccountAPI/Dockerfile
     container_name: AccountAPI
     depends_on:
       - accounts-database
@@ -20,12 +20,12 @@ services:
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
     volumes:
-      - ./Certificates:/https
+      - ../../Certificates:/https
 
   files-api:
     build:
       context: .
-      dockerfile: ./Services/Ypdf.Web.FilesAPI/Dockerfile
+      dockerfile: ../../Services/Ypdf.Web.FilesAPI/Dockerfile
     container_name: FilesAPI
     depends_on:
       - rabbitmq
@@ -44,14 +44,14 @@ services:
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
     volumes:
-      - ./Certificates:/https
+      - ../../Certificates:/https
       - output_files:/output
       - intput_files:/input
 
   pdf-operations-history-api:
     build:
       context: .
-      dockerfile: ./Services/Ypdf.Web.PdfOperationsHistoryAPI/Dockerfile
+      dockerfile: ../../Services/Ypdf.Web.PdfOperationsHistoryAPI/Dockerfile
     container_name: PdfOperationsHistoryAPI
     depends_on:
       - rabbitmq
@@ -70,13 +70,13 @@ services:
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
     volumes:
-      - ./Certificates:/https
+      - ../../Certificates:/https
       - db_data:/db
 
   pdf-processing-api:
     build:
       context: .
-      dockerfile: ./Services/Ypdf.Web.PdfProcessingAPI/Dockerfile
+      dockerfile: ../../Services/Ypdf.Web.PdfProcessingAPI/Dockerfile
     container_name: PdfProcessingAPI
     depends_on:
       - rabbitmq
@@ -95,7 +95,7 @@ services:
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
     volumes:
-      - ./Certificates:/https
+      - ../../Certificates:/https
       - output_files:/output
       - intput_files:/input
 
@@ -112,7 +112,7 @@ services:
       POSTGRES_PASSWORD: Ypdf2025
       POSTGRES_MULTIPLE_DATABASES: AccountsDB
     volumes:
-      - ./Docker/Postgres:/docker-entrypoint-initdb.d
+      - ../../Docker/Postgres:/docker-entrypoint-initdb.d
 
   rabbitmq:
     image: rabbitmq:management

@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pdf-processing-api
+  name: pdf-operations-history-api
   namespace: ypdf
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pdf-processing-api
+      app: pdf-operations-history-api
   template:
     metadata:
       labels:
-        app: pdf-processing-api
+        app: pdf-operations-history-api
     spec:
       containers:
-      - name: pdf-processing-api
-        image: ypdf-pdf-processing-api:latest
+      - name: pdf-operations-history-api
+        image: ypdf-pdf-operations-history-api:latest
         imagePullPolicy: Never
         ports:
           - containerPort: 443
@@ -31,7 +31,7 @@ spec:
           - name: RABBITMQ_PASSWORD
             value: "Ypdf2025"
           - name: ASPNETCORE_HTTPS_PORT
-            value: "8084"
+            value: "8083"
           - name: ASPNETCORE_Kestrel__Certificates__Default__Path
             value: "/https/tls.crt"
           - name: ASPNETCORE_Kestrel__Certificates__Default__KeyPath
@@ -39,20 +39,15 @@ spec:
         volumeMounts:
           - name: tls-certificates
             mountPath: /https
-          - name: output-files
-            mountPath: /output
-          - name: intput-files
-            mountPath: /input
+          - name: db-data
+            mountPath: /db
       volumes:
         - name: tls-certificates
           secret:
-            secretName: tls-secret
-        - name: output-files
+            secretName: secret-tls
+        - name: db-data
           persistentVolumeClaim:
-            claimName: output-files-pvc
-        - name: intput-files
-          persistentVolumeClaim:
-            claimName: intput-files-pvc
+            claimName: pvc-db-data
       resources:
         limits:
           cpu: "200m"

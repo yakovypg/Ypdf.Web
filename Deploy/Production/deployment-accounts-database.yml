@@ -36,7 +36,7 @@ spec:
             path: /opt/ypdf/Docker/Postgres
         - name: accounts-database-data
           persistentVolumeClaim:
-            claimName: accounts-database-pvc
+            claimName: pvc-accounts-database
       resources:
         limits:
           cpu: "200m"

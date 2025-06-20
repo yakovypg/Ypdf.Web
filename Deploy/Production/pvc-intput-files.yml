@@ -1,11 +1,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: accounts-database-pvc
+  name: pvc-intput-files
   namespace: ypdf
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 5Gi
+      storage: 1Gi
+

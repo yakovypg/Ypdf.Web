@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-app
+  name: account-api
   namespace: ypdf
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: web-app
+      app: account-api
   template:
     metadata:
       labels:
-        app: web-app
+        app: account-api
     spec:
       containers:
-      - name: web-app
-        image: ypdf-web-app:latest
+      - name: account-api
+        image: ypdf-account-api:latest
         imagePullPolicy: Never
         ports:
           - containerPort: 443
@@ -25,7 +25,7 @@ spec:
           - name: ASPNETCORE_ENVIRONMENT
             value: "Production"
           - name: ASPNETCORE_HTTPS_PORT
-            value: "9001"
+            value: "443"
           - name: ASPNETCORE_Kestrel__Certificates__Default__Path
             value: "/https/tls.crt"
           - name: ASPNETCORE_Kestrel__Certificates__Default__KeyPath
@@ -33,15 +33,10 @@ spec:
         volumeMounts:
           - name: tls-certificates
             mountPath: /https
-          - name: web-app-keys
-            mountPath: /keys
       volumes:
         - name: tls-certificates
           secret:
-            secretName: tls-secret
-        - name: web-app-keys
-          persistentVolumeClaim:
-            claimName: web-app-keys-pvc
+            secretName: secret-tls
       resources:
         limits:
           cpu: "200m"

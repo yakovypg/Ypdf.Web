@@ -1,7 +1,7 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: pdf-processing-api-hpa
+  name: hpa-pdf-processing-api
   namespace: ypdf
 spec:
   scaleTargetRef:

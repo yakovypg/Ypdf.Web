@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: files-api
+  name: web-app
   namespace: ypdf
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: files-api
+      app: web-app
   template:
     metadata:
       labels:
-        app: files-api
+        app: web-app
     spec:
       containers:
-      - name: files-api
-        image: ypdf-files-api:latest
+      - name: web-app
+        image: ypdf-web-app:latest
         imagePullPolicy: Never
         ports:
           - containerPort: 443
@@ -24,14 +24,8 @@ spec:
             value: "https://+;http://+"
           - name: ASPNETCORE_ENVIRONMENT
             value: "Production"
-          - name: RABBITMQ_HOST
-            value: "rabbitmq"
-          - name: RABBITMQ_USER
-            value: "Ypdf"
-          - name: RABBITMQ_PASSWORD
-            value: "Ypdf2025"
           - name: ASPNETCORE_HTTPS_PORT
-            value: "8082"
+            value: "9001"
           - name: ASPNETCORE_Kestrel__Certificates__Default__Path
             value: "/https/tls.crt"
           - name: ASPNETCORE_Kestrel__Certificates__Default__KeyPath
@@ -39,20 +33,15 @@ spec:
         volumeMounts:
           - name: tls-certificates
             mountPath: /https
-          - name: output-files
-            mountPath: /output
-          - name: intput-files
-            mountPath: /input
+          - name: web-app-keys
+            mountPath: /keys
       volumes:
         - name: tls-certificates
           secret:
-            secretName: tls-secret
-        - name: output-files
+            secretName: secret-tls
+        - name: web-app-keys
           persistentVolumeClaim:
-            claimName: output-files-pvc
-        - name: intput-files
-          persistentVolumeClaim:
-            claimName: intput-files-pvc
+            claimName: pvc-web-app-keys
       resources:
         limits:
           cpu: "200m"

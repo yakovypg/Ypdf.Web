@@ -111,8 +111,6 @@ services:
       POSTGRES_USER: Ypdf
       POSTGRES_PASSWORD: Ypdf2025
       POSTGRES_MULTIPLE_DATABASES: AccountsDB
-    volumes:
-      - ../../Docker/Postgres:/docker-entrypoint-initdb.d
 
   rabbitmq:
     image: rabbitmq:management

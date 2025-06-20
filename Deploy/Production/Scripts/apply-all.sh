@@ -50,13 +50,13 @@ helm upgrade \
     --set prometheusOperator.tls.enabled=false \
     --set prometheus.prometheusSpec.serviceMonitorSelector.matchLabels.release=kube-prom-stack \
     --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
-    -f ../values.yml
+    -f ../values-prometheus.yml
 
 kubectl apply -f ../servicemonitor-rabbitmq-exporter.yml
 
 helm upgrade \
     --install prometheus-adapter prometheus-community/prometheus-adapter \
     --namespace monitoring \
-    -f ../adapter-values.yaml
+    -f ../values-prometheus-adapter.yaml
 
 kubectl apply -f ../hpa-pdf-processing-api.yml

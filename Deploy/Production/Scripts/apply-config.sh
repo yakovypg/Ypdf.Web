@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-kubectl apply -f ../namespace.yml
+kubectl apply -f ../namespace-ypdf.yml
+kubectl apply -f ../namespace-monitoring.yml
 
 kubectl apply -f ../pvc-accounts-database.yml
 kubectl apply -f ../pvc-db-data.yml
@@ -42,7 +43,6 @@ helm upgrade \
 helm upgrade \
     --install kube-prom-stack prometheus-community/kube-prometheus-stack \
     --namespace monitoring \
-    --create-namespace \
     --set grafana.enabled=true \
     --set prometheusOperator.createCustomResource=true \
     --set prometheusOperator.admissionWebhooks.enabled=false \

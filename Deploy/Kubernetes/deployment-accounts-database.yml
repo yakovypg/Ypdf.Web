@@ -32,14 +32,9 @@ spec:
         ports:
           - containerPort: 5432
         volumeMounts:
-          - name: accounts-database-init
-            mountPath: /docker-entrypoint-initdb.d
           - name: accounts-database-data
             mountPath: /var/lib/postgresql/data
       volumes:
-        - name: accounts-database-init
-          hostPath:
-            path: /opt/ypdf/Docker/Postgres
         - name: accounts-database-data
           persistentVolumeClaim:
             claimName: pvc-accounts-database

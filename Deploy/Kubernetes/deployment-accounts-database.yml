@@ -21,12 +21,12 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: secret-accounts-database
-                key: POSTGRES_USER
+                key: ACCOUNTS_DATABASE_USER
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: secret-accounts-database
-                key: POSTGRES_PASSWORD
+                key: ACCOUNTS_DATABASE_PASSWORD
           - name: POSTGRES_MULTIPLE_DATABASES
             value: "AccountsDB"
         ports:

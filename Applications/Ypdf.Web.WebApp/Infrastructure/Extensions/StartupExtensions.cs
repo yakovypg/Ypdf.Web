@@ -26,7 +26,8 @@ public static class StartupExtensions
 
         _ = services
             .AddSingleton<ICurrentUserService, CurrentUserService>()
-            .AddSingleton<IHttpClientService, HttpClientService>();
+            .AddSingleton<IHttpClientService, HttpClientService>()
+            .AddSingleton<IEndpointUrlsService, EndpointUrlsService>();
 
         return services
             .AddScoped<IApiResponseReaderService, ApiResponseReaderService>()

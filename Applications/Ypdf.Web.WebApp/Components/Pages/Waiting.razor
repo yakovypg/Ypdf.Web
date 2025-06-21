@@ -6,6 +6,7 @@
 @inject NavigationManager Navigation
 @inject IHttpClientService HttpClientService
 @inject IApiResponseReaderService ApiResponseReaderService
+@inject IEndpointUrlsService EndpointUrlsService
 
 <PageTitle>Waiting</PageTitle>
 
@@ -83,7 +84,7 @@
     {
         for (int i = 0; i < MaxRequestsCount; ++i)
         {
-            Uri uri = EndpointUrls.CheckOutputFile(FileName!);
+            Uri uri = EndpointUrlsService.CheckOutputFile(FileName!);
 
             HttpResponseMessage responseMessage = await HttpClientService
                 .GetAsync(uri)

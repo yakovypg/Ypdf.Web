@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Ypdf.Web.Domain.Models.Api.Responses;
 using Ypdf.Web.Domain.Models.Informing;
-using Ypdf.Web.WebApp.Infrastructure.Configuration;
 using Ypdf.Web.WebApp.Infrastructure.Services.Api;
 using Ypdf.Web.WebApp.Infrastructure.Services.Http;
 using Ypdf.Web.WebApp.Infrastructure.Services.UI;
@@ -20,6 +19,7 @@ public class HistoryPageSwitcher
     private readonly IJsElementInteractorService _elementInteractorService;
     private readonly IApiResponseReaderService _apiResponseReaderService;
     private readonly IHttpClientInteractorService _httpClientInteractorService;
+    private readonly IEndpointUrlsService _endpointUrlsService;
 
     private string _userId;
     private int _minHistoryPageNumber = 1;
@@ -30,12 +30,14 @@ public class HistoryPageSwitcher
         IJsElementInteractorService elementInteractor,
         IApiResponseReaderService apiResponseReader,
         IHttpClientInteractorService httpClientInteractor,
+        IEndpointUrlsService endpointUrlsService,
         int recordsPerPage = DefaultRecordsPerPage)
     {
         ArgumentNullException.ThrowIfNull(messageService, nameof(messageService));
         ArgumentNullException.ThrowIfNull(elementInteractor, nameof(elementInteractor));
         ArgumentNullException.ThrowIfNull(apiResponseReader, nameof(apiResponseReader));
         ArgumentNullException.ThrowIfNull(httpClientInteractor, nameof(httpClientInteractor));
+        ArgumentNullException.ThrowIfNull(endpointUrlsService, nameof(endpointUrlsService));
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(recordsPerPage, nameof(recordsPerPage));
 
         _userId = string.Empty;
@@ -44,6 +46,7 @@ public class HistoryPageSwitcher
         _elementInteractorService = elementInteractor;
         _apiResponseReaderService = apiResponseReader;
         _httpClientInteractorService = httpClientInteractor;
+        _endpointUrlsService = endpointUrlsService;
 
         RecordsPerPage = recordsPerPage;
     }
@@ -173,7 +176,7 @@ public class HistoryPageSwitcher
                 .ConfigureAwait(false);
         }
 
-        Uri uri = EndpointUrls.History(UserId, pageNumber, RecordsPerPage);
+        Uri uri = _endpointUrlsService.History(UserId, pageNumber, RecordsPerPage);
 
         await _httpClientInteractorService
             .GetAsync(uri, SuccessHandler)

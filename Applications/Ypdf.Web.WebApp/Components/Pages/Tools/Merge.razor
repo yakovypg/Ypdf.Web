@@ -10,6 +10,7 @@
 @inject IFileContentCreatingService FileContentCreatingService
 @inject IApiResponseReaderService ApiResponseReaderService
 @inject IUiMessageService MessageService
+@inject IEndpointUrlsService EndpointUrlsService
 
 <PageTitle>Merge</PageTitle>
 
@@ -96,7 +97,7 @@
         };
 
         await HttpClientInteractorService
-            .PostAsync(EndpointUrls.Merge, content, successHandler)
+            .PostAsync(EndpointUrlsService.Merge, content, successHandler)
             .ConfigureAwait(false);
     }
 }

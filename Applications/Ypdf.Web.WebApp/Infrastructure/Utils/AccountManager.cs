@@ -2,7 +2,6 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Ypdf.Web.Domain.Models.Api.Responses;
-using Ypdf.Web.WebApp.Infrastructure.Configuration;
 using Ypdf.Web.WebApp.Infrastructure.Services.Api;
 using Ypdf.Web.WebApp.Infrastructure.Services.Http;
 using Ypdf.Web.WebApp.Infrastructure.Services.UI;
@@ -14,19 +13,23 @@ public class AccountManager
     private readonly IUiMessageService _messageService;
     private readonly IApiResponseReaderService _apiResponseReaderService;
     private readonly IHttpClientInteractorService _httpClientInteractorService;
+    private readonly IEndpointUrlsService _endpointUrlsService;
 
     public AccountManager(
         IUiMessageService messageService,
         IApiResponseReaderService apiResponseReaderService,
-        IHttpClientInteractorService httpClientInteractor)
+        IHttpClientInteractorService httpClientInteractor,
+        IEndpointUrlsService endpointUrlsService)
     {
         ArgumentNullException.ThrowIfNull(messageService, nameof(messageService));
         ArgumentNullException.ThrowIfNull(apiResponseReaderService, nameof(apiResponseReaderService));
         ArgumentNullException.ThrowIfNull(httpClientInteractor, nameof(httpClientInteractor));
+        ArgumentNullException.ThrowIfNull(endpointUrlsService, nameof(endpointUrlsService));
 
         _messageService = messageService;
         _apiResponseReaderService = apiResponseReaderService;
         _httpClientInteractorService = httpClientInteractor;
+        _endpointUrlsService = endpointUrlsService;
     }
 
     public async Task ChangePasswordAsync()
@@ -70,7 +73,7 @@ public class AccountManager
         };
 
         await _httpClientInteractorService
-            .PostAsync(EndpointUrls.Login, data, SuccessHandler)
+            .PostAsync(_endpointUrlsService.Login, data, SuccessHandler)
             .ConfigureAwait(false);
     }
 
@@ -111,7 +114,7 @@ public class AccountManager
         };
 
         await _httpClientInteractorService
-            .PostAsync(EndpointUrls.Register, data, SuccessHandler)
+            .PostAsync(_endpointUrlsService.Register, data, SuccessHandler)
             .ConfigureAwait(false);
     }
 }

@@ -20,7 +20,7 @@ kubectl create secret generic secret-accounts-database \
     -n ypdf \
     --from-literal=ACCOUNTS_DATABASE_USER="$ACCOUNTS_DATABASE_USER" \
     --from-literal=ACCOUNTS_DATABASE_PASSWORD="$ACCOUNTS_DATABASE_PASSWORD" \
-    --from-literal=ACCOUNTS_DATABASE_CONNECTION_STRING="Host=accounts-database;Port=5432;Database=AccountsDB;Username=${ACCOUNTS_DATABASE_USER};Password=${ACCOUNTS_DATABASE_PASSWORD}"
+    --from-literal=ACCOUNTS_DATABASE_CONNECTION_STRING="Host=accounts-database.ypdf.svc.cluster.local;Port=8080;Database=AccountsDB;Username=${ACCOUNTS_DATABASE_USER};Password=${ACCOUNTS_DATABASE_PASSWORD}"
 
 kubectl create secret generic secret-jwt \
     -n ypdf \

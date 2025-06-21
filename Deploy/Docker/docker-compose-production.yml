@@ -15,6 +15,11 @@ services:
     ports:
       - 9001:443
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 256M
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Production
@@ -36,6 +41,11 @@ services:
     ports:
       - 8081:443
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Production
@@ -72,6 +82,11 @@ services:
     ports:
       - 8082:443
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Production
@@ -99,6 +114,11 @@ services:
     ports:
       - 8083:443
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Production
@@ -125,6 +145,11 @@ services:
     ports:
       - 8084:443
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Production
@@ -147,6 +172,11 @@ services:
     ports:
       - 8080:5432
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 256M
     environment:
       POSTGRES_USER: ${ACCOUNTS_DATABASE_USER}
       POSTGRES_PASSWORD: ${ACCOUNTS_DATABASE_PASSWORD}
@@ -162,6 +192,11 @@ services:
       - 5672:5672   # RabbitMQ port
       - 15672:15672 # RabbitMQ management UI
     restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 256M
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}

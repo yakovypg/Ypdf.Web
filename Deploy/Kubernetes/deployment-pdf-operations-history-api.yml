@@ -61,8 +61,8 @@ spec:
             claimName: pvc-db-data
       resources:
         limits:
-          cpu: "200m"
-          memory: "400Mi"
-        requests:
           cpu: "100m"
-          memory: "300Mi"
+          memory: "128Mi"
+        requests:
+          cpu: "50m"
+          memory: "64Mi"

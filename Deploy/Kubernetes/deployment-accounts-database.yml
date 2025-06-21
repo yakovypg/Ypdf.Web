@@ -40,8 +40,8 @@ spec:
             claimName: pvc-accounts-database
       resources:
         limits:
-          cpu: "200m"
-          memory: "400Mi"
+          cpu: "300m"
+          memory: "256Mi"
         requests:
           cpu: "100m"
-          memory: "300Mi"
+          memory: "128Mi"

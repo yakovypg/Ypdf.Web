@@ -75,13 +75,13 @@ services:
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Production
-      RabbitMq__HostName: rabbitmq
-      RabbitMq__UserName: ${RABBITMQ_USER}
-      RabbitMq__Password: ${RABBITMQ_PASSWORD}
       ASPNETCORE_HTTPS_PORT: 8082
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
       Jwt__Key: ${JWT_KEY}
+      RabbitMq__HostName: rabbitmq
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
     volumes:
       - ../../Certificates:/https
       - output_files:/output
@@ -102,13 +102,13 @@ services:
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Production
-      RabbitMq__HostName: rabbitmq
-      RabbitMq__UserName: ${RABBITMQ_USER}
-      RabbitMq__Password: ${RABBITMQ_PASSWORD}
       ASPNETCORE_HTTPS_PORT: 8083
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
       Jwt__Key: ${JWT_KEY}
+      RabbitMq__HostName: rabbitmq
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
     volumes:
       - ../../Certificates:/https
       - db_data:/db
@@ -128,12 +128,12 @@ services:
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Production
-      RabbitMq__HostName: rabbitmq
-      RabbitMq__UserName: ${RABBITMQ_USER}
-      RabbitMq__Password: ${RABBITMQ_PASSWORD}
       ASPNETCORE_HTTPS_PORT: 8084
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
+      RabbitMq__HostName: rabbitmq
+      RabbitMq__UserName: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
     volumes:
       - ../../Certificates:/https
       - output_files:/output

@@ -18,9 +18,15 @@ spec:
         image: postgis/postgis:13-master
         env:
           - name: POSTGRES_USER
-            value: "Ypdf"
+            valueFrom:
+              secretKeyRef:
+                name: secret-accounts-database
+                key: POSTGRES_USER
           - name: POSTGRES_PASSWORD
-            value: "Ypdf2025"
+            valueFrom:
+              secretKeyRef:
+                name: secret-accounts-database
+                key: POSTGRES_PASSWORD
           - name: POSTGRES_MULTIPLE_DATABASES
             value: "AccountsDB"
         ports:

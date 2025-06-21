@@ -11,7 +11,7 @@ kubectl apply -f ../pvc-intput-files.yml
 kubectl apply -f ../pvc-output-files.yml
 kubectl apply -f ../pvc-web-app-keys.yml
 
-kubectl apply -f ../secret-tls.yml
+./create-secrets.sh
 
 kubectl apply -f ../deployment-accounts-database.yml
 kubectl apply -f ../deployment-rabbitmq.yml

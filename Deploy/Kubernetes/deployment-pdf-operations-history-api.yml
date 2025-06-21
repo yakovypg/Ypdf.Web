@@ -24,18 +24,29 @@ spec:
             value: "https://+;http://+"
           - name: ASPNETCORE_ENVIRONMENT
             value: "Production"
-          - name: RABBITMQ_HOST
-            value: "rabbitmq"
-          - name: RABBITMQ_USER
-            value: "Ypdf"
-          - name: RABBITMQ_PASSWORD
-            value: "Ypdf2025"
           - name: ASPNETCORE_HTTPS_PORT
             value: "8083"
           - name: ASPNETCORE_Kestrel__Certificates__Default__Path
             value: "/https/tls.crt"
           - name: ASPNETCORE_Kestrel__Certificates__Default__KeyPath
             value: "/https/tls.key"
+          - name: Jwt__Key
+            valueFrom:
+              secretKeyRef:
+                name: secret-jwt
+                key: JWT_KEY
+          - name: RabbitMq__HostName
+            value: "rabbitmq"
+          - name: RabbitMq__UserName
+            valueFrom:
+              secretKeyRef:
+                name: secret-rabbitmq
+                key: RABBITMQ_USER
+          - name: RabbitMq__Password
+            valueFrom:
+              secretKeyRef:
+                name: secret-rabbitmq
+                key: RABBITMQ_PASSWORD
         volumeMounts:
           - name: tls-certificates
             mountPath: /https

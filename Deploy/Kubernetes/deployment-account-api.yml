@@ -30,6 +30,56 @@ spec:
             value: "/https/tls.crt"
           - name: ASPNETCORE_Kestrel__Certificates__Default__KeyPath
             value: "/https/tls.key"
+          - name: Jwt__Key
+            valueFrom:
+              secretKeyRef:
+                name: secret-jwt
+                key: JWT_KEY
+          - name: ConnectionStrings__Accounts
+            valueFrom:
+              secretKeyRef:
+                name: secret-accounts-database
+                key: ACCOUNTS_DATABASE_CONNECTION_STRING
+          - name: InitialUsers__Admin__Email
+            valueFrom:
+              secretKeyRef:
+                name: secret-initial-users
+                key: ADMIN_USER_EMAIL
+          - name: InitialUsers__Admin__UserName
+            valueFrom:
+              secretKeyRef:
+                name: secret-initial-users
+                key: ADMIN_USER_USERNAME
+          - name: InitialUsers__Admin__Nickname
+            valueFrom:
+              secretKeyRef:
+                name: secret-initial-users
+                key: ADMIN_USER_NICKNAME
+          - name: InitialUsers__Admin__Password
+            valueFrom:
+              secretKeyRef:
+                name: secret-initial-users
+                key: ADMIN_USER_PASSWORD
+          - name: InitialUsers__TestUser__Email
+            valueFrom:
+              secretKeyRef:
+                name: secret-initial-users
+                key: TEST_USER_EMAIL
+          - name: InitialUsers__TestUser__UserName
+            valueFrom:
+              secretKeyRef:
+                name: secret-initial-users
+                key: TEST_USER_USERNAME
+          - name: InitialUsers__TestUser__Nickname
+            valueFrom:
+              secretKeyRef:
+                name: secret-initial-users
+                key: TEST_USER_NICKNAME
+          - name: InitialUsers__TestUser__Password
+            valueFrom:
+              secretKeyRef:
+                name: secret-initial-users
+                key: TEST_USER_PASSWORD
         volumeMounts:
           - name: tls-certificates
             mountPath: /https

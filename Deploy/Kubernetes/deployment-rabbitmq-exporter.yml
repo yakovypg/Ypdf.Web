@@ -22,6 +22,12 @@ spec:
         - name: RABBIT_URL
           value: "http://rabbitmq.ypdf:15672"
         - name: RABBIT_USER
-          value: Ypdf
+          valueFrom:
+            secretKeyRef:
+              name: secret-rabbitmq
+              key: RABBITMQ_USER
         - name: RABBIT_PASSWORD
-          value: Ypdf2025
+          valueFrom:
+            secretKeyRef:
+              name: secret-rabbitmq
+              key: RABBITMQ_PASSWORD

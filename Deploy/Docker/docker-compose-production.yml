@@ -26,8 +26,11 @@ services:
       ASPNETCORE_HTTPS_PORT: 9001
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.crt
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /https/localhost.key
+      Deployment: Docker
+      Storages__PersistentKeyStorage: /Keys
     volumes:
       - ../../Certificates:/https
+      - web_app_keys:/Keys
 
   account-api:
     build:
@@ -205,3 +208,4 @@ volumes:
   db_data:
   output_files:
   intput_files:
+  web_app_keys:

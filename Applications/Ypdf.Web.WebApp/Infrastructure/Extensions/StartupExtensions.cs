@@ -62,7 +62,7 @@ public static class StartupExtensions
         var keysDirectory = new DirectoryInfo(keysDirectoryPath);
 
         return services.AddDataProtection()
-            .SetApplicationName(environment.ApplicationName)
+            .SetApplicationName("ypdf")
             .PersistKeysToFileSystem(keysDirectory)
             .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
     }

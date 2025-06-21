@@ -30,6 +30,10 @@ spec:
             value: "/https/tls.crt"
           - name: ASPNETCORE_Kestrel__Certificates__Default__KeyPath
             value: "/https/tls.key"
+          - name: Deployment
+            value: Kubernetes
+          - name: Storages__PersistentKeyStorage
+            value: /Keys
         volumeMounts:
           - name: tls-certificates
             mountPath: /https

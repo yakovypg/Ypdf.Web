@@ -66,8 +66,8 @@ spec:
             claimName: pvc-intput-files
       resources:
         limits:
-          cpu: "100m"
-          memory: "128Mi"
+          cpu: "1000m"
+          memory: "256Mi"
         requests:
-          cpu: "50m"
-          memory: "64Mi"
+          cpu: "300m"
+          memory: "128Mi"

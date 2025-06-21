@@ -16,8 +16,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
-          memory: 128M
+          cpus: '1'
+          memory: 256M
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Development
@@ -57,8 +57,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
-          memory: 128M
+          cpus: '1'
+          memory: 256M
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Development
@@ -89,8 +89,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
-          memory: 128M
+          cpus: '1'
+          memory: 256M
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Development
@@ -120,8 +120,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
-          memory: 128M
+          cpus: '1'
+          memory: 256M
     environment:
       ASPNETCORE_URLS: https://+;http://+
       ASPNETCORE_ENVIRONMENT: Development
@@ -147,8 +147,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.3'
-          memory: 256M
+          cpus: '2'
+          memory: 512M
     environment:
       POSTGRES_USER: ${ACCOUNTS_DATABASE_USER}
       POSTGRES_PASSWORD: ${ACCOUNTS_DATABASE_PASSWORD}
@@ -167,8 +167,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.3'
-          memory: 256M
+          cpus: '2'
+          memory: 512M
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}

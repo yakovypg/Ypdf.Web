@@ -1,0 +1,3 @@
+[submodule "Vendor/Ypdf.Core"]
+	path = Vendor/Ypdf.Core
+	url = https://github.com/yakovypg/Ypdf.Core

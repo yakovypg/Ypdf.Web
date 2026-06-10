@@ -120,8 +120,6 @@ public abstract class RabbitMqConsumer : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        ArgumentNullException.ThrowIfNull(stoppingToken, nameof(stoppingToken));
-
         stoppingToken.ThrowIfCancellationRequested();
 
         if (_channel is null)

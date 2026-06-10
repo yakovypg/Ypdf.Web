@@ -80,14 +80,12 @@ public static class StartupExtensions
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
-        var mappingConfig = new MapperConfiguration(configuration =>
-        {
-        });
+        var mappingConfig = new MapperConfiguration(t => { }, null);
 
         IMapper mapper = mappingConfig.CreateMapper();
 
         return services
-            .AddAutoMapper(typeof(Startup))
+            .AddAutoMapper(t => { }, typeof(Startup))
             .AddSingleton(mapper);
     }
 

@@ -28,7 +28,7 @@ public class ZipService : IZipService
         ArgumentNullException.ThrowIfNull(inputFilePaths, nameof(inputFilePaths));
         ArgumentException.ThrowIfNullOrWhiteSpace(outputFilePath, nameof(outputFilePath));
 
-        IReadOnlyCollection<string> inputFilePathCollection = inputFilePaths.ToArray();
+        IReadOnlyCollection<string> inputFilePathCollection = [.. inputFilePaths];
 
         if (inputFilePathCollection.Count == 0)
             throw new ArgumentException("No files specified", nameof(inputFilePaths));

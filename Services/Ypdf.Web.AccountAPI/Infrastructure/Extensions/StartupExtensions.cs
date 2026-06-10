@@ -73,15 +73,17 @@ public static class StartupExtensions
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
-        var mappingConfig = new MapperConfiguration(configuration =>
+        static void Configure(IMapperConfigurationExpression configuration)
         {
             configuration.AddProfile(new EntityMappingProfile());
-        });
+        }
+
+        var mappingConfig = new MapperConfiguration(Configure, null);
 
         IMapper mapper = mappingConfig.CreateMapper();
 
         return services
-            .AddAutoMapper(typeof(Startup))
+            .AddAutoMapper(t => { }, typeof(Startup))
             .AddSingleton(mapper);
     }
 

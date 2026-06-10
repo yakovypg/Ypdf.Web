@@ -35,7 +35,6 @@ public class UserSubscriptionService : IUserSubscriptionService
         TimeSpan period)
     {
         ArgumentNullException.ThrowIfNull(user, nameof(user));
-        ArgumentNullException.ThrowIfNull(subscriptionType, nameof(subscriptionType));
 
         _logger.LogInformation(
             "Trying to add subscription '{Type}' for user with ID {Id}",
@@ -61,7 +60,6 @@ public class UserSubscriptionService : IUserSubscriptionService
         TimeSpan period)
     {
         ArgumentNullException.ThrowIfNull(user, nameof(user));
-        ArgumentNullException.ThrowIfNull(subscriptionType, nameof(subscriptionType));
 
         _logger.LogInformation(
             "Trying to add new subscription '{Type}' for user with ID {Id}",

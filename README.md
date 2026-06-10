@@ -31,4 +31,4 @@ You can read our documentation in the [DOCUMENTATION.md](DOCUMENTATION.md).
 Contributions are welcome, have a look at the [CONTRIBUTING.md](CONTRIBUTING.md) document for more information.
 
 ## License
-The project is available under the [GPLv3](LICENSE) license.
+The project is available under the [AGPLv3](LICENSE) license.

@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Applications/">
+    <Project Path="Applications/Ypdf.Web.WebApp/Ypdf.Web.WebApp.csproj" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="Domain/Ypdf.Web.Domain/Ypdf.Web.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Services/">
+    <Project Path="Services/Ypdf.Web.AccountAPI/Ypdf.Web.AccountAPI.csproj" />
+    <Project Path="Services/Ypdf.Web.FilesAPI/Ypdf.Web.FilesAPI.csproj" />
+    <Project Path="Services/Ypdf.Web.PdfOperationsHistoryAPI/Ypdf.Web.PdfOperationsHistoryAPI.csproj" />
+    <Project Path="Services/Ypdf.Web.PdfProcessingAPI/Ypdf.Web.PdfProcessingAPI.csproj" />
+  </Folder>
+  <Folder Name="/Vendor/" />
+  <Folder Name="/Vendor/Ypdf.Core/" />
+  <Folder Name="/Vendor/Ypdf.Core/Core/">
+    <Project Path="Vendor/Ypdf.Core/Core/Ypdf.Core/Ypdf.Core.csproj" />
+  </Folder>
+</Solution>
